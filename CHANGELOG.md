@@ -9,6 +9,9 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 - Directions visuelles (9 au total) et choix du style « Courbes de niveau » (direction E d'origine).
 - Design system dans Figma : 71 variables (couleurs, espacements, rayons), 16 styles de texte, 9 composants (icônes, logo provisoire, bouton, bouton icône, barre de recherche, badge de statut UICN, puce de groupe, carte espèce, en-tête).
 - Générateurs de maquettes dans `tools/maquettes/` (trame halftone, courbes de niveau).
+- Composants Ligne espèce et Statistique.
+- 12 écrans clés dans Figma : continent, pays, fiche espèce, recherche, identification d'une plante, Autour de moi (ordinateur et téléphone).
+- Notes du coffre : Style visuel (palette illustrée), Écrans clés (avec aperçus).
 
 ### Modifié
 - Domaine visé : `nomenature.org` au lieu de `nomennature.org`.
