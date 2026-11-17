@@ -559,13 +559,18 @@ for d in DIRS:
     d["hq"], d["bq"], d["mq"] = q(d["head"]), q(d["body"]), q(d["mono"])
 DIRS[2]["swatches"][-1] = ("Verre (blanc 23 %)", "#FFFFFF")
 
-html = ['<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Nomen Nature — directions D E F</title>',
-        '<style>*{box-sizing:border-box;margin:0;padding:0}body{background:#E9E9E9;padding:40px;display:flex;flex-direction:column;gap:80px;width:max-content}'
-        '.row{display:flex;gap:60px;align-items:flex-start}.screen{flex-shrink:0}</style></head><body>']
-for d in DIRS:
-    html.append(f'<div class="row">{tile(d)}{mobile(d)}{desktop(d)}</div>')
-html.append('</body></html>')
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "directions_def.html")
-with open(out, "w", encoding="utf-8") as f:
-    f.write("".join(html))
-print(out, os.path.getsize(out))
+def main():
+    html = ['<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Nomen Nature — directions D E F</title>',
+            '<style>*{box-sizing:border-box;margin:0;padding:0}body{background:#E9E9E9;padding:40px;display:flex;flex-direction:column;gap:80px;width:max-content}'
+            '.row{display:flex;gap:60px;align-items:flex-start}.screen{flex-shrink:0}</style></head><body>']
+    for d in DIRS:
+        html.append(f'<div class="row">{tile(d)}{mobile(d)}{desktop(d)}</div>')
+    html.append('</body></html>')
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "directions_def.html")
+    with open(out, "w", encoding="utf-8") as f:
+        f.write("".join(html))
+    print(out, os.path.getsize(out))
+
+
+if __name__ == "__main__":
+    main()

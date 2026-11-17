@@ -1,6 +1,20 @@
 # Directions visuelles
 
-*Étape 3 — en attente de choix. Maquettes : [Figma « Nomen », page « Directions visuelles »](https://www.figma.com/design/lbR59tuBWRe62sapV6RSum/Nomen).*
+*Étape 3 — direction E retenue comme base, choix de la variation en attente. Maquettes : [Figma « Nomen », page « Directions visuelles »](https://www.figma.com/design/lbR59tuBWRe62sapV6RSum/Nomen).*
+
+## Variations de E (E1, E2, E3) — direction préférée
+
+L'utilisateur a choisi **E — Courbes de niveau** comme base (les autres directions sont conservées dans Figma). Trois variations qui changent la structure, pas seulement les couleurs ou les polices. Elles sont dans le même fichier Figma, sous la deuxième série.
+
+Dans les trois, les courbes prennent un **sens** : elles représentent la richesse du vivant. Plus elles sont serrées, plus la vie est dense.
+
+| Variation | Idée | Ce qui change vraiment |
+|---|---|---|
+| **E1 — Atlas plein écran** | La carte est la page, comme une application de cartographie | Pas de défilement ; panneau latéral du continent choisi (statistiques, onglets Toutes / Menacées / Par groupe, liste d'espèces) ; panneau qui monte du bas sur téléphone ; légende « Lire la carte », échelle, zoom, sélecteur de continents |
+| **E2 — Carte d'état-major** | Version claire, façon carte topographique imprimée | Fond papier ; continents en teintes d'altitude (vert → brun) avec quadrillage des latitudes ; sections numérotées 01–04 ; cartouche et colophon ; fiches d'espèces façon étiquettes de muséum (numéro, lieu, coordonnées, tampon) ; groupes en index avec nombre d'espèces |
+| **E3 — Strates** | Le relief devient une maquette en carton découpé | Navigation latérale fixe (ordinateur) et barre d'onglets en bas (téléphone) ; grand relief en couches avec ombres ; carte du monde en strates ; cartes et tuiles de groupes en relief |
+
+Générateur : `tools/maquettes/directions_e.py` (courbes calculées sur une « richesse » fictive : distance à la côte modulée par un bruit). Les chiffres affichés (18 240 espèces, 1 126 menacées, nombres par groupe) sont des **exemples**.
 
 ## Deuxième série (D, E, F) — à la demande de l'utilisateur
 
