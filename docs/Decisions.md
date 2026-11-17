@@ -4,6 +4,7 @@ Chaque décision structurante du projet, avec sa raison. Les plus récentes en h
 
 | Date | Décision | Pourquoi | Écarté |
 |---|---|---|---|
+| 2026-11-17 | Parcours utilisateurs validés (4 schémas FigJam), avec : rayon « Autour de moi » 5 km puis 25 et 100 km ; 3 propositions d'identification avec pourcentage ; partie de la plante facultative ; panneaux en bas sur téléphone, sur le côté sur ordinateur ; À propos, crédits et langue en pied de page | Couvrir tous les cas (refus de géolocalisation, erreurs d'identification) avant de dessiner les écrans | — |
 | 2026-11-17 | Flux git : travail sur des branches `feat/`, `fix/`, `docs/`… issues de `develop` ; `main` ne reçoit que les releases | Historique propre ; `main` = toujours la dernière version publiée | Travail direct sur `main` |
 | 2026-11-17 | Parcours utilisateurs dans le FigJam « Nomen », maquettes dans le fichier Figma « Nomen » | Un outil par usage : schémas dans FigJam, écrans dans Figma | — |
 | 2026-11-17 | Dépôt GitHub **public**, code sous **licence MIT**, documentation dans `docs/` (coffre Obsidian versionné) | Projet ouvert et non commercial ; une seule source de vérité, tenue à jour avec le code | Dépôt privé ; licence AGPL ; coffre séparé hors git |
