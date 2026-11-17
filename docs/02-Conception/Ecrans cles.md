@@ -35,6 +35,16 @@ Tous les écrans sont construits avec les composants du [design system](Design%2
 - Les états d'erreur (pas de connexion, limite Pl@ntNet atteinte, aucun résultat, géolocalisation refusée) sont décrits dans les parcours mais pas encore dessinés.
 - Le vrai logo reste à créer.
 
+## Écrans restants pour la V1
+
+Ces 6 écrans couvrent les parcours principaux. La V1 aura aussi besoin de :
+
+- **Navigation** : liste d'un groupe (ex. Oiseaux), liste de toutes les espèces menacées, menu sur téléphone.
+- **Étapes intermédiaires** : prise ou choix de la photo avant l'identification, demande de géolocalisation.
+- **États d'erreur et cas limites** : pas de connexion, limite Pl@ntNet atteinte, aucun résultat, géolocalisation refusée, page 404, **fiche d'une espèce peu documentée** (sans photo ni description : le cas le plus fréquent).
+- **Chargement** : écrans d'attente pendant l'arrivée des données.
+- **Pages annexes** : À propos, Sources et crédits, Politique de confidentialité, Mentions légales (voir la [checklist qualité](../Checklist%20qualite.md)).
+
 ## Suite
 
 1. Valider ces écrans (ou demander des changements).
