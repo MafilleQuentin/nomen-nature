@@ -22,6 +22,7 @@ Bienvenue dans le coffre du projet. Ce coffre est tenu à jour par Claude à cha
 | [Glossaire](Glossaire.md) | Les mots techniques et scientifiques expliqués simplement |
 | [Journal](03-Journal/2026-11-17.md) | Une note par session de travail, dans `03-Journal/` |
 | [Parcours utilisateurs](02-Conception/Parcours%20utilisateurs.md) | Le plan du site et les parcours clés, validés |
+| [Style visuel](02-Conception/Style%20visuel.md) | La palette et l'explication du style « Courbes de niveau » |
 | [Design system](02-Conception/Design%20system.md) | Couleurs, typographies, espacements et composants du site |
 | [Directions visuelles](02-Conception/Directions%20visuelles.md) | Les 3 ambiances proposées (couleurs, polices, page d'accueil) |
 
