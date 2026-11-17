@@ -61,10 +61,13 @@ Contrastes vérifiés : texte principal 12,9:1, secondaire 8,7:1, texte sur ambr
 | **Puce de groupe** | Défaut / Sélectionné | Libellé |
 | **Carte espèce** | — | Nom, Nom latin, Méta ; statut modifiable depuis la carte |
 | **En-tête** | Ordinateur / Téléphone | — |
+| **Ligne espèce** | — | Nom, Nom latin, Méta, Avec statut ; statut modifiable |
+| **Statistique** | — | Valeur, Libellé |
+
+![Page Fondations du design system](../Pieces-jointes/design-system-fondations.png)
 
 ## Pas encore fait
 
-- Les **écrans clés** (continent, pays, fiche espèce, recherche, identification, Autour de moi) : prochaine étape, construits avec ces composants.
 - Le **vrai logo** (le logo actuel est provisoire).
 - Un composant **Carte du monde** : la carte reste pour l'instant un dessin dans les maquettes.
 - Pas de mode clair : le site n'a qu'un thème (nuit).
