@@ -6,7 +6,7 @@ Bienvenue dans le coffre du projet. Ce coffre est tenu à jour par Claude à cha
 
 ## Où en est-on ?
 
-**Étape actuelle : 2 — Parcours utilisateurs (FigJam).** Le cadrage est terminé et validé.
+**Étape actuelle : 2 — Parcours utilisateurs (FigJam), en attente de validation.** Le cadrage est terminé et validé.
 
 → [Feuille de route](Feuille%20de%20route.md) · [Dernière note du journal](03-Journal/2026-11-17.md)
 
@@ -21,7 +21,7 @@ Bienvenue dans le coffre du projet. Ce coffre est tenu à jour par Claude à cha
 | [Feuille de route](Feuille%20de%20route.md) | Les étapes, ce qui est fait, ce qui vient, les idées pour plus tard |
 | [Glossaire](Glossaire.md) | Les mots techniques et scientifiques expliqués simplement |
 | [Journal](03-Journal/2026-11-17.md) | Une note par session de travail, dans `03-Journal/` |
-| `02-Conception/` | *À venir* : parcours utilisateurs et maquettes |
+| [Parcours utilisateurs](02-Conception/Parcours%20utilisateurs.md) | Le plan du site et les parcours clés, avec les hypothèses à valider |
 
 ## Liens utiles
 

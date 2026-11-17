@@ -5,7 +5,7 @@
 | # | Étape | État | Résultat attendu |
 |---|---|---|---|
 | 1 | Cadrage | ✅ Terminé (17.11.2026) | [Brief](01-Cadrage/Brief.md) validé |
-| 2 | Parcours utilisateurs | ⏳ **En cours** | Schéma FigJam : écrans et enchaînements |
+| 2 | Parcours utilisateurs | ⏳ **En attente de validation** | [Parcours utilisateurs](02-Conception/Parcours%20utilisateurs.md) : 4 schémas dans le FigJam |
 | 3 | Maquettes Figma | ⬜ | Directions visuelles, design system, écrans clés mobile et ordinateur, validés par l'utilisateur |
 | 4 | Stack technique | ⬜ | Technologies et hébergement choisis ensemble, consignés dans les [décisions](Decisions.md) |
 | 5 | Développement V1 | ⬜ | Livré lot par lot, chaque lot testé et publié en release |
