@@ -1,6 +1,6 @@
 # Écrans secondaires
 
-*Étape 3 — dessinés le 17 novembre 2026, en attente de validation. Fichier : [Figma « Nomen »](https://www.figma.com/design/lbR59tuBWRe62sapV6RSum/Nomen), page **Écrans secondaires**.*
+*Étape 3 — dessinés et **validés** le 17 novembre 2026. Fichier : [Figma « Nomen »](https://www.figma.com/design/lbR59tuBWRe62sapV6RSum/Nomen), page **Écrans secondaires**.*
 
 Ils complètent les [écrans clés](Ecrans%20cles.md) pour couvrir toute la V1. Tous utilisent le [design system](Design%20system.md), dont deux nouveaux composants : **Message d'état** (erreurs et listes vides) et **Pied de page**. Les textes des pages légales sont des **brouillons à faire relire** avant la mise en ligne.
 
