@@ -1,0 +1,8 @@
+{
+  "useMarkdownLinks": true,
+  "newLinkFormat": "relative",
+  "attachmentFolderPath": "Pieces-jointes",
+  "newFileLocation": "current",
+  "alwaysUpdateLinks": true,
+  "showUnsupportedFiles": false
+}
