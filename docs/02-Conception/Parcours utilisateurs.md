@@ -1,6 +1,6 @@
 # Parcours utilisateurs
 
-*Étape 2 — en attente de validation. Schémas : [FigJam « Nomen »](https://www.figma.com/board/PLlFoRDj5ko2AJftKq78p1/Nomen).*
+*Étape 2 — validée le 17 novembre 2026. Schémas : [FigJam « Nomen »](https://www.figma.com/board/PLlFoRDj5ko2AJftKq78p1/Nomen).*
 
 Le FigJam contient quatre schémas, de gauche à droite :
 
@@ -39,9 +39,9 @@ Le FigJam contient quatre schémas, de gauche à droite :
 - Recherche des espèces observées dans un rayon ; s'il n'y a rien, on élargit le rayon.
 - Liste : espèces bien documentées d'abord, badges de menace visibles, filtre par groupe.
 
-## Hypothèses à valider
+## Précisions validées
 
-Ces points ne sont pas encore décidés, ils sont proposés dans les schémas :
+Ces points ont été proposés avec les schémas et validés tels quels :
 
 1. **Rayon d'« Autour de moi »** : 5 km par défaut, élargi à 25 km puis 100 km s'il n'y a pas de résultat.
 2. **Nombre de propositions d'identification** : 3, avec le niveau de confiance en pourcentage.
