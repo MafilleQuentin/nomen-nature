@@ -6,7 +6,7 @@
 |---|---|---|---|
 | 1 | Cadrage | ✅ Terminé (17.11.2026) | [Brief](01-Cadrage/Brief.md) validé |
 | 2 | Parcours utilisateurs | ✅ Terminé (17.11.2026) | [Parcours utilisateurs](02-Conception/Parcours%20utilisateurs.md) : 4 schémas dans le FigJam |
-| 3 | Maquettes Figma | ⏳ **En cours** : [style retenu](02-Conception/Directions%20visuelles.md) = E d'origine (Courbes de niveau) ; [design system](02-Conception/Design%20system.md) fait ; prochaine étape : écrans clés | Directions visuelles, design system, écrans clés mobile et ordinateur, validés par l'utilisateur |
+| 3 | Maquettes Figma | ⏳ **En cours** : [style retenu](02-Conception/Directions%20visuelles.md) = E d'origine (Courbes de niveau) ; [design system](02-Conception/Design%20system.md) fait ; [écrans clés](02-Conception/Ecrans%20cles.md) dessinés, en attente de validation | Directions visuelles, design system, écrans clés mobile et ordinateur, validés par l'utilisateur |
 | 4 | Stack technique | ⬜ | Technologies et hébergement choisis ensemble, consignés dans les [décisions](Decisions.md) |
 | 5 | Développement V1 | ⬜ | Livré lot par lot, chaque lot testé et publié en release |
 | 6 | Mise en ligne | ⬜ | Site public sur `nomenature.org` |
