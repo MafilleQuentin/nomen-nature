@@ -15,7 +15,9 @@ Les lots de développement seront découpés en tickets dans Linear une fois la 
 
 ## À faire hors développement
 
-- [ ] Réserver le domaine `nomenature.org` (par l'utilisateur ; conseillé : Cloudflare Registrar, ou Infomaniak), et en option `nomennature.org` pour rediriger
+- [x] Réserver le domaine `nomenature.org` : fait le 17.11.2026 chez Cloudflare Registrar (expire le 17.11.2027, 11,20 $/an)
+- [ ] Valider l'e-mail de contact du domaine (sinon suspension) et activer le renouvellement automatique
+- [ ] Optionnel : `nomennature.org` pour rediriger les fautes de frappe
 - [ ] Demander une clé Pl@ntNet (puis le plan non-profit) au moment du développement
 
 ## Plus tard (après la V1)
