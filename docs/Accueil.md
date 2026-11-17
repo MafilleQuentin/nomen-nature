@@ -18,6 +18,7 @@ Bienvenue dans le coffre du projet. Ce coffre est tenu à jour par Claude à cha
 | [Sources de données](01-Cadrage/Sources%20de%20donnees.md) | D'où viennent les espèces, photos, cartes et identifications, avec leurs conditions |
 | [Choix du nom](01-Cadrage/Choix%20du%20nom.md) | Pourquoi « Nomen Nature » et pas « Sylva » |
 | [Décisions](Decisions.md) | Toutes les décisions prises, avec leur raison |
+| [Checklist qualité](Checklist%20qualite.md) | Les règles à respecter avant chaque mise en ligne (confidentialité, HTTPS, accessibilité, vitesse…) |
 | [Feuille de route](Feuille%20de%20route.md) | Les étapes, ce qui est fait, ce qui vient, les idées pour plus tard |
 | [Glossaire](Glossaire.md) | Les mots techniques et scientifiques expliqués simplement |
 | [Journal](03-Journal/2026-11-17.md) | Une note par session de travail, dans `03-Journal/` |
