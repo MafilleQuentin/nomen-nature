@@ -31,7 +31,7 @@ Tous les écrans sont construits avec les composants du [design system](Design%2
 
 ## Limites connues
 
-- La carte est le dessin simplifié des maquettes : pas encore de frontières de pays (elles viendront de Natural Earth).
+- La carte utilise les vraies frontières **Natural Earth** (1:110 m) en projection **Equal Earth** (composant « Carte du monde »). Les courbes de niveau restent **fictives** : sur le site, elles seront calculées à partir des observations GBIF. Au zoom sur un pays, le 1:110 m est grossier : le site utilisera des données plus fines.
 - Les états d'erreur (pas de connexion, limite Pl@ntNet atteinte, aucun résultat, géolocalisation refusée) sont décrits dans les parcours mais pas encore dessinés.
 - Le vrai logo reste à créer.
 
