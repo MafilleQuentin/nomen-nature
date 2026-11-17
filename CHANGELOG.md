@@ -1,4 +1,4 @@
-﻿# Journal des versions
+# Journal des versions
 
 Toutes les évolutions notables du projet sont consignées ici.
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation : [Semantic Versioning](https://semver.org/lang/fr/).
