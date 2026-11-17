@@ -37,6 +37,8 @@ Tous les écrans sont construits avec les composants du [design system](Design%2
 
 ## Écrans restants pour la V1
 
+*Dessinés depuis : voir [Écrans secondaires](Ecrans%20secondaires.md).*
+
 Ces 6 écrans couvrent les parcours principaux. La V1 aura aussi besoin de :
 
 - **Navigation** : liste d'un groupe (ex. Oiseaux), liste de toutes les espèces menacées, menu sur téléphone.

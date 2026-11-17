@@ -12,6 +12,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 - Composants Ligne espèce et Statistique.
 - 12 écrans clés dans Figma : continent, pays, fiche espèce, recherche, identification d'une plante, Autour de moi (ordinateur et téléphone).
 - Notes du coffre : Style visuel (palette illustrée), Écrans clés (avec aperçus), Checklist qualité.
+- 20 écrans secondaires : fiche peu documentée, étape photo, liste d'un groupe, menu, 6 états d'erreur, chargement, 404, politique de confidentialité, sources et crédits, à propos.
+- Composants Message d'état et Pied de page ; statuts DD et NE dans le badge.
 - Carte du monde réelle : frontières Natural Earth 1:110 m, projection Equal Earth (`tools/maquettes/carte_monde.py`), composant « Carte du monde » dans Figma.
 
 ### Modifié
