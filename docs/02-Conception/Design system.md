@@ -57,12 +57,14 @@ Contrastes vérifiés : texte principal 12,9:1, secondaire 8,7:1, texte sur ambr
 | **Bouton** | Style Principal / Secondaire × Taille Grand / Compact | Libellé, Icône (échangeable), Avec icône |
 | **Bouton icône** | — (44 × 44 px, zone tactile minimale) | Icône |
 | **Barre de recherche** | Grand (ordinateur) / Compact (téléphone) | Texte indicatif |
-| **Badge de statut** | CR, EN, VU, NT, LC | — (code + libellé, jamais la couleur seule) |
+| **Badge de statut** | CR, EN, VU, NT, LC, DD (données insuffisantes), NE (non évaluée) | — (code + libellé, jamais la couleur seule) |
 | **Puce de groupe** | Défaut / Sélectionné | Libellé |
 | **Carte espèce** | — | Nom, Nom latin, Méta ; statut modifiable depuis la carte |
 | **En-tête** | Ordinateur / Téléphone | — |
 | **Ligne espèce** | — | Nom, Nom latin, Méta, Avec statut ; statut modifiable |
 | **Statistique** | — | Valeur, Libellé |
+| **Message d'état** | — | Titre, Texte, Icône, Avec action ; bouton exposé (erreurs, listes vides) |
+| **Pied de page** | Ordinateur / Téléphone | — |
 | **Carte du monde** | — (1232 × 600, à recadrer dans un cadre) | Noms des continents ; frontières Natural Earth 1:110 m, projection Equal Earth, couleurs liées aux variables `color/map/*` |
 
 ![Page Fondations du design system](../Pieces-jointes/design-system-fondations.png)

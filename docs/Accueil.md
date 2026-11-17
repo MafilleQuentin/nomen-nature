@@ -6,7 +6,7 @@ Bienvenue dans le coffre du projet. Ce coffre est tenu à jour par Claude à cha
 
 ## Où en est-on ?
 
-**Étape actuelle : 3 — Maquettes Figma.** Le style est choisi (direction E d'origine, « Courbes de niveau ») le [design system](02-Conception/Design%20system.md) est construit et les [écrans clés](02-Conception/Ecrans%20cles.md) sont validés. Restent les écrans secondaires (erreurs, pages annexes) avant l'étape 4 (stack technique). Le cadrage et les parcours utilisateurs sont terminés et validés.
+**Étape actuelle : 3 — Maquettes Figma.** Le style est choisi (direction E d'origine, « Courbes de niveau ») le [design system](02-Conception/Design%20system.md) est construit et les [écrans clés](02-Conception/Ecrans%20cles.md) sont validés ; les [écrans secondaires](02-Conception/Ecrans%20secondaires.md) sont dessinés et attendent ta validation. Ensuite : étape 4 (stack technique). Le cadrage et les parcours utilisateurs sont terminés et validés.
 
 → [Feuille de route](Feuille%20de%20route.md) · [Dernière note du journal](03-Journal/2026-11-17.md)
 
@@ -24,6 +24,7 @@ Bienvenue dans le coffre du projet. Ce coffre est tenu à jour par Claude à cha
 | [Journal](03-Journal/2026-11-17.md) | Une note par session de travail, dans `03-Journal/` |
 | [Parcours utilisateurs](02-Conception/Parcours%20utilisateurs.md) | Le plan du site et les parcours clés, validés |
 | [Écrans clés](02-Conception/Ecrans%20cles.md) | Les 6 écrans principaux, sur ordinateur et téléphone |
+| [Écrans secondaires](02-Conception/Ecrans%20secondaires.md) | Fiche peu documentée, étape photo, listes, menu, erreurs, 404, pages légales |
 | [Style visuel](02-Conception/Style%20visuel.md) | La palette et l'explication du style « Courbes de niveau » |
 | [Design system](02-Conception/Design%20system.md) | Couleurs, typographies, espacements et composants du site |
 | [Directions visuelles](02-Conception/Directions%20visuelles.md) | Les 3 ambiances proposées (couleurs, polices, page d'accueil) |
