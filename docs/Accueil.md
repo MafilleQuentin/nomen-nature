@@ -6,7 +6,7 @@ Bienvenue dans le coffre du projet. Ce coffre est tenu à jour par Claude à cha
 
 ## Où en est-on ?
 
-**Étape actuelle : 3 — Maquettes Figma.** Le style « Courbes de niveau » est retenu ; trois variations (E1 Atlas plein écran, E2 Carte d'état-major, E3 Strates) attendent ton choix. Le cadrage et les parcours utilisateurs sont terminés et validés.
+**Étape actuelle : 3 — Maquettes Figma.** Le style est choisi : la direction E d'origine, « Courbes de niveau ». Prochaine étape : le design system et les écrans clés. Le cadrage et les parcours utilisateurs sont terminés et validés.
 
 → [Feuille de route](Feuille%20de%20route.md) · [Dernière note du journal](03-Journal/2026-11-17.md)
 
