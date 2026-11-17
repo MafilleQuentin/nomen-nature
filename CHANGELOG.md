@@ -5,6 +5,12 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ## [Non publié]
 
+### Ajouté
+- Parcours utilisateurs de la V1 validés : plan du site, explorer la carte, identifier une plante, autour de moi (FigJam et note dans `docs/02-Conception/`).
+
+### Modifié
+- Flux git : travail sur des branches issues de `develop`, `main` réservée aux releases.
+
 ## [0.1.0] - 2026-11-17
 
 Fin du cadrage : le projet est défini, aucune ligne de code encore.
