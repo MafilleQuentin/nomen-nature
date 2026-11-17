@@ -19,3 +19,13 @@ desktop.ini
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Maquettes HTML générées (envoyées dans Figma, non versionnées)
+tools/maquettes/*.html
+
+# Python
+__pycache__/
+
+# Données téléchargées (Natural Earth) et sorties générées
+tools/maquettes/data/
+tools/maquettes/carte_monde_points.json

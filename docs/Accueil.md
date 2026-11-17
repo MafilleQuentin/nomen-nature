@@ -6,7 +6,7 @@ Bienvenue dans le coffre du projet. Ce coffre est tenu à jour par Claude à cha
 
 ## Où en est-on ?
 
-**Étape actuelle : 3 — Maquettes Figma.** Le cadrage et les parcours utilisateurs sont terminés et validés.
+**Étape actuelle : 4 — Stack technique.** Le cadrage, les parcours et les maquettes (style, design system, écrans clés et secondaires) sont terminés et validés.
 
 → [Feuille de route](Feuille%20de%20route.md) · [Dernière note du journal](03-Journal/2026-11-17.md)
 
@@ -18,10 +18,16 @@ Bienvenue dans le coffre du projet. Ce coffre est tenu à jour par Claude à cha
 | [Sources de données](01-Cadrage/Sources%20de%20donnees.md) | D'où viennent les espèces, photos, cartes et identifications, avec leurs conditions |
 | [Choix du nom](01-Cadrage/Choix%20du%20nom.md) | Pourquoi « Nomen Nature » et pas « Sylva » |
 | [Décisions](Decisions.md) | Toutes les décisions prises, avec leur raison |
+| [Checklist qualité](Checklist%20qualite.md) | Les règles à respecter avant chaque mise en ligne (confidentialité, HTTPS, accessibilité, vitesse…) |
 | [Feuille de route](Feuille%20de%20route.md) | Les étapes, ce qui est fait, ce qui vient, les idées pour plus tard |
 | [Glossaire](Glossaire.md) | Les mots techniques et scientifiques expliqués simplement |
 | [Journal](03-Journal/2026-11-17.md) | Une note par session de travail, dans `03-Journal/` |
-| [Parcours utilisateurs](02-Conception/Parcours%20utilisateurs.md) | Le plan du site et les parcours clés, avec les hypothèses à valider |
+| [Parcours utilisateurs](02-Conception/Parcours%20utilisateurs.md) | Le plan du site et les parcours clés, validés |
+| [Écrans clés](02-Conception/Ecrans%20cles.md) | Les 6 écrans principaux, sur ordinateur et téléphone |
+| [Écrans secondaires](02-Conception/Ecrans%20secondaires.md) | Fiche peu documentée, étape photo, listes, menu, erreurs, 404, pages légales |
+| [Style visuel](02-Conception/Style%20visuel.md) | La palette et l'explication du style « Courbes de niveau » |
+| [Design system](02-Conception/Design%20system.md) | Couleurs, typographies, espacements et composants du site |
+| [Directions visuelles](02-Conception/Directions%20visuelles.md) | Les 3 ambiances proposées (couleurs, polices, page d'accueil) |
 
 ## Liens utiles
 
@@ -29,4 +35,4 @@ Bienvenue dans le coffre du projet. Ce coffre est tenu à jour par Claude à cha
 - Suivi des tâches : Linear
 - Parcours utilisateurs : [FigJam « Nomen »](https://www.figma.com/board/PLlFoRDj5ko2AJftKq78p1/Nomen)
 - Maquettes : [Figma « Nomen »](https://www.figma.com/design/lbR59tuBWRe62sapV6RSum/Nomen)
-- Domaine visé : `nomennature.org` *(à réserver)*
+- Domaine : `nomenature.org` *(réservé chez Cloudflare, pas encore de site)*

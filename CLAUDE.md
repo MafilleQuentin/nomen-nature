@@ -38,6 +38,18 @@ Site web non commercial d'exploration de la biodiversité mondiale. Brief : `doc
 - Pour publier une version (sur la branche `release/vX.Y.Z`) : déplacer `[Non publié]` sous un nouveau numéro daté, mettre à jour les liens de comparaison, committer, fusionner dans `main`, créer le tag `vX.Y.Z` sur `main` et une release GitHub (`gh release create`) dont le texte reprend la section du changelog.
 - Proposer une release à la fin de chaque étape validée ou de chaque lot livré ; ne pas publier sans l'accord de l'utilisateur.
 
+## Qualité et mise en ligne
+
+Appliquer la checklist `docs/Checklist qualite.md` à chaque lot de développement et la vérifier entièrement avant toute mise en ligne. Points non négociables :
+
+- Aucun secret dans le code du navigateur ; appels Pl@ntNet via notre serveur, avec une limite par visiteur.
+- HTTPS partout ; politique de confidentialité et mentions légales en ligne avant l'ouverture.
+- Aucun cookie non essentiel (donc pas de bannière) ; statistiques sans cookies.
+- Titres, descriptions, image d'aperçu, favicon, plan du site et robots.txt pour chaque page publique.
+- Texte alternatif sur chaque image ; images compressées et redimensionnées ; contrastes AA ; version téléphone de chaque écran.
+- Page 404 personnalisée ; vérification automatique des liens cassés ; mesure de la vitesse (Lighthouse) à chaque lot.
+- Un seul appel à l'action principal (bouton ambre) par écran.
+
 ## Données (contraintes à respecter)
 
 - Le site est **non commercial pour toujours** : pas de publicité ni d'abonnement. C'est ce qui autorise les photos iNaturalist en CC BY-NC et le plan non-profit de Pl@ntNet.

@@ -8,14 +8,14 @@
 
 ## État du projet
 
-🟡 **Cadrage et parcours utilisateurs terminés, maquette à venir.** Aucune ligne de code pour l'instant : le projet avance étape par étape, et la maquette Figma doit être validée avant tout développement.
+🟡 **Maquettes terminées, choix de la stack technique à venir.** Aucune ligne de code pour l'instant : le projet avance étape par étape, et la maquette Figma est validée avant tout développement.
 
 | Étape | État |
 |---|---|
 | 1. Cadrage et brief | ✅ Terminé |
 | 2. Parcours utilisateurs (FigJam) | ✅ Terminé |
-| 3. Maquettes Figma (mobile et ordinateur) | ⏳ Prochaine étape |
-| 4. Choix de la stack technique | ⬜ |
+| 3. Maquettes Figma (mobile et ordinateur) | ✅ Terminé |
+| 4. Choix de la stack technique | ⏳ Prochaine étape |
 | 5. Développement de la V1, lot par lot | ⬜ |
 
 Détail : [feuille de route](docs/Feuille%20de%20route.md).
@@ -35,6 +35,7 @@ Détail : [feuille de route](docs/Feuille%20de%20route.md).
 Toute la documentation du projet se trouve dans [`docs/`](docs/Accueil.md). C'est aussi un **coffre Obsidian** : ouvre le dossier `docs` comme coffre dans Obsidian pour naviguer dans les notes.
 
 - [Brief du projet](docs/01-Cadrage/Brief.md)
+- [Style visuel](docs/02-Conception/Style%20visuel.md) et [design system](docs/02-Conception/Design%20system.md)
 - [Sources de données](docs/01-Cadrage/Sources%20de%20donnees.md)
 - [Journal des décisions](docs/Decisions.md)
 - [Glossaire](docs/Glossaire.md)
