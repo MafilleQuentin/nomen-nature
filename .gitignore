@@ -19,3 +19,6 @@ desktop.ini
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Maquettes HTML générées (envoyées dans Figma, non versionnées)
+tools/maquettes/*.html
