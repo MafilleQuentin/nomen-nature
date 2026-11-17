@@ -4,6 +4,7 @@ Chaque décision structurante du projet, avec sa raison. Les plus récentes en h
 
 | Date | Décision | Pourquoi | Écarté |
 |---|---|---|---|
+| 2026-11-17 | Style final : **la direction E d'origine** (« E0 », celle de la série D/E/F), pas une de ses variations | Préférée de l'utilisateur après comparaison avec E1, E2 et E3 | E1 Atlas plein écran, E2 Carte d'état-major, E3 Strates (conservées dans Figma comme sources d'idées) |
 | 2026-11-17 | Style visuel : **E — Courbes de niveau** retenu comme base ; les courbes représentent la richesse du vivant | Original, parlant pour un atlas, évoque le terrain et l'exploration | A, B, C (jugées trop génériques), D Halftone, F Liquid glass (conservées dans Figma) |
 | 2026-11-17 | Domaine : **`nomenature.org`** (remplace `nomennature.org`) ; `nomennature.org` en option pour les fautes de frappe | Écho à « nomenclature », pas de double « n », .com libre aussi | `nomennature.org` comme adresse principale ; `nomen.org` (déjà pris) |
 | 2026-11-17 | Parcours utilisateurs validés (4 schémas FigJam), avec : rayon « Autour de moi » 5 km puis 25 et 100 km ; 3 propositions d'identification avec pourcentage ; partie de la plante facultative ; panneaux en bas sur téléphone, sur le côté sur ordinateur ; À propos, crédits et langue en pied de page | Couvrir tous les cas (refus de géolocalisation, erreurs d'identification) avant de dessiner les écrans | — |

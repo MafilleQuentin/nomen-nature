@@ -1,6 +1,6 @@
 # Directions visuelles
 
-*Étape 3 — direction E retenue comme base, choix de la variation en attente. Maquettes : [Figma « Nomen », page « Directions visuelles »](https://www.figma.com/design/lbR59tuBWRe62sapV6RSum/Nomen).*
+*Étape 3 — **style retenu : la direction E d'origine (« E0 »)**, décrite dans la deuxième série ci-dessous. Les variations E1 à E3 et les directions A, B, C, D, F restent dans Figma comme sources d'idées. Maquettes : [Figma « Nomen », page « Directions visuelles »](https://www.figma.com/design/lbR59tuBWRe62sapV6RSum/Nomen).*
 
 ## Variations de E (E1, E2, E3) — direction préférée
 
