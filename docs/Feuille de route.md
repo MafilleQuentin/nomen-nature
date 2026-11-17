@@ -9,13 +9,13 @@
 | 3 | Maquettes Figma | ⏳ **Prochaine étape** | Directions visuelles, design system, écrans clés mobile et ordinateur, validés par l'utilisateur |
 | 4 | Stack technique | ⬜ | Technologies et hébergement choisis ensemble, consignés dans les [décisions](Decisions.md) |
 | 5 | Développement V1 | ⬜ | Livré lot par lot, chaque lot testé et publié en release |
-| 6 | Mise en ligne | ⬜ | Site public sur `nomennature.org` |
+| 6 | Mise en ligne | ⬜ | Site public sur `nomenature.org` |
 
 Les lots de développement seront découpés en tickets dans Linear une fois la maquette validée.
 
 ## À faire hors développement
 
-- [ ] Réserver le domaine `nomennature.org` (par l'utilisateur)
+- [ ] Réserver le domaine `nomenature.org` (par l'utilisateur ; conseillé : Cloudflare Registrar, ou Infomaniak), et en option `nomennature.org` pour rediriger
 - [ ] Demander une clé Pl@ntNet (puis le plan non-profit) au moment du développement
 
 ## Plus tard (après la V1)

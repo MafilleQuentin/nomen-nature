@@ -5,6 +5,12 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ## [Non publié]
 
+### Modifié
+- Domaine visé : `nomenature.org` au lieu de `nomennature.org`.
+
+### Corrigé
+- Encodage du changelog (BOM UTF-8 retiré).
+
 ## [0.2.0] - 2026-11-17
 
 Parcours utilisateurs validés. Prochaine étape : les maquettes Figma.

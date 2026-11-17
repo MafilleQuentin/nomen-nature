@@ -6,7 +6,15 @@
 
 - *Nomen* signifie « nom » en latin, la langue des noms scientifiques. **Redonner un nom au vivant**, c'est exactement la mission.
 - En abrégé, dans le site et le logo : **Nomen**.
-- Domaine visé : **`nomennature.org`** (libre au 17.11.2026, à réserver). Également libres : `nomennature.ch`, `nomennature.app`, `nomennature.earth`.
+- Domaine : **`nomenature.org`** (libre au 17.11.2026, à réserver). Également libres : `nomenature.com`, `.ch`, `.app`, `.net`, `.earth`. En option, `nomennature.org` (avec deux « n ») pour rediriger les fautes de frappe.
+
+### Pourquoi `nomenature.org` plutôt que `nomennature.org`
+
+- Le domaine fait écho à **« nomenclature »**, le système qui donne leur nom scientifique aux êtres vivants : un clin d'œil direct à la mission.
+- Plus de double « n » : à l'oral, « Nomen Nature » risquait d'être tapé avec un seul « n ».
+- Plus court, et le `.com` est libre aussi.
+- Aucun site, marque ou projet existant sous ce nom (recherche du 17.11.2026).
+- Le nom affiché reste **« Nomen Nature »** (ou « Nomen ») : seule l'adresse change.
 
 ### Pourquoi « Nomen Nature » et pas « Nomen » tout court
 

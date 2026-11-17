@@ -29,4 +29,4 @@ Bienvenue dans le coffre du projet. Ce coffre est tenu à jour par Claude à cha
 - Suivi des tâches : Linear
 - Parcours utilisateurs : [FigJam « Nomen »](https://www.figma.com/board/PLlFoRDj5ko2AJftKq78p1/Nomen)
 - Maquettes : [Figma « Nomen »](https://www.figma.com/design/lbR59tuBWRe62sapV6RSum/Nomen)
-- Domaine visé : `nomennature.org` *(à réserver)*
+- Domaine : `nomenature.org` *(à réserver)*
