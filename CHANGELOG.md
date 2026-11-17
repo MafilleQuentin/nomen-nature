@@ -11,12 +11,14 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 - Générateurs de maquettes dans `tools/maquettes/` (trame halftone, courbes de niveau).
 - Composants Ligne espèce et Statistique.
 - 12 écrans clés dans Figma : continent, pays, fiche espèce, recherche, identification d'une plante, Autour de moi (ordinateur et téléphone).
-- Notes du coffre : Style visuel (palette illustrée), Écrans clés (avec aperçus).
+- Notes du coffre : Style visuel (palette illustrée), Écrans clés (avec aperçus), Checklist qualité.
+- Carte du monde réelle : frontières Natural Earth 1:110 m, projection Equal Earth (`tools/maquettes/carte_monde.py`), composant « Carte du monde » dans Figma.
 
 ### Modifié
 - Domaine visé : `nomenature.org` au lieu de `nomennature.org`.
 
 ### Corrigé
+- Les maquettes utilisaient une carte dessinée à la main, géographiquement incohérente : remplacée partout (écrans clés, accueil).
 - Encodage du changelog (BOM UTF-8 retiré).
 
 ## [0.2.0] - 2026-11-17

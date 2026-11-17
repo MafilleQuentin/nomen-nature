@@ -53,6 +53,7 @@ Le ton visuel suit le ton du texte : on **tutoie**, on reste chaleureux, mais la
 ## Les motifs et détails
 
 - **Courbes de niveau** : en fond de page (très discrètes), à l'intérieur des continents, et à la place des photos manquantes.
+- **La carte** : vraies frontières Natural Earth, projection **Equal Earth** (les continents gardent leur vraie surface : l'Afrique n'est pas rapetissée comme sur les cartes Mercator).
 - **Coordonnées** en police technique (« 46.20°N · 6.14°E — Genève ») : petits rappels de géographie.
 - **Surtitres** en capitales espacées et menthe (« ATLAS DU VIVANT · 1,5 MILLION D'ESPÈCES »).
 - **Coins peu arrondis** (6 à 10 px) : sérieux sans être froid. Les puces sont en pilule.

@@ -63,13 +63,14 @@ Contrastes vérifiés : texte principal 12,9:1, secondaire 8,7:1, texte sur ambr
 | **En-tête** | Ordinateur / Téléphone | — |
 | **Ligne espèce** | — | Nom, Nom latin, Méta, Avec statut ; statut modifiable |
 | **Statistique** | — | Valeur, Libellé |
+| **Carte du monde** | — (1232 × 600, à recadrer dans un cadre) | Noms des continents ; frontières Natural Earth 1:110 m, projection Equal Earth, couleurs liées aux variables `color/map/*` |
 
 ![Page Fondations du design system](../Pieces-jointes/design-system-fondations.png)
 
 ## Pas encore fait
 
 - Le **vrai logo** (le logo actuel est provisoire).
-- Un composant **Carte du monde** : la carte reste pour l'instant un dessin dans les maquettes.
+- La carte est au 1:110 m : suffisante pour le monde et les continents, trop grossière pour zoomer sur un pays. Le site utilisera des données plus fines (1:50 m, 1:10 m) aux forts zooms.
 - Pas de mode clair : le site n'a qu'un thème (nuit).
 
 Voir aussi : [Directions visuelles](Directions%20visuelles.md) · [Parcours utilisateurs](Parcours%20utilisateurs.md)
