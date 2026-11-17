@@ -21,8 +21,13 @@ Site web non commercial d'exploration de la biodiversité mondiale. Brief : `doc
 
 ## Git et GitHub
 
-- Messages de commit en français, au format `type: description` (`docs:`, `feat:`, `fix:`, `chore:`, `refactor:`, `test:`).
-- `main` reste toujours propre. Une branche par lot de travail une fois le développement commencé.
+- Messages de commit en français, au format `type: description` (`docs:`, `feat:`, `fix:`, `chore:`, `refactor:`, `test:`). Des commits petits et cohérents : un sujet par commit.
+- **Ne jamais travailler ni committer directement sur `main`.** `main` ne reçoit que les releases.
+- Branches :
+  - `develop` : branche d'intégration, toujours dans un état sain.
+  - Une branche de travail par sujet, créée depuis `develop` : `feat/…`, `fix/…`, `docs/…`, `chore/…` (noms en minuscules, sans accents).
+  - Une branche de travail terminée est fusionnée dans `develop` avec `git merge --no-ff`, puis supprimée (en local et sur GitHub).
+  - Release : depuis `develop`, branche `release/vX.Y.Z` (changelog, version), fusion `--no-ff` dans `main`, tag sur `main`, puis `main` refusionnée dans `develop`.
 - Aucun secret dans le dépôt (`.env` ignoré ; fournir un `.env.example`).
 - Mettre à jour `README.md` quand l'état du projet ou les fonctionnalités changent.
 
@@ -30,7 +35,7 @@ Site web non commercial d'exploration de la biodiversité mondiale. Brief : `doc
 
 - Numérotation SemVer. Tant que la V1 n'est pas publiée : `0.x.y`.
 - Toute évolution notable va d'abord dans la section `[Non publié]` de `CHANGELOG.md`.
-- Pour publier une version : déplacer `[Non publié]` sous un nouveau numéro daté, mettre à jour les liens de comparaison, committer, créer le tag `vX.Y.Z` et une release GitHub (`gh release create`) dont le texte reprend la section du changelog.
+- Pour publier une version (sur la branche `release/vX.Y.Z`) : déplacer `[Non publié]` sous un nouveau numéro daté, mettre à jour les liens de comparaison, committer, fusionner dans `main`, créer le tag `vX.Y.Z` sur `main` et une release GitHub (`gh release create`) dont le texte reprend la section du changelog.
 - Proposer une release à la fin de chaque étape validée ou de chaque lot livré ; ne pas publier sans l'accord de l'utilisateur.
 
 ## Données (contraintes à respecter)
