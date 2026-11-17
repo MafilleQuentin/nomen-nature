@@ -4,6 +4,7 @@ Chaque décision structurante du projet, avec sa raison. Les plus récentes en h
 
 | Date | Décision | Pourquoi | Écarté |
 |---|---|---|---|
+| 2026-11-17 | **Écrans secondaires validés** (fiche peu documentée, étape photo, listes, menu, erreurs, 404, pages légales) ; **fin de l'étape 3** | La V1 est entièrement maquettée | — |
 | 2026-11-17 | **Écrans clés validés** : continent, pays, fiche espèce, recherche, identification d'une plante, Autour de moi (ordinateur et téléphone) | Couvrent tous les parcours validés, avec le design system | — |
 | 2026-11-17 | Carte : frontières **Natural Earth** (domaine public) en projection **Equal Earth** ; courbes calculées plus tard à partir des observations GBIF | Géographie juste ; Equal Earth respecte la surface des continents (important pour un site éducatif) | Carte dessinée à la main (incohérente) ; projection Mercator (déforme les surfaces) |
 | 2026-11-17 | **Checklist qualité** adoptée (`docs/Checklist qualite.md`), à vérifier à chaque lot et avant chaque mise en ligne | Liste fournie par l'utilisateur, triée et adaptée au projet | — (aucune règle écartée, 5 adaptées) |

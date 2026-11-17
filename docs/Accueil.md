@@ -6,7 +6,7 @@ Bienvenue dans le coffre du projet. Ce coffre est tenu à jour par Claude à cha
 
 ## Où en est-on ?
 
-**Étape actuelle : 3 — Maquettes Figma.** Le style est choisi (direction E d'origine, « Courbes de niveau ») le [design system](02-Conception/Design%20system.md) est construit et les [écrans clés](02-Conception/Ecrans%20cles.md) sont validés ; les [écrans secondaires](02-Conception/Ecrans%20secondaires.md) sont dessinés et attendent ta validation. Ensuite : étape 4 (stack technique). Le cadrage et les parcours utilisateurs sont terminés et validés.
+**Étape actuelle : 4 — Stack technique.** Le cadrage, les parcours et les maquettes (style, design system, écrans clés et secondaires) sont terminés et validés.
 
 → [Feuille de route](Feuille%20de%20route.md) · [Dernière note du journal](03-Journal/2026-11-17.md)
 
