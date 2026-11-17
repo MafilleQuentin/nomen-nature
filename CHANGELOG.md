@@ -5,6 +5,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ## [Non publié]
 
+## [0.2.0] - 2026-11-17
+
+Parcours utilisateurs validés. Prochaine étape : les maquettes Figma.
+
 ### Ajouté
 - Parcours utilisateurs de la V1 validés : plan du site, explorer la carte, identifier une plante, autour de moi (FigJam et note dans `docs/02-Conception/`).
 
@@ -23,5 +27,6 @@ Fin du cadrage : le projet est défini, aucune ligne de code encore.
 - Coffre Obsidian dans `docs/`.
 - Licence MIT.
 
-[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.1.0...HEAD
+[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/MafilleQuentin/nomen-nature/releases/tag/v0.1.0
