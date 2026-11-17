@@ -8,13 +8,13 @@
 
 ## État du projet
 
-🟡 **Cadrage terminé, maquette à venir.** Aucune ligne de code pour l'instant : le projet avance étape par étape, et la maquette Figma doit être validée avant tout développement.
+🟡 **Cadrage et parcours utilisateurs terminés, maquette à venir.** Aucune ligne de code pour l'instant : le projet avance étape par étape, et la maquette Figma doit être validée avant tout développement.
 
 | Étape | État |
 |---|---|
 | 1. Cadrage et brief | ✅ Terminé |
-| 2. Parcours utilisateurs (FigJam) | ⏳ Prochaine étape |
-| 3. Maquettes Figma (mobile et ordinateur) | ⬜ |
+| 2. Parcours utilisateurs (FigJam) | ✅ Terminé |
+| 3. Maquettes Figma (mobile et ordinateur) | ⏳ Prochaine étape |
 | 4. Choix de la stack technique | ⬜ |
 | 5. Développement de la V1, lot par lot | ⬜ |
 
