@@ -6,7 +6,7 @@ Bienvenue dans le coffre du projet. Ce coffre est tenu à jour par Claude à cha
 
 ## Où en est-on ?
 
-**Étape actuelle : 3 — Maquettes Figma.** Le style est choisi : la direction E d'origine, « Courbes de niveau ». Prochaine étape : le design system et les écrans clés. Le cadrage et les parcours utilisateurs sont terminés et validés.
+**Étape actuelle : 3 — Maquettes Figma.** Le style est choisi (direction E d'origine, « Courbes de niveau ») et le [design system](02-Conception/Design%20system.md) est construit. Prochaine étape : les écrans clés. Le cadrage et les parcours utilisateurs sont terminés et validés.
 
 → [Feuille de route](Feuille%20de%20route.md) · [Dernière note du journal](03-Journal/2026-11-17.md)
 
@@ -22,6 +22,7 @@ Bienvenue dans le coffre du projet. Ce coffre est tenu à jour par Claude à cha
 | [Glossaire](Glossaire.md) | Les mots techniques et scientifiques expliqués simplement |
 | [Journal](03-Journal/2026-11-17.md) | Une note par session de travail, dans `03-Journal/` |
 | [Parcours utilisateurs](02-Conception/Parcours%20utilisateurs.md) | Le plan du site et les parcours clés, validés |
+| [Design system](02-Conception/Design%20system.md) | Couleurs, typographies, espacements et composants du site |
 | [Directions visuelles](02-Conception/Directions%20visuelles.md) | Les 3 ambiances proposées (couleurs, polices, page d'accueil) |
 
 ## Liens utiles
