@@ -2,7 +2,26 @@
 
 *Étape 3 — en attente de choix. Maquettes : [Figma « Nomen », page « Directions visuelles »](https://www.figma.com/design/lbR59tuBWRe62sapV6RSum/Nomen).*
 
-Trois directions sont proposées. Chacune comprend une **planche de style** (couleurs, polices, badges, boutons) et la **page d'accueil** sur téléphone (390 px) et sur ordinateur (1440 px), avec le même contenu pour pouvoir comparer.
+## Deuxième série (D, E, F) — à la demande de l'utilisateur
+
+Retour sur la première série : **trop générique**. L'utilisateur a demandé trois styles précis : Halftone, Contour lines et Liquid glass. Ils sont dans le même fichier Figma, sous les directions A, B et C.
+
+| Direction | Ambiance | Couleurs clés | Polices |
+|---|---|---|---|
+| **D — Halftone** | Affiche imprimée en risographie : trames de points, encre noire, ombres dures, titres en capitales | Papier `#F1ECE1`, encre `#141414`, vert `#12A35E`, orange fluo `#FF5B2E` | Archivo (Black), DM Mono |
+| **E — Courbes de niveau** | Carte topographique de nuit : courbes de niveau partout, coordonnées en police technique | Forêt de nuit `#0F2A21`, crème `#F1EBDD`, ambre `#F2B85B`, menthe `#7FC8A0` | Space Grotesk, IBM Plex Sans, IBM Plex Mono |
+| **F — Liquid glass** | Panneaux de verre sur une nature lumineuse et floue | Forêt `#0E3B2E`, mousse `#3FA36F`, lagon `#2C8C99`, soleil `#F5D76E`, encre `#0B1F17` | Plus Jakarta Sans, Instrument Serif (italique) |
+
+Comment c'est fait :
+- **Halftone** : la carte et les « photos » sont des trames de points **vectorielles** (taille des points modulée), donc légères et nettes sur le web. L'effet Halftone officiel de Figma n'est pas accessible par l'API ; on pourra l'appliquer à la main sur de vraies photos.
+- **Courbes de niveau** : vraies isolignes calculées (algorithme « marching squares ») à l'intérieur de chaque continent, et en fond de page.
+- **Liquid glass** : effet **Glass natif de Figma** (réfraction, reflets, dispersion) appliqué aux 42 panneaux (navigation, recherche, boutons, carte, cartes d'espèces).
+- Contrastes vérifiés : tous les textes atteignent au moins 5,6:1 (niveau AA).
+- Le générateur est versionné dans `tools/maquettes/directions_def.py` : ses algorithmes (trame, courbes) resserviront pour le site.
+
+## Première série (A, B, C)
+
+Trois directions ont d'abord été proposées. Chacune comprend une **planche de style** (couleurs, polices, badges, boutons) et la **page d'accueil** sur téléphone (390 px) et sur ordinateur (1440 px), avec le même contenu pour pouvoir comparer.
 
 Elles ont été construites à partir des recherches du skill UI UX Pro Max (styles « Organic Biophilic » et « Nature Distilled », palettes nature, associations de polices), puis ajustées à la main. Les premiers résultats bruts étaient trop génériques (bleu « SaaS », police Comic Neue).
 
@@ -64,7 +83,7 @@ Moderne et énergique : la carte est la star, avec des continents aux couleurs f
 
 ## Suite
 
-1. Choisir une direction, ou un mélange (par exemple les couleurs de A avec les polices de B).
+1. Choisir une direction parmi les six, ou un mélange (par exemple les courbes de niveau de E avec le verre de F).
 2. Construire le design system dans Figma : couleurs, typographies, espacements, composants.
 3. Dessiner les écrans clés : carte (continent, pays), fiche espèce, recherche, identification, Autour de moi.
 

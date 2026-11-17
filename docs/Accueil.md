@@ -6,7 +6,7 @@ Bienvenue dans le coffre du projet. Ce coffre est tenu à jour par Claude à cha
 
 ## Où en est-on ?
 
-**Étape actuelle : 3 — Maquettes Figma.** Trois directions visuelles attendent ton choix. Le cadrage et les parcours utilisateurs sont terminés et validés.
+**Étape actuelle : 3 — Maquettes Figma.** Six directions visuelles attendent ton choix (dont Halftone, Courbes de niveau et Liquid glass). Le cadrage et les parcours utilisateurs sont terminés et validés.
 
 → [Feuille de route](Feuille%20de%20route.md) · [Dernière note du journal](03-Journal/2026-11-17.md)
 
