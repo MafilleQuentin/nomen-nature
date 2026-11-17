@@ -6,7 +6,7 @@
 |---|---|---|---|
 | 1 | Cadrage | ✅ Terminé (17.11.2026) | [Brief](01-Cadrage/Brief.md) validé |
 | 2 | Parcours utilisateurs | ✅ Terminé (17.11.2026) | [Parcours utilisateurs](02-Conception/Parcours%20utilisateurs.md) : 4 schémas dans le FigJam |
-| 3 | Maquettes Figma | ⏳ **En cours** : direction E (Courbes de niveau) retenue ; [3 variations E1, E2, E3](02-Conception/Directions%20visuelles.md) à départager | Directions visuelles, design system, écrans clés mobile et ordinateur, validés par l'utilisateur |
+| 3 | Maquettes Figma | ⏳ **En cours** : [style retenu](02-Conception/Directions%20visuelles.md) = E d'origine (Courbes de niveau) ; prochaine étape : design system et écrans clés | Directions visuelles, design system, écrans clés mobile et ordinateur, validés par l'utilisateur |
 | 4 | Stack technique | ⬜ | Technologies et hébergement choisis ensemble, consignés dans les [décisions](Decisions.md) |
 | 5 | Développement V1 | ⬜ | Livré lot par lot, chaque lot testé et publié en release |
 | 6 | Mise en ligne | ⬜ | Site public sur `nomenature.org` |
@@ -30,6 +30,9 @@ Les lots de développement seront découpés en tickets dans Linear une fois la 
 - Clés de détermination : identifier sans photo, par questions successives
 - « Comment le distinguer d'une espèce qui lui ressemble »
 - Océans cliquables, régions plus fines (cantons, départements)
+- **Calques de carte** (idée du 17.11.2026, à approfondir le moment venu) :
+  - calque **diversité** : colorer la carte selon le nombre d'espèces, du « peu d'espèces » au « beaucoup d'espèces », avec une légende (comme la légende de la variation E2 dans Figma) ;
+  - d'autres calques possibles plus tard (à définir ensemble : espèces menacées, groupes, etc.).
 - Allemand, italien, puis d'autres langues
 - Application mobile
 - Dons
