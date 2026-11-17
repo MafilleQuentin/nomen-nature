@@ -20,17 +20,17 @@ Trois raisons à ce choix :
 
 ![Palette « Courbes de niveau »](../Pieces-jointes/palette-courbes-de-niveau.svg)
 
-| Nom | Couleur | Rôle | Règle |
-|---|---|---|---|
-| **Forêt de nuit** | `#0F2A21` | Fond de page | Le fond par défaut, partout |
-| **Sous-bois** | `#0B2119` | Zones en creux | Carte, barre latérale : un cran plus sombre que la page |
-| **Clairière** | `#163A2E` | Cartes, panneaux, champs | Tout ce qui « flotte » au-dessus du fond |
-| **Terre** | `#1A4434` | Terres sur la carte, photo absente | Remplit les continents |
-| **Courbe** | `#4F8A6B` | Courbes de niveau, bordures | Toujours en trait fin (0,7 à 1,5 px) |
-| **Menthe** | `#7FC8A0` | Courbes maîtresses, surtitres, coordonnées | L'information, jamais l'action |
-| **Sauge** | `#B9C7BC` | Texte secondaire, noms latins | Pour ce qui se lit après le titre |
-| **Crème** | `#F1EBDD` | Texte principal, traits de côte | Le blanc du site : jamais de blanc pur |
-| **Ambre** | `#F2B85B` | Action principale, mot mis en avant | **Rare** : un seul bouton ambre par écran, plus le mot « le vivant » |
+| Nom               | Couleur   | Rôle                                       | Règle                                                                |
+| ----------------- | --------- | ------------------------------------------ | -------------------------------------------------------------------- |
+| **Forêt de nuit** | `#0F2A21` | Fond de page                               | Le fond par défaut, partout                                          |
+| **Sous-bois**     | `#0B2119` | Zones en creux                             | Carte, barre latérale : un cran plus sombre que la page              |
+| **Clairière**     | `#163A2E` | Cartes, panneaux, champs                   | Tout ce qui « flotte » au-dessus du fond                             |
+| **Terre**         | `#1A4434` | Terres sur la carte, photo absente         | Remplit les continents                                               |
+| **Courbe**        | `#4F8A6B` | Courbes de niveau, bordures                | Toujours en trait fin (0,7 à 1,5 px)                                 |
+| **Menthe**        | `#7FC8A0` | Courbes maîtresses, surtitres, coordonnées | L'information, jamais l'action                                       |
+| **Sauge**         | `#B9C7BC` | Texte secondaire, noms latins              | Pour ce qui se lit après le titre                                    |
+| **Crème**         | `#F1EBDD` | Texte principal, traits de côte            | Le blanc du site : jamais de blanc pur                               |
+| **Ambre**         | `#F2B85B` | Action principale, mot mis en avant        | **Rare** : un seul bouton ambre par écran, plus le mot « le vivant » |
 
 Les **statuts de menace** utilisent les couleurs officielles de l'UICN (CR rouge, EN orange, VU jaune, NT vert-jaune, LC vert), uniquement dans les badges, et toujours avec le code et le libellé écrits.
 
