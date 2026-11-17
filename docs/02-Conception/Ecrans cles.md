@@ -1,6 +1,6 @@
 # Écrans clés
 
-*Étape 3 — dessinés le 17 novembre 2026, en attente de validation. Fichier : [Figma « Nomen »](https://www.figma.com/design/lbR59tuBWRe62sapV6RSum/Nomen), page **Écrans clés** (ordinateur à gauche, téléphone à droite).*
+*Étape 3 — dessinés et **validés** le 17 novembre 2026. Fichier : [Figma « Nomen »](https://www.figma.com/design/lbR59tuBWRe62sapV6RSum/Nomen), page **Écrans clés** (ordinateur à gauche, téléphone à droite).*
 
 Tous les écrans sont construits avec les composants du [design system](Design%20system.md) (en-tête, boutons, puces, cartes et lignes d'espèces, badges, statistiques) et suivent les [parcours validés](Parcours%20utilisateurs.md). Les chiffres et les espèces affichés sont des **exemples** ; les photos sont remplacées par des courbes de niveau en attendant les vraies.
 

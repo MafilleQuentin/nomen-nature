@@ -4,6 +4,7 @@ Chaque décision structurante du projet, avec sa raison. Les plus récentes en h
 
 | Date | Décision | Pourquoi | Écarté |
 |---|---|---|---|
+| 2026-11-17 | **Écrans clés validés** : continent, pays, fiche espèce, recherche, identification d'une plante, Autour de moi (ordinateur et téléphone) | Couvrent tous les parcours validés, avec le design system | — |
 | 2026-11-17 | Carte : frontières **Natural Earth** (domaine public) en projection **Equal Earth** ; courbes calculées plus tard à partir des observations GBIF | Géographie juste ; Equal Earth respecte la surface des continents (important pour un site éducatif) | Carte dessinée à la main (incohérente) ; projection Mercator (déforme les surfaces) |
 | 2026-11-17 | **Checklist qualité** adoptée (`docs/Checklist qualite.md`), à vérifier à chaque lot et avant chaque mise en ligne | Liste fournie par l'utilisateur, triée et adaptée au projet | — (aucune règle écartée, 5 adaptées) |
 | 2026-11-17 | Style final : **la direction E d'origine** (« E0 », celle de la série D/E/F), pas une de ses variations | Préférée de l'utilisateur après comparaison avec E1, E2 et E3 | E1 Atlas plein écran, E2 Carte d'état-major, E3 Strates (conservées dans Figma comme sources d'idées) |
