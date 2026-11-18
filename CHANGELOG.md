@@ -5,6 +5,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ## [Non publié]
 
+### Ajouté
+- Stack technique choisie : Astro 6 + TypeScript, îlots Svelte, hébergement Cloudflare Workers, base Cloudflare D1, carte d3-geo en Equal Earth (`docs/02-Conception/Stack technique.md`).
+- Glossaire complété avec les termes techniques de la stack.
+
 ## [0.3.0] - 2026-11-17
 
 Maquettes terminées : toute la V1 est dessinée dans Figma. Prochaine étape : le choix de la stack technique.

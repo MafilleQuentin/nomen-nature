@@ -19,3 +19,19 @@
 | **V1** | Première version publique du site. |
 | **FigJam / Figma** | Outils de conception : FigJam pour les schémas de parcours, Figma pour les maquettes. |
 | **Release** | Version publiée et numérotée du projet (ex. v0.1.0), avec la liste de ses changements. |
+| **Stack technique** | L'ensemble des outils et technologies avec lesquels le site est construit et hébergé. |
+| **Astro** | Outil qui fabrique le site : il produit des pages HTML légères et n'envoie du JavaScript que là où c'est utile. |
+| **Îlot (island)** | Morceau interactif d'une page Astro (la carte, la recherche…) ; le reste de la page reste du simple HTML. |
+| **Svelte** | Outil pour écrire les parties interactives ; il produit très peu de code dans le navigateur. |
+| **TypeScript** | JavaScript avec des types : beaucoup d'erreurs sont repérées avant même de lancer le site. |
+| **Cloudflare Workers** | Petits programmes qui tournent sur les serveurs de Cloudflare, près du visiteur. C'est notre serveur. |
+| **D1** | Base de données de Cloudflare (SQLite). Elle contient notre index de recherche et nos listes. |
+| **Cache** | Copie d'une page ou d'une réponse gardée de côté pour la resservir aussitôt, sans tout recalculer. |
+| **API** | Porte d'entrée d'un service pour les programmes (par ex. l'API de GBIF renvoie les données d'une espèce). |
+| **Projection Equal Earth** | Façon d'aplatir la Terre sur une carte qui respecte la surface des continents. |
+| **EPSG:4326** | Code d'une façon simple de placer des points sur la Terre (latitude et longitude). Les tuiles GBIF sont disponibles dans ce format. |
+| **d3** | Bibliothèque JavaScript de dessin de données ; d3-geo dessine les cartes, d3-zoom gère le zoom. |
+| **Recherche phonétique** | Recherche par le son plutôt que l'orthographe : « boulot » retrouve « bouleau ». |
+| **Intégration continue (GitHub Actions)** | Vérifications lancées automatiquement à chaque envoi de code : tests, accessibilité, vitesse, liens cassés. |
+| **Lighthouse** | Outil de Google qui mesure la vitesse, l'accessibilité et le référencement d'une page. |
+| **Sentry** | Service qui signale les erreurs du site en ligne. |

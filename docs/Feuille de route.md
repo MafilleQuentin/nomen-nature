@@ -7,11 +7,11 @@
 | 1 | Cadrage | ✅ Terminé (17.11.2026) | [Brief](01-Cadrage/Brief.md) validé |
 | 2 | Parcours utilisateurs | ✅ Terminé (17.11.2026) | [Parcours utilisateurs](02-Conception/Parcours%20utilisateurs.md) : 4 schémas dans le FigJam |
 | 3 | Maquettes Figma | ✅ Terminé (17.11.2026) | [Style visuel](02-Conception/Style%20visuel.md), [design system](02-Conception/Design%20system.md), [écrans clés](02-Conception/Ecrans%20cles.md) et [écrans secondaires](02-Conception/Ecrans%20secondaires.md) validés |
-| 4 | Stack technique | ⏳ **Prochaine étape** | Technologies et hébergement choisis ensemble, consignés dans les [décisions](Decisions.md) |
-| 5 | Développement V1 | ⬜ | Livré lot par lot, chaque lot testé et publié en release |
+| 4 | Stack technique | ✅ Terminé (18.11.2026) | [Stack technique](02-Conception/Stack%20technique.md) : Astro + Cloudflare, consignée dans les [décisions](Decisions.md) |
+| 5 | Développement V1 | ⏳ **Prochaine étape** | Livré lot par lot, chaque lot testé et publié en release ; premier lot : un essai de la recherche sur D1 |
 | 6 | Mise en ligne | ⬜ | Site public sur `nomenature.org` |
 
-Les lots de développement seront découpés en tickets dans Linear une fois la maquette validée.
+Les lots de développement sont à découper en tickets dans Linear au début de l'étape 5.
 
 ## À faire hors développement
 
