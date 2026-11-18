@@ -5,19 +5,27 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ## [Non publié]
 
+## [0.6.0] - 2026-11-18
+
+Lot 2 terminé : le socle du site. Gabarit bilingue fidèle aux maquettes, page 404, tests automatiques qui bloquent les fusions, et un site de test en ligne sur https://test.nomenature.org (non indexé). Prochain lot : les données.
+
 ### Ajouté
 - Socle du site : projet Astro 7 + TypeScript + Svelte, adaptateur Cloudflare, configuration Wrangler, `.env.example` (QUE-11).
 - Design system en CSS : variables du Figma, 16 styles de texte, polices hébergées chez nous, page de contrôle `/design-system` (QUE-12).
 - Gabarit de page : en-tête, menu sur téléphone, pied de page, lien d'évitement ; composants Icône, Logo, Bouton, Bouton icône (QUE-13).
+- Tests d'accessibilité automatiques (Playwright + axe) sur le site compilé, sur ordinateur et sur téléphone : aucune violation WCAG 2.2 AA, menu au clavier, lien d'évitement (`npm test`) (QUE-13).
 - Site bilingue : chaque page existe en français (`/fr/…`) et en anglais (`/en/…`) avec des adresses traduites ; textes de l'interface dans les deux langues ; choix de la langue dans l'en-tête, le menu et le pied de page ; balises `hreflang` et adresse canonique ; la racine envoie vers la langue du navigateur, sans cookie (QUE-14).
 - Page introuvable « Ce sentier ne mène nulle part », d'après la maquette (ordinateur et téléphone) : vrai code 404, en français ou en anglais selon l'adresse puis le navigateur, avec une barre de recherche et le retour à la carte (QUE-15).
+- Intégration continue (GitHub Actions) : types et tests unitaires (Vitest), tests navigateur et accessibilité (Playwright + axe), vitesse et budget de poids par page (Lighthouse CI), liens cassés (lychee) ; liens externes vérifiés chaque semaine ; `develop` et `main` protégées, fusion par pull request seulement (QUE-16).
 - Site de test en ligne sur `test.nomenature.org` (`npm run deploy:test`), jamais indexé ; suivi des erreurs du serveur avec Sentry, sans données personnelles ; `robots.txt` ; HTTPS forcé (QUE-17).
-- Intégration continue (GitHub Actions) : types et tests unitaires (Vitest), tests navigateur et accessibilité (Playwright + axe), vitesse et budget de poids par page (Lighthouse CI), liens cassés (lychee) ; liens externes vérifiés chaque semaine (QUE-16).
-- Tests d'accessibilité automatiques (Playwright + axe) sur le site compilé, sur ordinateur et sur téléphone : aucune violation WCAG 2.2 AA, menu au clavier, lien d'évitement (`npm test`) (QUE-13).
 
 ### Modifié
-- Statistiques : analyses intégrées de Cloudflare au lieu de Web Analytics, pour n'ajouter aucun script ni tiers dans les pages.
 - Stack technique : Astro 7 au lieu d'Astro 6 ; Node 22.23.4 ou plus.
+- Statistiques : analyses intégrées de Cloudflare au lieu de Web Analytics, pour n'ajouter aucun script ni tiers dans les pages.
+- Index de recherche : fichiers à publier en `.txt` (Cloudflare ne compresse pas les `.tsv`).
+
+### Sécurité
+- Astro passé en 7.4.7 (avis GHSA-r3h5-4585-7x3w). Avis picomatch GHSA-fc5q-39xc-vjpf sans correctif disponible : utilisé seulement à la construction, risque accepté et suivi.
 
 ## [0.5.0] - 2026-11-18
 
@@ -85,7 +93,8 @@ Fin du cadrage : le projet est défini, aucune ligne de code encore.
 - Coffre Obsidian dans `docs/`.
 - Licence MIT.
 
-[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.5.0...HEAD
+[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.2.0...v0.3.0

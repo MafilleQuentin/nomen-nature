@@ -14,7 +14,7 @@ Le site sera construit avec [Astro](https://astro.build) et TypeScript, et hébe
 
 Le premier lot de développement, un **essai de la recherche**, est terminé : la recherche tolérante aux fautes (« boulot » trouve le bouleau) fonctionnera avec un index en fichiers statiques. Outils et résultats : [`tools/essai-recherche/`](tools/essai-recherche/README.md).
 
-Le deuxième lot, le **socle du site**, est presque terminé : gabarit bilingue (français et anglais) fidèle aux maquettes, page 404, tests automatiques sur GitHub, et un site de test en ligne sur <https://test.nomenature.org> (non indexé, encore sans contenu).
+Le deuxième lot, le **socle du site**, est terminé (v0.6.0) : gabarit bilingue (français et anglais) fidèle aux maquettes, page 404, tests automatiques sur GitHub, et un site de test en ligne sur <https://test.nomenature.org> (non indexé, encore sans contenu).
 
 | Étape | État |
 |---|---|
