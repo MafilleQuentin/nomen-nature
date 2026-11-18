@@ -22,6 +22,8 @@ import time
 from collections.abc import Iterator
 from pathlib import Path
 
+from phonetique import cle
+
 ICI = Path(__file__).parent
 DONNEES = ICI / "data"
 SCHEMA = (ICI / "schema.sql").read_text(encoding="utf-8")
@@ -43,10 +45,11 @@ def taxons() -> Iterator[list[str]]:
 
 
 def noms(sans_synonymes: bool) -> Iterator[list[str]]:
+    """taxon_id, nom, langue, type, clé phonétique."""
     for ligne in lire(DONNEES / "noms.tsv"):
         if sans_synonymes and ligne[3] == "synonyme":
             continue
-        yield ligne
+        yield [*ligne, cle(ligne[1], ligne[2])]
 
 
 def vers_sqlite(sans_synonymes: bool) -> None:
@@ -56,7 +59,7 @@ def vers_sqlite(sans_synonymes: bool) -> None:
     base.executescript(SCHEMA)
     debut = time.perf_counter()
     base.executemany("INSERT INTO taxon VALUES (?,?,?,?,?,?,?,?)", ([v or None for v in t] for t in taxons()))
-    base.executemany("INSERT INTO nom (taxon_id, nom, langue, type) VALUES (?,?,?,?)", noms(sans_synonymes))
+    base.executemany("INSERT INTO nom (taxon_id, nom, langue, type, cle) VALUES (?,?,?,?,?)", noms(sans_synonymes))
     base.commit()
     print(f"Données insérées en {time.perf_counter() - debut:.0f} s")
     debut = time.perf_counter()
@@ -82,11 +85,16 @@ def rapport(base: sqlite3.Connection, chemin: Path) -> None:
     print(f"  {n_taxons:,} taxons, {n_noms:,} noms".replace(",", " "))
 
 
-def sql_texte(valeur: str) -> str:
-    return "NULL" if valeur == "" else "'" + valeur.replace("'", "''") + "'"
+def sql_texte(valeur: str, vide_en_null: bool) -> str:
+    if valeur == "" and vide_en_null:
+        return "NULL"
+    return "'" + valeur.replace("'", "''") + "'"
 
 
-def fichiers_sql(table: str, colonnes: str, lignes: Iterator[list[str]], dossier: Path, prefixe: str) -> list[Path]:
+def fichiers_sql(
+    table: str, colonnes: str, lignes: Iterator[list[str]], dossier: Path, prefixe: str, vide_en_null: bool
+) -> list[Path]:
+    """vide_en_null : un champ vide devient NULL (champs facultatifs) ou reste '' (ex. clé phonétique vide)."""
     fichiers: list[Path] = []
     lot: list[str] = []
     contenu: list[str] = []
@@ -106,7 +114,7 @@ def fichiers_sql(table: str, colonnes: str, lignes: Iterator[list[str]], dossier
             contenu.clear()
 
     for ligne in lignes:
-        lot.append("(" + ",".join(sql_texte(v) for v in ligne) + ")")
+        lot.append("(" + ",".join(sql_texte(v, vide_en_null) for v in ligne) + ")")
         compte += 1
         if len(lot) == LIGNES_PAR_INSTRUCTION:
             vider_lot()
@@ -131,8 +139,10 @@ def vers_d1(sans_synonymes: bool) -> None:
         ancien.unlink()
     (dossier / "000-schema.sql").write_text(SCHEMA, encoding="utf-8")
     fichiers = [dossier / "000-schema.sql"]
-    fichiers += fichiers_sql("taxon", "id, rang, nom_scientifique, auteur, regne, famille, genre, groupe", taxons(), dossier, "100-taxon")
-    fichiers += fichiers_sql("nom", "taxon_id, nom, langue, type", noms(sans_synonymes), dossier, "200-nom")
+    fichiers += fichiers_sql(
+        "taxon", "id, rang, nom_scientifique, auteur, regne, famille, genre, groupe", taxons(), dossier, "100-taxon", True
+    )
+    fichiers += fichiers_sql("nom", "taxon_id, nom, langue, type, cle", noms(sans_synonymes), dossier, "200-nom", False)
     print(f"{len(fichiers)} fichiers SQL écrits dans {dossier}")
 
     debut = time.perf_counter()

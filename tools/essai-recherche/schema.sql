@@ -23,9 +23,12 @@ CREATE TABLE nom (
   taxon_id TEXT NOT NULL REFERENCES taxon(id),
   nom      TEXT NOT NULL,
   langue   TEXT NOT NULL,                   -- la | fr | en
-  type     TEXT NOT NULL                    -- accepte | synonyme | courant
+  type     TEXT NOT NULL,                   -- accepte | synonyme | courant
+  cle      TEXT NOT NULL                    -- clé phonétique selon la langue (phonetique.py), ex. « bUlo » pour bouleau
 );
 CREATE INDEX nom_taxon ON nom(taxon_id);
+-- Recherche par début de clé : WHERE langue = ? AND cle >= ? AND cle < ? || '~'
+CREATE INDEX nom_cle ON nom(langue, cle);
 
 -- Index plein texte par trigrammes : sous-chaînes, sans tenir compte des majuscules ni des accents.
 -- « Contenu externe » : l'index ne recopie pas les noms, il pointe vers la table nom.

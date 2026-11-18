@@ -11,6 +11,7 @@ Les données téléchargées et générées vont dans `data/`, **ignoré par git
 | QUE-5 | `telecharger.py` | Télécharge le Catalogue of Life XR : l'export à plat (137 Mo) et, depuis l'archive mensuelle de 1,4 Go, **seulement** la table des noms courants (35 Mo, grâce aux requêtes HTTP partielles). |
 | QUE-5 | `extraire_noms.py` | Garde les animaux, plantes et champignons, et écrit `data/taxa.tsv` (taxons) et `data/noms.tsv` (noms cherchables). |
 
+| QUE-7 | `phonetique.py`, `test_phonetique.py` | Normalise les noms et calcule une **clé phonétique** par langue (français, anglais, latin), stockée dans la colonne `nom.cle`. |
 | QUE-6 | `schema.sql`, `charger.py` | Charge les taxons et les noms dans une base SQLite (`sqlite`, pour comparer des variantes) ou dans la base **D1 locale** de Wrangler (`d1`), avec un index par trigrammes qui ignore majuscules et accents. |
 
 ```bash
@@ -19,6 +20,10 @@ python telecharger.py
 
 ```bash
 python -X utf8 extraire_noms.py
+```
+
+```bash
+python -X utf8 -m unittest -v test_phonetique
 ```
 
 ```bash
@@ -76,4 +81,39 @@ C'est volontairement le **cas le plus lourd** : toutes les espèces du Catalogue
 Premières recherches à la main, avant la clé phonétique (QUE-7) :
 - « boulot » ne trouve pas le bouleau : c'est le rôle de la clé phonétique.
 - Le tri est à travailler (QUE-8) : « bouleau » est posé sur deux espèces avant le genre *Betula*, et « chêne » fait remonter des noms latins comme *Cheneya*.
-- **D1 local ne donne pas les lignes lues** : `meta` ne contient que la durée, et `sqlite_version()` est refusé. Pour QUE-9, il faudra une base D1 en ligne (compte Cloudflare) ou une estimation par `EXPLAIN QUERY PLAN`.
+- **D1 local ne donne pas les lignes lues**, ce qui sera un problème pour QUE-9 : `meta` ne contient que la durée, et `sqlite_version()` est refusé. Pour QUE-9, il faudra une base D1 en ligne (compte Cloudflare) ou une estimation par `EXPLAIN QUERY PLAN`.
+
+## Clé phonétique (18.11.2026)
+
+**Normalisation** (`normaliser`) : minuscules, accents et ligatures retirés (œ → oe), ponctuation, apostrophes et traits d'union remplacés par des espaces. « Rouge-gorge » et « rouge gorge » deviennent identiques.
+
+**Une clé par langue**, calculée mot par mot. Les majuscules dans une clé représentent des sons, pas des lettres : A = an/en, O = on, I = in/un, U = ou, E = eu, X = ch, N = gn.
+
+| Langue | Principales règles | Exemple |
+|---|---|---|
+| Français | eau/au → o ; lettres finales muettes (e, s, t, d, x, z, p) ; nasales ; ch, qu, ph, c/g doux ; s entre voyelles → z ; h muet ; lettres doublées | bouleau, boulot → `bUlo` ; mésange charbonnière, mezange charbonière → `mezAj Xarbonier` |
+| Anglais | dans l'esprit de Metaphone : kn/wr en début de mot, tch/ch/sh → X, ph → f, th → 0, c/g doux ; on garde la première lettre puis on retire les voyelles | birch, birtch → `brX` ; red fox, red focks → `rd fks` |
+| Latin | ae/oe → e, y → i, ph → f, th → t, ch/c/q → k, lettres doublées | Quercus, Querkus → `kuerkus` ; Philadelphus, Filadelfus → `filadelfus` |
+
+**Tests** (`test_phonetique.py`) : 36 paires qui doivent donner la même clé (fautes d'accent, de son, de lettres doublées…), et 8 paires qui doivent rester différentes (bouleau ≠ boule, chêne ≠ chien, oak ≠ ash…). Tous passent.
+
+**Recherche** : la clé est stockée dans `nom.cle`, avec un index `(langue, cle)`. On cherche par **début de clé**, dans chaque langue, avec la clé calculée pour le texte tapé :
+
+```sql
+SELECT … FROM nom WHERE langue = 'fr' AND cle >= 'bUlo' AND cle < 'bUlo' || '~'
+```
+
+`EXPLAIN QUERY PLAN` confirme que D1 utilise l'index (`SEARCH n USING COVERING INDEX nom_cle`).
+
+| | Avant la clé | Avec la clé |
+|---|---|---|
+| Taille SQLite | 975 Mo | 1 230 Mo |
+| **Taille D1 locale** | 993 Mo | **1 272 Mo** (environ un quart des 5 Go gratuits) |
+| « boulot » | rien d'utile | *Betula* (bouleaux), en 1 à 4 ms |
+
+Premiers résultats, à mesurer pour de bon dans QUE-8 :
+- Trouvés grâce à la clé : « boulot » → bouleau, « ecureuil » → écureuil, « mezange charbonière » → *Parus major*, « renar » → renard, « birtch » → *Betula*, « red focks » → *Vulpes vulpes*.
+- Ce que la clé ne rattrape pas : une lettre ou une syllabe manquante (« verruquex »). Il faudra le combiner avec les trigrammes.
+- Le tri reste à faire : « Querkus robur » remonte aussi « Caracas Robber Frog » par la clé anglaise.
+- 74 noms en écriture chinoise, cyrillique ou grecque sont étiquetés « anglais » dans le Catalogue : leur clé est vide. À nettoyer au lot 3.
+- La clé devra être **réécrite en TypeScript** pour le Worker, avec les mêmes tests, afin de donner exactement le même résultat à l'import et à la recherche.
