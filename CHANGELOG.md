@@ -5,6 +5,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ## [Non publié]
 
+## [0.5.0] - 2026-11-18
+
+Lot 1 terminé : essai de la recherche. La recherche tolérante aux fautes fonctionne (« boulot » trouve le bouleau) et sera servie par un index en fichiers statiques, D1 gratuit étant trop petit. Prochain lot : le socle du site.
+
 ### Ajouté
 - Étape 5 découpée en 10 lots de développement (feuille de route et projet Linear « Nomen Nature — V1 »).
 - Essai de la recherche : scripts de téléchargement et d'extraction des noms du Catalogue of Life XR (`tools/essai-recherche/`).
@@ -67,7 +71,8 @@ Fin du cadrage : le projet est défini, aucune ligne de code encore.
 - Coffre Obsidian dans `docs/`.
 - Licence MIT.
 
-[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.4.0...HEAD
+[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.1.0...v0.2.0
