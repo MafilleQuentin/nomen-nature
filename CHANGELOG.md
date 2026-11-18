@@ -11,9 +11,11 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 - Essai de la recherche : schéma D1 avec index par trigrammes et script de chargement dans D1 en local.
 - Essai de la recherche : normalisation et clé phonétique par langue (français, anglais, latin), avec tests.
 - Essai de la recherche : fonction de recherche avec tri et jeu de 40 recherches de test (40/40 dans les 5 premiers résultats).
+- Essai de la recherche : index en fichiers statiques (construction, recherche « comme le navigateur », mesure du poids par recherche).
 
 ### Modifié
 - Sources de données : le Catalogue of Life XR remplace la GBIF Backbone comme référentiel des noms.
+- Stack technique : la recherche passe par un index en fichiers statiques au lieu de D1 (D1 gratuit limité à 500 Mo par base et 100 000 écritures par jour).
 
 ## [0.4.0] - 2026-11-18
 
