@@ -28,6 +28,12 @@ export function langueDuNavigateur(entete: string | null): Langue {
   return preferences.map((p) => p.langue).find(estLangue) ?? langueParDefaut;
 }
 
+/** Langue indiquée par le début d'une adresse (/en/about → en), s'il y en a une. */
+export function langueDeLAdresse(chemin: string): Langue | undefined {
+  const premier = chemin.split("/")[1]?.toLowerCase();
+  return estLangue(premier) ? premier : undefined;
+}
+
 /** Nom de chaque langue dans cette langue, et son code court affiché. */
 export const nomsLangues: Record<Langue, { nom: string; code: string }> = {
   fr: { nom: "Français", code: "FR" },

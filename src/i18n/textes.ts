@@ -38,6 +38,20 @@ const fr = {
     mention: "Nomen Nature · gratuit et sans publicité · données GBIF, Wikipédia, UICN, Pl@ntNet",
     mentionCourte: "Gratuit et sans publicité",
   },
+  recherche: {
+    libelle: "Chercher une espèce",
+    indicatif: "Cherche une espèce…",
+  },
+  introuvable: {
+    titrePage: "Page introuvable — Nomen Nature",
+    descriptionPage: "Cette page n'existe pas ou a été déplacée.",
+    surtitre: "Erreur 404 · 0.00°N 0.00°E",
+    titre: "Ce sentier ne mène nulle part",
+    texte: "La page que tu cherches n'existe pas ou a été déplacée.",
+    texteSuite: "Cherche une espèce ou retourne à la carte.",
+    retourCarte: "Retour à la carte",
+    autourDeMoi: "Autour de moi",
+  },
   accueil: {
     titre: "Nomen Nature",
     description: "Redonner un nom au vivant : explorer la faune, la flore et les champignons du monde entier.",
@@ -81,6 +95,20 @@ const en: Textes = {
   piedDePage: {
     mention: "Nomen Nature · free and ad-free · data from GBIF, Wikipedia, IUCN, Pl@ntNet",
     mentionCourte: "Free and ad-free",
+  },
+  recherche: {
+    libelle: "Search for a species",
+    indicatif: "Search for a species…",
+  },
+  introuvable: {
+    titrePage: "Page not found — Nomen Nature",
+    descriptionPage: "This page doesn't exist or has moved.",
+    surtitre: "Error 404 · 0.00°N 0.00°E",
+    titre: "This trail leads nowhere",
+    texte: "The page you're looking for doesn't exist or has moved.",
+    texteSuite: "Search for a species or head back to the map.",
+    retourCarte: "Back to the map",
+    autourDeMoi: "Near me",
   },
   accueil: {
     titre: "Nomen Nature",

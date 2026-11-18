@@ -7,6 +7,8 @@ const pages = [
   { nom: "accueil (fr)", chemin: "/fr" },
   { nom: "accueil (en)", chemin: "/en" },
   { nom: "design system", chemin: "/design-system" },
+  { nom: "introuvable (fr)", chemin: "/fr/page-inconnue" },
+  { nom: "introuvable (en)", chemin: "/en/unknown-page" },
 ];
 
 async function auditer(page: Page) {
