@@ -1,0 +1,78 @@
+---
+// Barre de recherche (Figma « Barre de recherche », 75:42) : Grand sur ordinateur, Compact
+// sur téléphone. Formulaire natif qui envoie vers la page de recherche (?q=…) : il marche
+// sans JavaScript. Les suggestions et la tolérance aux fautes arrivent avec le lot 5.
+import type { Langue } from "../i18n/langues";
+import { t } from "../i18n/textes";
+import { lien } from "../lib/liens";
+import Icone from "./Icone.astro";
+
+interface Props {
+  langue: Langue;
+  taille?: "grand" | "compact";
+  /** Identifiant du champ, à changer s'il y a deux barres sur la même page. */
+  id?: string;
+  class?: string;
+}
+
+const { langue, taille = "grand", id = "recherche", class: classe } = Astro.props;
+const textes = t(langue).recherche;
+---
+
+<form class:list={["barre", `barre--${taille}`, classe]} role="search" action={lien("recherche", langue)} method="get">
+  <label class="visuellement-cache" for={id}>{textes.libelle}</label>
+  <Icone nom="recherche" taille={22} />
+  <input
+    id={id}
+    class:list={["barre__champ", taille === "grand" ? "t-texte-grand" : "t-texte-normal"]}
+    type="search"
+    name="q"
+    placeholder={textes.indicatif}
+    autocomplete="off"
+    enterkeyhint="search"
+  />
+</form>
+
+<style>
+  .barre {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    width: 100%;
+    border: 1.5px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-surface);
+    color: var(--color-icon-primary);
+  }
+  .barre--grand {
+    max-width: 720px;
+    padding: var(--space-4) var(--space-5);
+  }
+  .barre--compact {
+    padding: var(--space-3) var(--space-4);
+  }
+  /* Le contour de focus entoure toute la barre, pas seulement le champ. */
+  .barre:focus-within {
+    outline: 2px solid var(--color-border-accent);
+    outline-offset: 2px;
+  }
+  .barre__champ {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-text-primary);
+  }
+  .barre__champ:focus {
+    outline: none;
+  }
+  .barre__champ::placeholder {
+    color: var(--color-text-secondary);
+    opacity: 1;
+  }
+  /* Pas de croix d'effacement imposée par le navigateur : elle n'est pas dans la maquette. */
+  .barre__champ::-webkit-search-cancel-button {
+    appearance: none;
+  }
+</style>

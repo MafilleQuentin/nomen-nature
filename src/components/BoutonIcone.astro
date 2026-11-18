@@ -1,0 +1,39 @@
+---
+// Bouton icône (Figma « Bouton icône », 75:28) : carré de 44 px, la zone tactile minimale.
+// Le libellé est obligatoire : il est lu par les lecteurs d'écran (aria-label).
+import Icone, { type NomIcone } from "./Icone.astro";
+
+interface Props {
+  icone: NomIcone;
+  libelle: string;
+  href?: string;
+  class?: string;
+  [attribut: string]: unknown;
+}
+
+const { icone, libelle, href, class: classe, ...reste } = Astro.props;
+const Balise = href ? "a" : "button";
+---
+
+<Balise class:list={["bouton-icone", classe]} href={href} type={href ? undefined : "button"} aria-label={libelle} {...reste}>
+  <Icone nom={icone} taille={20} />
+</Balise>
+
+<style>
+  .bouton-icone {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-bg-surface);
+    color: var(--color-icon-primary);
+    cursor: pointer;
+  }
+  .bouton-icone:hover {
+    background: var(--color-bg-surface-raised);
+  }
+</style>

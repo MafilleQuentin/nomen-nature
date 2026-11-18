@@ -1,0 +1,16 @@
+---
+// Page introuvable, servie avec le code HTTP 404 pour toute adresse inconnue.
+// Rendue à la demande par le Worker pour parler la bonne langue : celle du début de
+// l'adresse (/en/… → anglais), sinon celle du navigateur, sinon le français.
+import { langueDeLAdresse, langueDuNavigateur } from "../i18n/langues";
+import Introuvable from "../vues/Introuvable.astro";
+
+export const prerender = false;
+
+const langue =
+  langueDeLAdresse(Astro.url.pathname) ?? langueDuNavigateur(Astro.request.headers.get("Accept-Language"));
+Astro.response.status = 404;
+Astro.response.headers.set("Vary", "Accept-Language");
+---
+
+<Introuvable langue={langue} />

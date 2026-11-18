@@ -1,0 +1,146 @@
+---
+// Pied de page (Figma « Pied de page », 93:99), présent sur toutes les pages :
+// mention « gratuit et sans publicité », sources des données, pages annexes et langue.
+import { langues, nomsLangues, type Langue } from "../i18n/langues";
+import { t } from "../i18n/textes";
+import { lien } from "../lib/liens";
+
+interface Props {
+  langue: Langue;
+  /** Adresse de la page courante dans chaque langue. */
+  versions: Record<Langue, string>;
+}
+
+const { langue, versions } = Astro.props;
+const textes = t(langue);
+
+// Deux groupes, pour que la coupure sur téléphone tombe au bon endroit (comme dans Figma).
+const groupe1 = [
+  { libelle: textes.annexes.aPropos, href: lien("aPropos", langue) },
+  { libelle: textes.annexes.sources, href: lien("sources", langue) },
+];
+const groupe2 = [
+  { libelle: textes.annexes.confidentialite, href: lien("confidentialite", langue) },
+  { libelle: textes.annexes.mentionsLegales, href: lien("mentionsLegales", langue) },
+];
+---
+
+<footer class="pied t-mono-legende">
+  <p class="pied__mention">
+    <span class="ordi">{textes.piedDePage.mention}</span>
+    <span class="tel">{textes.piedDePage.mentionCourte}</span>
+  </p>
+  <nav class="pied__liens" aria-label={textes.annexes.titre}>
+    <ul>
+      {groupe1.map(({ libelle, href }) => <li><a href={href}>{libelle}</a></li>)}
+    </ul>
+    <ul>
+      {groupe2.map(({ libelle, href }) => <li><a href={href}>{libelle}</a></li>)}
+      <li>
+        <span class="langues">
+          {langues.map((l, i) => (
+            <>
+              {i > 0 && <span aria-hidden="true">/</span>}
+              {/* Le nom accessible commence par le code affiché (WCAG 2.5.3). */}
+              <a
+                href={versions[l]}
+                hreflang={l === langue ? undefined : l}
+                lang={l}
+                aria-current={l === langue ? "true" : undefined}
+                aria-label={`${nomsLangues[l].code}, ${nomsLangues[l].nom}`}
+              >
+                {nomsLangues[l].code}
+              </a>
+            </>
+          ))}
+        </span>
+      </li>
+    </ul>
+  </nav>
+</footer>
+
+<style>
+  .pied {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: var(--space-2);
+    /* 4 px de moins que le Figma en haut et en bas : les liens font 24 px de haut (cibles WCAG 2.5.8). */
+    padding: calc(var(--space-5) - 4px) var(--space-5) calc(var(--space-6) - 4px);
+    border-top: 1px solid var(--color-border-subtle);
+    text-align: center;
+  }
+  .pied p {
+    margin: 0;
+  }
+  .pied__mention {
+    color: var(--color-text-secondary);
+  }
+  .ordi {
+    display: none;
+  }
+  .pied__liens {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .pied ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .pied li {
+    display: flex;
+    align-items: center;
+  }
+  .pied li + li::before {
+    content: "·";
+    margin: 0 0.6ch;
+  }
+  /* Cibles d'au moins 24 × 24 px (WCAG 2.5.8), sans changer la taille du texte. */
+  .pied a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    min-height: 24px;
+    color: var(--color-text-primary);
+    text-decoration: none;
+  }
+  .pied a:hover {
+    color: var(--color-text-accent);
+    text-decoration: underline;
+  }
+  /* Pas d'écart : les liens FR et EN font déjà 24 px de large. */
+  .langues {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  @media (min-width: 900px) {
+    .pied {
+      flex-direction: row;
+      justify-content: space-between;
+      padding: calc(var(--space-6) - 4px) var(--space-20);
+      text-align: left;
+    }
+    .ordi {
+      display: inline;
+    }
+    .tel {
+      display: none;
+    }
+    .pied__liens {
+      flex-direction: row;
+      align-items: center;
+    }
+    .pied ul + ul::before {
+      content: "·";
+      margin: 0 0.6ch;
+    }
+  }
+</style>

@@ -1,0 +1,305 @@
+---
+// En-tête (Figma « En-tête », 76:60) et menu sur téléphone (« Menu · Téléphone », 95:427).
+// Ordinateur : logo, navigation, langue. Téléphone : logo, langue, bouton menu qui ouvre
+// un panneau plein écran (<dialog> natif : focus piégé, touche Échap, retour du focus).
+// Les textes viennent de src/i18n/textes.ts, les adresses de src/lib/liens.ts.
+import courbes from "../assets/motifs/courbes-telephone.svg?url";
+import { langues, nomsLangues, type Langue } from "../i18n/langues";
+import { t } from "../i18n/textes";
+import { lien } from "../lib/liens";
+import Icone, { type NomIcone } from "./Icone.astro";
+import Logo from "./Logo.astro";
+
+interface Props {
+  langue: Langue;
+  /** Adresse de la page courante dans chaque langue. */
+  versions: Record<Langue, string>;
+}
+
+const { langue, versions } = Astro.props;
+const textes = t(langue);
+// Deux langues pour l'instant : le lien de l'en-tête mène à l'autre.
+const autre: Langue = langue === "fr" ? "en" : "fr";
+
+const navigation = [
+  { libelle: textes.enTete.explorer, href: lien("carte", langue) },
+  { libelle: textes.enTete.identifier, href: lien("identifier", langue) },
+  { libelle: textes.enTete.menacees, href: lien("menacees", langue) },
+  { libelle: textes.enTete.aPropos, href: lien("aPropos", langue) },
+];
+
+const menu: { libelle: string; href: string; icone: NomIcone }[] = [
+  { libelle: textes.menu.carte, href: lien("carte", langue), icone: "globe" },
+  { libelle: textes.menu.autourDeMoi, href: lien("autourDeMoi", langue), icone: "position" },
+  { libelle: textes.menu.identifier, href: lien("identifier", langue), icone: "appareil-photo" },
+  { libelle: textes.menu.menacees, href: lien("menacees", langue), icone: "feuille" },
+  { libelle: textes.menu.recherche, href: lien("recherche", langue), icone: "recherche" },
+];
+
+const annexes = [
+  { libelle: textes.annexes.aPropos, href: lien("aPropos", langue) },
+  { libelle: textes.annexes.sources, href: lien("sources", langue) },
+  { libelle: textes.annexes.confidentialite, href: lien("confidentialite", langue) },
+  { libelle: textes.annexes.mentionsLegales, href: lien("mentionsLegales", langue) },
+];
+---
+
+<header class="en-tete">
+  <Logo langue={langue} />
+
+  <nav class="navigation" aria-label={textes.enTete.navigation}>
+    <ul class="t-mono-navigation">
+      {navigation.map(({ libelle, href }) => <li><a href={href}>{libelle}</a></li>)}
+    </ul>
+  </nav>
+
+  <div class="actions">
+    <a class="langue" href={versions[autre]} hreflang={autre} lang={autre} aria-label={textes.enTete.autreLangue}>
+      <Icone nom="globe" taille={18} class="langue__icone-ordi" />
+      <Icone nom="globe" taille={22} class="langue__icone-tel" />
+      <span class="t-libelle-petit langue__code" aria-hidden="true">{nomsLangues[langue].code}</span>
+    </a>
+    <button class="bouton-menu" type="button" aria-label={textes.enTete.ouvrirMenu} aria-haspopup="dialog" aria-controls="menu" aria-expanded="false" data-ouvrir-menu>
+      <Icone nom="menu" taille={24} />
+    </button>
+  </div>
+</header>
+
+<dialog id="menu" class="menu" aria-label={textes.enTete.menu} style={`--courbes: url("${courbes}")`}>
+  <div class="menu__haut">
+    <Logo langue={langue} />
+    <button class="bouton-fermer" type="button" aria-label={textes.enTete.fermerMenu} data-fermer-menu>
+      <Icone nom="fermer" taille={26} />
+    </button>
+  </div>
+
+  <nav class="menu__navigation" aria-label={textes.enTete.menu}>
+    <ul>
+      {menu.map(({ libelle, href, icone }) => (
+        <li>
+          <a href={href}>
+            <Icone nom={icone} taille={24} class="menu__icone" />
+            <span class="t-titre-section-compact">{libelle}</span>
+            <Icone nom="fleche-droite" taille={20} class="menu__icone" />
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+
+  <div class="menu__bas">
+    <div class="menu__langue" role="group" aria-labelledby="menu-langue">
+      <span id="menu-langue" class="t-mono-surtitre secondaire">{textes.menu.langue}</span>
+      {langues.map((l) => (
+        <a
+          class:list={["puce t-libelle-petit", { "puce--selectionnee": l === langue }]}
+          href={versions[l]}
+          hreflang={l === langue ? undefined : l}
+          lang={l}
+          aria-current={l === langue ? "true" : undefined}
+        >
+          {nomsLangues[l].nom}
+        </a>
+      ))}
+    </div>
+    <ul class="menu__annexes t-mono-legende">
+      {annexes.map(({ libelle, href }) => <li><a href={href}>{libelle}</a></li>)}
+    </ul>
+  </div>
+</dialog>
+
+<script>
+  const menu = document.getElementById("menu") as HTMLDialogElement | null;
+  const ouvrir = document.querySelector<HTMLButtonElement>("[data-ouvrir-menu]");
+  const fermer = menu?.querySelector<HTMLButtonElement>("[data-fermer-menu]");
+
+  ouvrir?.addEventListener("click", () => {
+    menu?.showModal();
+    ouvrir.setAttribute("aria-expanded", "true");
+  });
+  fermer?.addEventListener("click", () => menu?.close());
+  menu?.addEventListener("close", () => {
+    ouvrir?.setAttribute("aria-expanded", "false");
+    ouvrir?.focus();
+  });
+  // Si l'écran s'élargit (rotation, fenêtre), le menu téléphone n'a plus lieu d'être.
+  window.matchMedia("(min-width: 900px)").addEventListener("change", (e) => {
+    if (e.matches && menu?.open) menu.close();
+  });
+</script>
+
+<style>
+  /* --- En-tête --- */
+  .en-tete {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+  .navigation {
+    display: none;
+  }
+  .navigation ul {
+    display: flex;
+    gap: var(--space-8);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .navigation a,
+  .langue {
+    color: var(--color-text-primary);
+    text-decoration: none;
+  }
+  .navigation a:hover,
+  .langue:hover {
+    color: var(--color-text-accent);
+  }
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .langue {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  /* Zones tactiles de 44 px sur téléphone, sans changer la taille des icônes. */
+  .langue,
+  .bouton-menu,
+  .bouton-fermer {
+    min-width: 44px;
+    min-height: 44px;
+    justify-content: center;
+    margin: -10px;
+  }
+  .bouton-menu,
+  .bouton-fermer {
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-icon-primary);
+    cursor: pointer;
+  }
+  .langue__code,
+  .langue :global(.langue__icone-ordi) {
+    display: none;
+  }
+
+  @media (min-width: 900px) {
+    .en-tete {
+      padding: var(--space-5) var(--space-20);
+    }
+    .navigation {
+      display: block;
+    }
+    .bouton-menu,
+    .langue :global(.langue__icone-tel) {
+      display: none;
+    }
+    .langue {
+      margin: 0;
+      min-width: 0;
+      min-height: 0;
+    }
+    .langue__code,
+    .langue :global(.langue__icone-ordi) {
+      display: inline-block;
+    }
+  }
+
+  /* --- Menu sur téléphone --- */
+  .menu {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    color: var(--color-text-primary);
+    background: var(--courbes) top left / 390px auto no-repeat, var(--color-bg-page);
+  }
+  .menu::backdrop {
+    background: var(--color-bg-page);
+  }
+  .menu__haut {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+  .menu__navigation {
+    padding: var(--space-4) var(--space-5);
+  }
+  .menu__navigation ul,
+  .menu__annexes {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .menu__navigation a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) 0;
+    border-bottom: 1px solid var(--color-border-subtle);
+    color: var(--color-text-primary);
+    text-decoration: none;
+  }
+  .menu__navigation a span {
+    flex: 1;
+  }
+  .menu__navigation :global(.menu__icone) {
+    color: var(--color-icon-highlight);
+  }
+  .menu__bas {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-6) var(--space-5);
+  }
+  .menu__langue {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .secondaire {
+    color: var(--color-text-secondary);
+  }
+  .puce {
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border-strong);
+    color: var(--color-text-primary);
+    text-decoration: none;
+  }
+  .puce--selectionnee {
+    background: var(--color-bg-inverse);
+    border-color: var(--color-bg-inverse);
+    color: var(--color-text-on-inverse);
+  }
+  .menu__annexes {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  /* Séparateur après chaque lien (et non avant) : si la ligne se coupe, il reste en fin de ligne. */
+  .menu__annexes li:not(:last-child)::after {
+    content: "·";
+    margin: 0 0.6ch;
+    color: var(--color-text-secondary);
+  }
+  .menu__annexes a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+  }
+</style>

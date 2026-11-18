@@ -14,6 +14,8 @@ Le site sera construit avec [Astro](https://astro.build) et TypeScript, et hébe
 
 Le premier lot de développement, un **essai de la recherche**, est terminé : la recherche tolérante aux fautes (« boulot » trouve le bouleau) fonctionnera avec un index en fichiers statiques. Outils et résultats : [`tools/essai-recherche/`](tools/essai-recherche/README.md).
 
+Le deuxième lot, le **socle du site**, est presque terminé : gabarit bilingue (français et anglais) fidèle aux maquettes, page 404, tests automatiques sur GitHub, et un site de test en ligne sur <https://test.nomenature.org> (non indexé, encore sans contenu).
+
 | Étape | État |
 |---|---|
 | 1. Cadrage et brief | ✅ Terminé |
@@ -33,6 +35,52 @@ Détail : [feuille de route](docs/Feuille%20de%20route.md).
 - 🦉 **Fiches espèces** : photos, noms, statut de menace, description, carte de répartition, famille, espèces proches.
 - ⚠️ **Espèces menacées** mises en avant dans chaque pays.
 - 🏫 **Utilisable en classe** : pas de compte, pas de publicité, pas de pistage. Accessibilité visée : WCAG AA.
+
+## Développer en local
+
+Il faut **Node 22.23.4 ou plus** (Node 24 LTS conseillé, voir `.node-version`).
+
+```bash
+npm install
+```
+
+```bash
+npm run dev
+```
+
+Le site s'ouvre sur <http://localhost:4321>, qui envoie vers `/fr` ou `/en` selon la langue du navigateur. Le premier démarrage prend une vingtaine de secondes.
+
+Les textes de l'interface sont dans `src/i18n/textes.ts` (français et anglais) et les adresses des pages dans `src/lib/liens.ts`.
+
+| Commande | Rôle |
+|---|---|
+| `npm run dev` | Serveur de développement, avec le moteur de Cloudflare (workerd) |
+| `npm run build` | Construit le site dans `dist/` |
+| `npm run preview` | Construit puis sert le site comme en ligne (Wrangler) |
+| `npm run check` | Vérifie les types (TypeScript, fichiers Astro) |
+| `npm run test:unit` | Tests unitaires (Vitest), sans navigateur |
+| `npm run test:e2e` | Tests dans un vrai navigateur, dont l'audit d'accessibilité axe, sur le site compilé |
+| `npm test` | Tous les tests (types, unitaires, puis navigateur) |
+| `npm run deploy:test` | Construit et publie le site de test sur <https://test.nomenature.org> (après `npx wrangler login`) |
+
+Avant le premier `npm run test:e2e`, installer le navigateur de test : `npx playwright install chromium`.
+
+## Vérifications automatiques
+
+À chaque envoi sur GitHub, le workflow [Vérifications](.github/workflows/verifications.yml) lance quatre vérifications en parallèle :
+
+| Vérification | Outil | Échoue si… |
+|---|---|---|
+| Types et tests unitaires | `astro check`, Vitest | une erreur de type ou un test unitaire échoue, ou la construction échoue |
+| Navigateur et accessibilité | Playwright + axe, ordinateur et téléphone | un parcours échoue ou axe trouve une violation WCAG 2.2 AA |
+| Vitesse et qualité | Lighthouse CI ([réglages](lighthouserc.json)) | un score passe sous 90 (100 pour l'accessibilité), ou une page dépasse son budget : 200 Ko en tout, 50 Ko de scripts, 100 Ko de polices, aucune requête vers un tiers |
+| Liens cassés | lychee ([réglages](lychee.toml)) | un lien interne du site ou de la documentation est cassé |
+
+`develop` et `main` sont protégées : on y fusionne seulement par pull request, une fois les quatre vérifications réussies.
+
+Les liens vers les sites externes sont vérifiés chaque lundi par le workflow [Liens externes](.github/workflows/liens-externes.yml).
+
+Les secrets ne sont jamais dans le dépôt : copier `.env.example` en `.dev.vars` pour le développement local.
 
 ## Documentation
 

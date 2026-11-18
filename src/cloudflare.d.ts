@@ -1,0 +1,11 @@
+// Variables du Worker (wrangler.jsonc et secrets Cloudflare), lues par
+// `import { env } from "cloudflare:workers"`. À compléter quand on en ajoute.
+declare module "cloudflare:workers" {
+  export interface Env {
+    /** « local », « test » ou, plus tard, « production ». */
+    ENVIRONNEMENT?: string;
+    /** Clé de connexion Sentry (secret Cloudflare, absente en local). */
+    SENTRY_DSN?: string;
+  }
+  export const env: Env;
+}

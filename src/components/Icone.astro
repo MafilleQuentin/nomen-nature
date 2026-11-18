@@ -1,0 +1,38 @@
+---
+// Icône du design system (dessins Lucide, trait 2 px, repris tels quels du Figma).
+// Le fichier SVG sert de masque : l'icône prend la couleur du texte (currentColor),
+// ce qui permet de la « surcharger » (ambre, menthe…) sans modifier le dessin.
+// Toujours décorative : le sens est porté par le texte ou l'aria-label du parent.
+
+export type NomIcone =
+  | "recherche" | "position" | "appareil-photo" | "feuille" | "plus"
+  | "moins" | "menu" | "globe" | "fleche-droite" | "fermer";
+
+interface Props {
+  nom: NomIcone;
+  taille?: number;
+  class?: string;
+}
+
+const { nom, taille = 24, class: classe } = Astro.props;
+
+const fichiers = import.meta.glob<string>("../assets/icones/*.svg", { eager: true, query: "?url", import: "default" });
+const url = fichiers[`../assets/icones/${nom}.svg`];
+if (!url) throw new Error(`Icône inconnue : ${nom}`);
+---
+
+<span
+  class:list={["icone", classe]}
+  aria-hidden="true"
+  style={`--icone-url: url("${url}"); width: ${taille}px; height: ${taille}px;`}
+></span>
+
+<style>
+  .icone {
+    display: inline-block;
+    flex-shrink: 0;
+    background-color: currentColor;
+    -webkit-mask: var(--icone-url) center / contain no-repeat;
+    mask: var(--icone-url) center / contain no-repeat;
+  }
+</style>

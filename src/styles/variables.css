@@ -1,0 +1,100 @@
+/*
+ * Variables du design system Nomen Nature, reprises du fichier Figma « Nomen »
+ * (page Fondations, lue le 18.11.2026). Même nom que dans Figma : color/bg/page → --color-bg-page.
+ * Ne pas mettre de couleur en dur dans les composants : toujours passer par ces rôles.
+ */
+
+:root {
+  /* Couleurs : fonds */
+  --color-bg-page: #0f2a21;
+  --color-bg-sunken: #0b2119;
+  --color-bg-surface: #163a2e;
+  --color-bg-surface-raised: #1a4434;
+  --color-bg-land: #1a4434;
+  --color-bg-accent: #f2b85b;
+  --color-bg-inverse: #f1ebdd;
+
+  /* Couleurs : textes */
+  --color-text-primary: #f1ebdd;
+  --color-text-secondary: #b9c7bc;
+  --color-text-accent: #f2b85b;
+  --color-text-highlight: #7fc8a0;
+  --color-text-on-accent: #0f2a21;
+  --color-text-on-inverse: #0f2a21;
+
+  /* Couleurs : icônes */
+  --color-icon-primary: #f1ebdd;
+  --color-icon-on-accent: #0f2a21;
+  --color-icon-highlight: #7fc8a0;
+
+  /* Couleurs : bordures */
+  --color-border-subtle: #2f5c4a;
+  --color-border-strong: #4f8a6b;
+  --color-border-inverse: #f1ebdd;
+  --color-border-accent: #f2b85b;
+
+  /* Couleurs : carte */
+  --color-map-contour: #4f8a6b;
+  --color-map-contour-index: #7fc8a0;
+  --color-map-coast: #c9dcc9;
+  --color-map-background-line: #2f5c4a;
+
+  /* Couleurs : statuts UICN (couleurs officielles) et texte posé dessus */
+  --color-status-cr: #d81e05;
+  --color-status-en: #fc7f3f;
+  --color-status-vu: #f9e814;
+  --color-status-nt: #cce226;
+  --color-status-lc: #60c659;
+  --color-status-on-cr: #ffffff;
+  --color-status-on-en: #1a1a1a;
+  --color-status-on-vu: #1a1a1a;
+  --color-status-on-nt: #1a1a1a;
+  --color-status-on-lc: #1a1a1a;
+
+  /* Espacements (space/1 à space/20 : le numéro × 4 px) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-14: 56px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* Rayons */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 14px;
+  --radius-full: 999px;
+
+  /*
+   * Polices : les familles (--font-titre, --font-texte, --font-mono) sont déclarées par
+   * l'API Fonts d'Astro (astro.config.mjs), qui héberge les fichiers chez nous.
+   */
+}
+
+/*
+ * Styles de texte (16), un par style Figma. Figma donne l'espacement des lettres en %,
+ * converti ici en em (−2 % → −0.02em).
+ */
+.t-display-grand { font: 700 58px / 1.05 var(--font-titre); letter-spacing: -0.02em; }
+.t-display-compact { font: 700 34px / 1.08 var(--font-titre); letter-spacing: -0.02em; }
+.t-titre-section { font: 700 34px / 1.2 var(--font-titre); letter-spacing: -0.01em; }
+.t-titre-section-compact { font: 700 22px / 1.25 var(--font-titre); letter-spacing: -0.01em; }
+.t-titre-carte { font: 700 18px / 1.2 var(--font-titre); letter-spacing: 0; }
+.t-logo { font: 700 26px / 1 var(--font-titre); letter-spacing: -0.01em; }
+.t-texte-grand { font: 400 19px / 1.5 var(--font-texte); letter-spacing: 0; }
+.t-texte-normal { font: 400 16px / 1.5 var(--font-texte); letter-spacing: 0; }
+.t-texte-petit { font: 400 14px / 1.45 var(--font-texte); letter-spacing: 0; }
+.t-texte-latin { font: italic 400 14px / 1.4 var(--font-texte); letter-spacing: 0; }
+.t-libelle-normal { font: 600 16px / 1.2 var(--font-texte); letter-spacing: 0; }
+.t-libelle-petit { font: 600 14px / 1.2 var(--font-texte); letter-spacing: 0; }
+.t-mono-navigation { font: 600 15px / 1.2 var(--font-mono); letter-spacing: 0; }
+.t-mono-surtitre { font: 400 14px / 1.3 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; }
+.t-mono-legende { font: 400 12px / 1.4 var(--font-mono); letter-spacing: 0; }
+.t-mono-badge { font: 600 12px / 1.2 var(--font-mono); letter-spacing: 0.02em; }

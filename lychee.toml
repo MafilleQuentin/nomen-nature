@@ -1,0 +1,33 @@
+# Vérification des liens cassés (lychee), lancée par GitHub Actions :
+# - à chaque envoi : liens internes du site construit (dist/client) et de la documentation,
+#   sans aller sur Internet (--offline) ;
+# - chaque lundi : tous les liens, y compris vers les sites externes (workflow « Liens »).
+
+no_progress = true
+# Une adresse du site sans extension (/fr/a-propos) correspond au fichier fr/a-propos.html.
+fallback_extensions = ["html"]
+
+exclude_path = [
+  "node_modules",
+  "dist/server",
+  ".astro",
+  ".wrangler",
+  ".lighthouseci",
+  "test-results",
+  "playwright-report",
+  "tools/essai-recherche/data",
+  "docs/.obsidian",
+]
+
+exclude = [
+  # Le domaine n'est pas encore en ligne (QUE-17) : adresses absolues des balises hreflang.
+  '^https://nomenature\.org',
+  # Pages prévues dans la table des adresses mais pas encore construites. À retirer de
+  # cette liste au fur et à mesure qu'elles arrivent (lots 3 à 10).
+  '/fr/(autour-de-moi|identifier|especes-menacees|recherche|a-propos|sources-et-credits|confidentialite|mentions-legales)(\.html)?$',
+  '/en/(near-me|identify|threatened-species|search|about|sources-and-credits|privacy|legal-notice)(\.html)?$',
+  # Sites qui refusent les robots ou demandent une connexion.
+  '^https://(www\.)?linkedin\.com',
+  '^https://(www\.)?figma\.com',
+  '^https://linear\.app',
+]

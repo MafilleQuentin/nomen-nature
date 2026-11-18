@@ -1,0 +1,87 @@
+{
+  "ci": {
+    "collect": {
+      "startServerCommand": "npx wrangler dev --ip 127.0.0.1 --port 8789",
+      "startServerReadyPattern": "Ready on",
+      "startServerReadyTimeout": 120000,
+      "url": [
+        "http://127.0.0.1:8789/fr",
+        "http://127.0.0.1:8789/en"
+      ],
+      "numberOfRuns": 3,
+      "settings": {
+        "chromeFlags": "--headless=new --no-sandbox"
+      }
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": [
+          "error",
+          {
+            "minScore": 0.9,
+            "aggregationMethod": "median-run"
+          }
+        ],
+        "categories:accessibility": [
+          "error",
+          {
+            "minScore": 1
+          }
+        ],
+        "categories:best-practices": [
+          "error",
+          {
+            "minScore": 0.95
+          }
+        ],
+        "categories:seo": [
+          "error",
+          {
+            "minScore": 0.9
+          }
+        ],
+        "largest-contentful-paint": [
+          "error",
+          {
+            "maxNumericValue": 2500,
+            "aggregationMethod": "median-run"
+          }
+        ],
+        "cumulative-layout-shift": [
+          "error",
+          {
+            "maxNumericValue": 0.1
+          }
+        ],
+        "resource-summary:total:size": [
+          "error",
+          {
+            "maxNumericValue": 204800
+          }
+        ],
+        "resource-summary:script:size": [
+          "error",
+          {
+            "maxNumericValue": 51200
+          }
+        ],
+        "resource-summary:font:size": [
+          "error",
+          {
+            "maxNumericValue": 102400
+          }
+        ],
+        "resource-summary:third-party:count": [
+          "error",
+          {
+            "maxNumericValue": 0
+          }
+        ]
+      }
+    },
+    "upload": {
+      "target": "filesystem",
+      "outputDir": ".lighthouseci/rapports"
+    }
+  }
+}

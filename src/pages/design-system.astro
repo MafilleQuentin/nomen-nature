@@ -1,0 +1,279 @@
+---
+// Page de contrôle du design system (QUE-12) : toutes les variables et tous les styles de
+// texte, à comparer avec la page Fondations du Figma. Non indexée par les moteurs de recherche.
+import Bouton from "../components/Bouton.astro";
+import BoutonIcone from "../components/BoutonIcone.astro";
+import Icone, { type NomIcone } from "../components/Icone.astro";
+import Base from "../layouts/Base.astro";
+
+const couleurs: Record<string, string[]> = {
+  "Fonds": ["bg-page", "bg-sunken", "bg-surface", "bg-surface-raised", "bg-land", "bg-accent", "bg-inverse"],
+  "Textes": ["text-primary", "text-secondary", "text-accent", "text-highlight", "text-on-accent", "text-on-inverse"],
+  "Icônes": ["icon-primary", "icon-on-accent", "icon-highlight"],
+  "Bordures": ["border-subtle", "border-strong", "border-inverse", "border-accent"],
+  "Carte": ["map-contour", "map-contour-index", "map-coast", "map-background-line"],
+  "Statuts UICN": ["status-cr", "status-en", "status-vu", "status-nt", "status-lc"],
+};
+
+// Valeurs reprises de variables.css, pour calculer les contrastes (WCAG : 4,5:1 minimum pour le texte).
+const hex: Record<string, string> = {
+  "bg-page": "#0f2a21", "bg-sunken": "#0b2119", "bg-surface": "#163a2e", "bg-accent": "#f2b85b",
+  "bg-inverse": "#f1ebdd", "text-primary": "#f1ebdd", "text-secondary": "#b9c7bc", "text-accent": "#f2b85b",
+  "text-highlight": "#7fc8a0", "text-on-accent": "#0f2a21", "text-on-inverse": "#0f2a21",
+  "status-cr": "#d81e05", "status-en": "#fc7f3f", "status-vu": "#f9e814", "status-nt": "#cce226", "status-lc": "#60c659",
+  "status-on-cr": "#ffffff", "status-on-en": "#1a1a1a", "status-on-vu": "#1a1a1a", "status-on-nt": "#1a1a1a", "status-on-lc": "#1a1a1a",
+};
+
+function luminance(couleur: string): number {
+  const [r, g, b] = [1, 3, 5].map((i) => {
+    const c = parseInt(couleur.slice(i, i + 2), 16) / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  }) as [number, number, number];
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function contraste(a: string, b: string): number {
+  const [l1, l2] = [luminance(hex[a]!), luminance(hex[b]!)].sort((x, y) => y - x) as [number, number];
+  return (l1 + 0.05) / (l2 + 0.05);
+}
+
+const paires: [string, string][] = [
+  ["text-primary", "bg-page"], ["text-secondary", "bg-page"], ["text-accent", "bg-page"], ["text-highlight", "bg-page"],
+  ["text-primary", "bg-surface"], ["text-secondary", "bg-surface"], ["text-secondary", "bg-sunken"],
+  ["text-on-accent", "bg-accent"], ["text-on-inverse", "bg-inverse"],
+  ["status-on-cr", "status-cr"], ["status-on-en", "status-en"], ["status-on-vu", "status-vu"],
+  ["status-on-nt", "status-nt"], ["status-on-lc", "status-lc"],
+];
+const contrastes = paires.map(([texte, fond]) => ({ texte, fond, ratio: contraste(texte, fond) }));
+
+const styles = [
+  ["display-grand", "Display/Grand · Space Grotesk Bold 58"],
+  ["display-compact", "Display/Compact · Space Grotesk Bold 34"],
+  ["titre-section", "Titre/Section · Space Grotesk Bold 34"],
+  ["titre-section-compact", "Titre/Section compact · Space Grotesk Bold 22"],
+  ["titre-carte", "Titre/Carte · Space Grotesk Bold 18"],
+  ["logo", "Logo · Space Grotesk Bold 26"],
+  ["texte-grand", "Texte/Grand · IBM Plex Sans 19"],
+  ["texte-normal", "Texte/Normal · IBM Plex Sans 16"],
+  ["texte-petit", "Texte/Petit · IBM Plex Sans 14"],
+  ["texte-latin", "Texte/Latin · IBM Plex Sans Italic 14"],
+  ["libelle-normal", "Libellé/Normal · IBM Plex Sans SemiBold 16"],
+  ["libelle-petit", "Libellé/Petit · IBM Plex Sans SemiBold 14"],
+  ["mono-navigation", "Mono/Navigation · IBM Plex Mono SemiBold 15"],
+  ["mono-surtitre", "Mono/Surtitre · IBM Plex Mono 14"],
+  ["mono-legende", "Mono/Légende · IBM Plex Mono 12"],
+  ["mono-badge", "Mono/Badge · IBM Plex Mono SemiBold 12"],
+] as const;
+const exemple = (style: string) =>
+  style === "texte-latin" ? "Quercus robur" : style.startsWith("mono") ? "46.20°N · 6.14°E — Genève" : "Apprends à nommer le vivant";
+
+const espacements = [1, 2, 3, 4, 5, 6, 8, 10, 14, 16, 20];
+const rayons = ["sm", "md", "lg", "xl", "2xl", "full"];
+const icones: NomIcone[] = ["recherche", "position", "appareil-photo", "feuille", "plus", "moins", "menu", "globe", "fleche-droite", "fermer"];
+---
+
+<Base titre="Design system — Nomen Nature" description="Page de contrôle des variables et des styles de texte." langue="fr" indexer={false}>
+  <div class="page">
+    <p class="t-mono-surtitre surtitre">Contrôle · QUE-12</p>
+    <h1 class="t-display-grand">Nomen Nature — Fondations</h1>
+    <p class="t-texte-normal secondaire">
+      Variables reprises de la page Fondations du Figma « Nomen ». À comparer côte à côte.
+    </p>
+
+    <section>
+      <h2 class="t-titre-section">Couleurs (rôles)</h2>
+      {Object.entries(couleurs).map(([groupe, noms]) => (
+        <div class="groupe">
+          <h3 class="t-libelle-petit secondaire">{groupe}</h3>
+          <ul class="nuancier">
+            {noms.map((nom) => (
+              <li>
+                <span class="pastille" style={`background: var(--color-${nom})`}></span>
+                <code class="t-mono-legende">--color-{nom}</code>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </section>
+
+    <section>
+      <h2 class="t-titre-section">Contrastes</h2>
+      <p class="t-texte-petit secondaire">Minimum WCAG AA pour du texte courant : 4,5:1.</p>
+      <table class="t-texte-petit">
+        <thead><tr><th>Texte</th><th>Fond</th><th>Aperçu</th><th>Rapport</th><th>AA</th></tr></thead>
+        <tbody>
+          {contrastes.map(({ texte, fond, ratio }) => (
+            <tr>
+              <td><code>{texte}</code></td>
+              <td><code>{fond}</code></td>
+              <td><span class="apercu t-libelle-petit" style={`color: var(--color-${texte}); background: var(--color-${fond})`}>Aa Nomen</span></td>
+              <td>{ratio.toFixed(1).replace(".", ",")}:1</td>
+              <td>{ratio >= 4.5 ? "✅" : "❌"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2 class="t-titre-section">Typographies</h2>
+      <ul class="styles">
+        {styles.map(([style, legende]) => (
+          <li>
+            <span class="t-mono-legende secondaire">{legende}</span>
+            <span class={`t-${style}`}>{exemple(style)}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="t-titre-section">Composants</h2>
+      <h3 class="t-libelle-petit secondaire">Icônes</h3>
+      <ul class="icones">
+        {icones.map((nom) => <li title={nom}><Icone nom={nom} /></li>)}
+      </ul>
+      <h3 class="t-libelle-petit secondaire">Boutons</h3>
+      <div class="boutons">
+        <Bouton icone="position">Autour de moi</Bouton>
+        <Bouton taille="compact" icone="position">Autour de moi</Bouton>
+        <Bouton variante="secondaire" icone="position">Autour de moi</Bouton>
+        <Bouton variante="secondaire" taille="compact" icone="position">Autour de moi</Bouton>
+        <BoutonIcone icone="plus" libelle="Zoomer" />
+      </div>
+    </section>
+
+    <section>
+      <h2 class="t-titre-section">Espacements et rayons</h2>
+      <ul class="espacements">
+        {espacements.map((n) => (
+          <li>
+            <span class="carre" style={`width: var(--space-${n}); height: var(--space-${n})`}></span>
+            <code class="t-mono-legende">{n} · {n * 4}</code>
+          </li>
+        ))}
+      </ul>
+      <ul class="rayons">
+        {rayons.map((r) => (
+          <li>
+            <span class="arrondi" style={`border-radius: var(--radius-${r})`}></span>
+            <code class="t-mono-legende">{r}</code>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-16) var(--space-4);
+  }
+  section {
+    margin-top: var(--space-14);
+  }
+  .surtitre {
+    color: var(--color-text-highlight);
+    margin: 0 0 var(--space-3);
+  }
+  h1 {
+    margin: 0 0 var(--space-3);
+  }
+  .secondaire {
+    color: var(--color-text-secondary);
+  }
+  .groupe {
+    margin-top: var(--space-6);
+  }
+  .nuancier,
+  .styles,
+  .espacements,
+  .rayons {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nuancier {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+  .nuancier li {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .pastille {
+    width: 132px;
+    height: 64px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border-subtle);
+  }
+  table {
+    border-collapse: collapse;
+    margin-top: var(--space-4);
+  }
+  th,
+  td {
+    text-align: left;
+    padding: var(--space-2) var(--space-4) var(--space-2) 0;
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+  .apercu {
+    display: inline-block;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+  }
+  .styles li {
+    display: grid;
+    grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+    gap: var(--space-6);
+    align-items: center;
+    padding: var(--space-3) 0;
+  }
+  .espacements,
+  .rayons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-5);
+    margin-top: var(--space-6);
+  }
+  .espacements li,
+  .rayons li {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+  }
+  .icones,
+  .boutons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-6);
+    margin: var(--space-4) 0 var(--space-8);
+    padding: 0;
+    list-style: none;
+    color: var(--color-icon-primary);
+  }
+  .carre {
+    background: var(--color-text-highlight);
+  }
+  .arrondi {
+    width: 72px;
+    height: 72px;
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-strong);
+  }
+  @media (max-width: 640px) {
+    .styles li {
+      grid-template-columns: 1fr;
+      gap: var(--space-1);
+    }
+    .t-display-grand {
+      font-size: 34px;
+    }
+  }
+</style>

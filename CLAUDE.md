@@ -26,8 +26,9 @@ Site web non commercial d'exploration de la biodiversité mondiale. Brief : `doc
 - Branches :
   - `develop` : branche d'intégration, toujours dans un état sain.
   - Une branche de travail par sujet, créée depuis `develop` : `feat/…`, `fix/…`, `docs/…`, `chore/…` (noms en minuscules, sans accents).
-  - Une branche de travail terminée est fusionnée dans `develop` avec `git merge --no-ff`, puis supprimée (en local et sur GitHub).
-  - Release : depuis `develop`, branche `release/vX.Y.Z` (changelog, version), fusion `--no-ff` dans `main`, tag sur `main`, puis `main` refusionnée dans `develop`.
+  - `develop` et `main` sont protégées sur GitHub : on n'y pousse jamais directement. Toute fusion passe par une **pull request**, possible seulement quand les 4 vérifications automatiques (workflow « Vérifications ») ont réussi.
+  - Une branche de travail terminée est poussée, puis fusionnée dans `develop` par pull request avec un commit de fusion (`gh pr merge --merge --delete-branch`, l'équivalent de `--no-ff`), puis supprimée en local.
+  - Release : depuis `develop`, branche `release/vX.Y.Z` (changelog, version), pull request vers `main` fusionnée avec un commit de fusion, tag sur `main`, puis pull request de `main` vers `develop`.
 - Aucun secret dans le dépôt (`.env` ignoré ; fournir un `.env.example`).
 - Mettre à jour `README.md` quand l'état du projet ou les fonctionnalités changent.
 
@@ -35,7 +36,7 @@ Site web non commercial d'exploration de la biodiversité mondiale. Brief : `doc
 
 - Numérotation SemVer. Tant que la V1 n'est pas publiée : `0.x.y`.
 - Toute évolution notable va d'abord dans la section `[Non publié]` de `CHANGELOG.md`.
-- Pour publier une version (sur la branche `release/vX.Y.Z`) : déplacer `[Non publié]` sous un nouveau numéro daté, mettre à jour les liens de comparaison, committer, fusionner dans `main`, créer le tag `vX.Y.Z` sur `main` et une release GitHub (`gh release create`) dont le texte reprend la section du changelog.
+- Pour publier une version (sur la branche `release/vX.Y.Z`) : déplacer `[Non publié]` sous un nouveau numéro daté, mettre à jour les liens de comparaison, committer, fusionner dans `main` par pull request, créer le tag `vX.Y.Z` sur `main` et une release GitHub (`gh release create`) dont le texte reprend la section du changelog.
 - Proposer une release à la fin de chaque étape validée ou de chaque lot livré ; ne pas publier sans l'accord de l'utilisateur.
 
 ## Qualité et mise en ligne
