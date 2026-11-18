@@ -35,6 +35,8 @@
 | **Clé phonétique** | Version simplifiée d'un nom qui ne garde que son « son », selon les règles de sa langue : « boulot » et « bouleau » donnent tous deux `bUlo`. Elle est calculée pour chaque nom à l'import, et pour le texte tapé au moment de la recherche. |
 | **Trigramme** | Groupe de 3 lettres qui se suivent (« chêne » → `che`, `hen`, `ene`). Un index par trigrammes retrouve un mot à partir de n'importe quel morceau. |
 | **Intégration continue (GitHub Actions)** | Vérifications lancées automatiquement à chaque envoi de code : tests, accessibilité, vitesse, liens cassés. |
+| **Playwright** | Outil qui pilote un vrai navigateur pour tester le site comme un visiteur : cliquer, taper au clavier, vérifier ce qui s'affiche. |
+| **axe** | Outil qui vérifie automatiquement l'accessibilité d'une page (règles WCAG) ; nous le lançons depuis Playwright. |
 | **Lighthouse** | Outil de Google qui mesure la vitesse, l'accessibilité et le référencement d'une page. |
 | **Sentry** | Service qui signale les erreurs du site en ligne. |
 | **Catalogue of Life (COL) / COL XR** | Liste mondiale de référence des noms d'espèces. La version « XR » (étendue) est complétée par des milliers d'autres listes ; c'est celle qu'utilise GBIF depuis 2026. |

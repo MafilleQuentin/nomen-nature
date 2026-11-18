@@ -81,6 +81,7 @@ Contrastes vérifiés : texte principal 12,9:1, secondaire 8,7:1, texte sur ambr
   - `Logo` (provisoire), `Bouton` (Principal ou Secondaire, Grand ou Compact), `BoutonIcone` (44 px, libellé obligatoire) ;
   - `EnTete`, avec le menu sur téléphone : un panneau plein écran (`<dialog>`) qui se ferme avec Échap et rend le focus au bouton ;
   - `PiedDePage`. Le passage de la version téléphone à la version ordinateur se fait à **900 px**.
+- **Accessibilité** : chaque lien et bouton fait au moins 24 × 24 px (44 px pour les boutons sur téléphone), et un lien qui affiche « FR » ou « EN » garde ce texte dans son nom pour les lecteurs d'écran. Les tests `tests/e2e/accessibilite.spec.ts` (Playwright + axe) le vérifient sur ordinateur et sur téléphone.
 - **Page de contrôle** : `/design-system` (non indexée). Elle montre toutes les couleurs, les contrastes calculés (14 paires, toutes AA), les 16 styles de texte, les espacements et les rayons.
 
 ## Pas encore fait

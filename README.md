@@ -54,6 +54,10 @@ Le site s'ouvre sur <http://localhost:4321>. Le premier démarrage prend une vin
 | `npm run build` | Construit le site dans `dist/` |
 | `npm run preview` | Construit puis sert le site comme en ligne (Wrangler) |
 | `npm run check` | Vérifie les types (TypeScript, fichiers Astro) |
+| `npm run test:e2e` | Tests dans un vrai navigateur, dont l'audit d'accessibilité axe, sur le site compilé |
+| `npm test` | Tous les tests (types, puis navigateur) |
+
+Avant le premier `npm run test:e2e`, installer le navigateur de test : `npx playwright install chromium`.
 
 Les secrets ne sont jamais dans le dépôt : copier `.env.example` en `.dev.vars` pour le développement local.
 
