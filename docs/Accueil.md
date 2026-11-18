@@ -33,7 +33,7 @@ Bienvenue dans le coffre du projet. Ce coffre est tenu à jour par Claude à cha
 ## Liens utiles
 
 - Dépôt GitHub : [MafilleQuentin/nomen-nature](https://github.com/MafilleQuentin/nomen-nature)
-- Suivi des tâches : Linear
+- Suivi des tâches : projet Linear [Nomen Nature — V1](https://linear.app/quentin-mafille/project/nomen-nature-v1-b9e8eb511ed2)
 - Parcours utilisateurs : [FigJam « Nomen »](https://www.figma.com/board/PLlFoRDj5ko2AJftKq78p1/Nomen)
 - Maquettes : [Figma « Nomen »](https://www.figma.com/design/lbR59tuBWRe62sapV6RSum/Nomen)
 - Domaine : `nomenature.org` *(réservé chez Cloudflare, pas encore de site)*

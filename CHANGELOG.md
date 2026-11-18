@@ -5,6 +5,9 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ## [Non publié]
 
+### Ajouté
+- Étape 5 découpée en 10 lots de développement (feuille de route et projet Linear « Nomen Nature — V1 »).
+
 ## [0.4.0] - 2026-11-18
 
 Stack technique choisie : Astro + Cloudflare. Prochaine étape : le développement de la V1, lot par lot.
