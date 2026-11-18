@@ -1,7 +1,9 @@
 ---
-// Gabarit de base de toutes les pages : langue, métadonnées, polices et styles communs.
-// L'en-tête, le pied de page et le menu viendront avec QUE-13.
+// Gabarit de base de toutes les pages : langue, métadonnées, polices, styles communs,
+// lien d'évitement, en-tête, contenu principal et pied de page.
 import { Font } from "astro:assets";
+import EnTete from "../components/EnTete.astro";
+import PiedDePage from "../components/PiedDePage.astro";
 import "../styles/global.css";
 
 interface Props {
@@ -29,6 +31,41 @@ const { titre, description, langue = "fr", indexer = true } = Astro.props;
     <Font cssVariable="--font-mono" />
   </head>
   <body>
-    <slot />
+    <a class="evitement t-libelle-normal" href="#contenu">Aller au contenu</a>
+    <EnTete />
+    <main id="contenu" tabindex="-1">
+      <slot />
+    </main>
+    <PiedDePage />
   </body>
 </html>
+
+<style>
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  main {
+    flex: 1;
+  }
+  main:focus {
+    outline: none;
+  }
+  /* Lien d'évitement : invisible jusqu'à ce qu'on y arrive au clavier. */
+  .evitement {
+    position: absolute;
+    top: var(--space-2);
+    left: var(--space-2);
+    z-index: 10;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-accent);
+    color: var(--color-text-on-accent);
+    transform: translateY(-200%);
+  }
+  .evitement:focus {
+    transform: none;
+  }
+</style>

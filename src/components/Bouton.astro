@@ -1,0 +1,65 @@
+---
+// Bouton (Figma « Bouton », 75:27) : Principal (fond ambre, une seule fois par écran) ou
+// Secondaire (contour crème), en taille Grand ou Compact. Lien si `href`, sinon <button>.
+import Icone, { type NomIcone } from "./Icone.astro";
+
+interface Props {
+  variante?: "principal" | "secondaire";
+  taille?: "grand" | "compact";
+  icone?: NomIcone;
+  href?: string;
+  type?: "button" | "submit";
+  class?: string;
+  [attribut: string]: unknown;
+}
+
+const { variante = "principal", taille = "grand", icone, href, type = "button", class: classe, ...reste } = Astro.props;
+const Balise = href ? "a" : "button";
+const tailleIcone = taille === "grand" ? 20 : 18;
+---
+
+<Balise
+  class:list={["bouton", `bouton--${variante}`, `bouton--${taille}`, taille === "grand" ? "t-libelle-normal" : "t-libelle-petit", classe]}
+  href={href}
+  type={href ? undefined : type}
+  {...reste}
+>
+  {icone && <Icone nom={icone} taille={tailleIcone} />}
+  <slot />
+</Balise>
+
+<style>
+  .bouton {
+    display: inline-flex;
+    align-items: center;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+    border: 1.5px solid transparent;
+  }
+  .bouton--grand {
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-6);
+    min-height: 44px;
+  }
+  .bouton--compact {
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+  }
+  .bouton--principal {
+    background: var(--color-bg-accent);
+    color: var(--color-text-on-accent);
+  }
+  .bouton--secondaire {
+    background: transparent;
+    border-color: var(--color-border-inverse);
+    color: var(--color-text-primary);
+  }
+  .bouton--principal:hover {
+    filter: brightness(1.06);
+  }
+  .bouton--secondaire:hover {
+    background: var(--color-bg-surface);
+  }
+</style>

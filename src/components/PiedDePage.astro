@@ -1,0 +1,109 @@
+---
+// Pied de page (Figma « Pied de page », 93:99), présent sur toutes les pages :
+// mention « gratuit et sans publicité », sources des données, pages annexes et langue.
+import { liens } from "../lib/liens";
+
+// Deux groupes, pour que la coupure sur téléphone tombe au bon endroit (comme dans Figma).
+const groupe1 = [
+  { libelle: "À propos", href: liens.aPropos },
+  { libelle: "Sources et crédits", href: liens.sources },
+];
+const groupe2 = [
+  { libelle: "Confidentialité", href: liens.confidentialite },
+  { libelle: "Mentions légales", href: liens.mentionsLegales },
+];
+---
+
+<footer class="pied t-mono-legende">
+  <p class="pied__mention">
+    <span class="ordi">Nomen Nature · gratuit et sans publicité · données GBIF, Wikipédia, UICN, Pl@ntNet</span>
+    <span class="tel">Gratuit et sans publicité</span>
+  </p>
+  <nav class="pied__liens" aria-label="Pages annexes">
+    <ul>
+      {groupe1.map(({ libelle, href }) => <li><a href={href}>{libelle}</a></li>)}
+    </ul>
+    <ul>
+      {groupe2.map(({ libelle, href }) => <li><a href={href}>{libelle}</a></li>)}
+      <li>
+        <span class="langues">
+          <a href="/" aria-current="true" lang="fr" aria-label="Français">FR</a>
+          <span aria-hidden="true">/</span>
+          <a href="/en/" hreflang="en" lang="en" aria-label="English">EN</a>
+        </span>
+      </li>
+    </ul>
+  </nav>
+</footer>
+
+<style>
+  .pied {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-5) var(--space-5) var(--space-6);
+    border-top: 1px solid var(--color-border-subtle);
+    text-align: center;
+  }
+  .pied p {
+    margin: 0;
+  }
+  .pied__mention {
+    color: var(--color-text-secondary);
+  }
+  .ordi {
+    display: none;
+  }
+  .pied__liens {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .pied ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .pied li + li::before {
+    content: "·";
+    margin: 0 0.6ch;
+  }
+  .pied a {
+    color: var(--color-text-primary);
+    text-decoration: none;
+  }
+  .pied a:hover {
+    color: var(--color-text-accent);
+    text-decoration: underline;
+  }
+  .langues {
+    display: inline-flex;
+    gap: 0.6ch;
+  }
+
+  @media (min-width: 900px) {
+    .pied {
+      flex-direction: row;
+      justify-content: space-between;
+      padding: var(--space-6) var(--space-20);
+      text-align: left;
+    }
+    .ordi {
+      display: inline;
+    }
+    .tel {
+      display: none;
+    }
+    .pied__liens {
+      flex-direction: row;
+    }
+    .pied ul + ul::before {
+      content: "·";
+      margin: 0 0.6ch;
+    }
+  }
+</style>
