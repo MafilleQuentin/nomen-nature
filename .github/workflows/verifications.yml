@@ -1,0 +1,116 @@
+# Vérifications automatiques à chaque envoi sur GitHub (toutes les branches) :
+# types, tests unitaires, tests dans un navigateur avec audit d'accessibilité, vitesse
+# (Lighthouse) et liens cassés. Une vérification en échec bloque la fusion dans develop
+# et main (règles de protection des branches).
+#
+# Les actions sont épinglées par empreinte de commit (et non par étiquette), pour qu'une
+# étiquette déplacée ne puisse pas changer le code exécuté ici.
+
+name: Vérifications
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verifications-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ASTRO_TELEMETRY_DISABLED: "1"
+  WRANGLER_SEND_METRICS: "false"
+
+jobs:
+  types-unitaires:
+    name: Types et tests unitaires
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - name: Types (TypeScript, fichiers Astro)
+        run: npm run check
+      - name: Tests unitaires (Vitest)
+        run: npm run test:unit
+      - name: Construction du site
+        run: npm run build
+
+  navigateur:
+    name: Navigateur et accessibilité (Playwright + axe)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - name: Navigateur de test
+        run: npx playwright install --with-deps chromium
+      - name: Tests de bout en bout (construit puis sert le site avec Wrangler)
+        run: npm run test:e2e
+      - name: Rapport en cas d'échec
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: rapport-playwright
+          path: test-results/
+          retention-days: 14
+
+  vitesse:
+    name: Vitesse et qualité (Lighthouse)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # Lighthouse CI n'est pas dans package.json : il ajoute 300 paquets au projet.
+      # Version épinglée ; les rapports restent sur GitHub (pas d'envoi chez un tiers).
+      - name: Lighthouse (3 mesures par page, budget de poids)
+        run: npx --yes @lhci/cli@0.16.0 autorun
+      - name: Rapports Lighthouse
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: rapports-lighthouse
+          path: .lighthouseci/
+          retention-days: 14
+
+  liens:
+    name: Liens cassés (site et documentation)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # Liens internes seulement : les sites externes sont vérifiés une fois par semaine
+      # (workflow « Liens externes »), pour ne pas bloquer un envoi quand un site tiers
+      # est momentanément indisponible.
+      - name: lychee
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: >-
+            --config lychee.toml
+            --offline
+            --root-dir ${{ github.workspace }}/dist/client
+            './dist/client/**/*.html'
+            './**/*.md'
+          fail: true
