@@ -39,6 +39,9 @@
 | **Intégration continue (GitHub Actions)** | Vérifications lancées automatiquement à chaque envoi de code : tests, accessibilité, vitesse, liens cassés. |
 | **Playwright** | Outil qui pilote un vrai navigateur pour tester le site comme un visiteur : cliquer, taper au clavier, vérifier ce qui s'affiche. |
 | **axe** | Outil qui vérifie automatiquement l'accessibilité d'une page (règles WCAG) ; nous le lançons depuis Playwright. |
+| **Vitest** | Outil de tests unitaires : il vérifie de petites fonctions isolées (par ex. le choix de la langue d'après le navigateur), sans navigateur, en quelques millisecondes. |
+| **lychee** | Outil qui vérifie que les liens d'un site ou d'une documentation ne sont pas cassés. |
+| **Budget de poids** | Poids maximal autorisé pour une page (fichiers, scripts, polices). La vérification Lighthouse échoue s'il est dépassé. |
 | **Lighthouse** | Outil de Google qui mesure la vitesse, l'accessibilité et le référencement d'une page. |
 | **Sentry** | Service qui signale les erreurs du site en ligne. |
 | **Catalogue of Life (COL) / COL XR** | Liste mondiale de référence des noms d'espèces. La version « XR » (étendue) est complétée par des milliers d'autres listes ; c'est celle qu'utilise GBIF depuis 2026. |

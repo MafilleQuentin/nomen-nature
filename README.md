@@ -56,10 +56,24 @@ Les textes de l'interface sont dans `src/i18n/textes.ts` (français et anglais) 
 | `npm run build` | Construit le site dans `dist/` |
 | `npm run preview` | Construit puis sert le site comme en ligne (Wrangler) |
 | `npm run check` | Vérifie les types (TypeScript, fichiers Astro) |
+| `npm run test:unit` | Tests unitaires (Vitest), sans navigateur |
 | `npm run test:e2e` | Tests dans un vrai navigateur, dont l'audit d'accessibilité axe, sur le site compilé |
-| `npm test` | Tous les tests (types, puis navigateur) |
+| `npm test` | Tous les tests (types, unitaires, puis navigateur) |
 
 Avant le premier `npm run test:e2e`, installer le navigateur de test : `npx playwright install chromium`.
+
+## Vérifications automatiques
+
+À chaque envoi sur GitHub, le workflow [Vérifications](.github/workflows/verifications.yml) lance quatre vérifications en parallèle :
+
+| Vérification | Outil | Échoue si… |
+|---|---|---|
+| Types et tests unitaires | `astro check`, Vitest | une erreur de type ou un test unitaire échoue, ou la construction échoue |
+| Navigateur et accessibilité | Playwright + axe, ordinateur et téléphone | un parcours échoue ou axe trouve une violation WCAG 2.2 AA |
+| Vitesse et qualité | Lighthouse CI ([réglages](lighthouserc.json)) | un score passe sous 90 (100 pour l'accessibilité), ou une page dépasse son budget : 200 Ko en tout, 50 Ko de scripts, 100 Ko de polices, aucune requête vers un tiers |
+| Liens cassés | lychee ([réglages](lychee.toml)) | un lien interne du site ou de la documentation est cassé |
+
+Les liens vers les sites externes sont vérifiés chaque lundi par le workflow [Liens externes](.github/workflows/liens-externes.yml).
 
 Les secrets ne sont jamais dans le dépôt : copier `.env.example` en `.dev.vars` pour le développement local.
 
