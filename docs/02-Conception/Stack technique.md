@@ -23,9 +23,9 @@ Un site **Astro** hébergé gratuitement chez **Cloudflare**, qui gère déjà l
 
 | Brique | Choix | Pourquoi |
 |---|---|---|
-| Site | **Astro 6** + **TypeScript** | Fait pour les sites de contenu. Pages générées à la demande puis mises en cache, bilingue `/fr/` et `/en/`, plan du site. |
+| Site | **Astro 7** + **TypeScript** *(Astro 6 au moment du choix, remplacé par la version 7 au démarrage du lot 2)* | Fait pour les sites de contenu. Pages générées à la demande puis mises en cache, bilingue `/fr/` et `/en/`, plan du site. |
 | Parties interactives | **Svelte** (îlots Astro) | Très peu de code envoyé au navigateur, code lisible. |
-| Hébergement | **Cloudflare Workers**, offre gratuite | Même compte que le domaine, HTTPS automatique, cache dans le monde entier, pris en charge nativement par Astro 6. |
+| Hébergement | **Cloudflare Workers**, offre gratuite | Même compte que le domaine, HTTPS automatique, cache dans le monde entier, pris en charge nativement par Astro. |
 | Recherche | **Index en fichiers statiques** *(modifié le 18.11.2026, voir plus bas)* | Noms FR/EN/latin et leur clé phonétique, découpés en petits fichiers publiés avec le site ; le navigateur charge seulement ceux qui correspondent au début du texte tapé, puis trie. |
 | Base de données | **Cloudflare D1** (SQLite) — *à réévaluer au lot 3* | Listes par pays et par continent triées par « bien documentées », statuts UICN. En gratuit, une base est limitée à 500 Mo et à 100 000 écritures par jour : le volume des listes est à vérifier. |
 | Remplissage de la base | Script d'import mensuel (GitHub Actions) | Depuis GBIF, Catalogue of Life et Wikidata. |

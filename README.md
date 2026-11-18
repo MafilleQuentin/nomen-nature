@@ -34,6 +34,29 @@ Détail : [feuille de route](docs/Feuille%20de%20route.md).
 - ⚠️ **Espèces menacées** mises en avant dans chaque pays.
 - 🏫 **Utilisable en classe** : pas de compte, pas de publicité, pas de pistage. Accessibilité visée : WCAG AA.
 
+## Développer en local
+
+Il faut **Node 22.23.4 ou plus** (Node 24 LTS conseillé, voir `.node-version`).
+
+```bash
+npm install
+```
+
+```bash
+npm run dev
+```
+
+Le site s'ouvre sur <http://localhost:4321>. Le premier démarrage prend une vingtaine de secondes.
+
+| Commande | Rôle |
+|---|---|
+| `npm run dev` | Serveur de développement, avec le moteur de Cloudflare (workerd) |
+| `npm run build` | Construit le site dans `dist/` |
+| `npm run preview` | Construit puis sert le site comme en ligne (Wrangler) |
+| `npm run check` | Vérifie les types (TypeScript, fichiers Astro) |
+
+Les secrets ne sont jamais dans le dépôt : copier `.env.example` en `.dev.vars` pour le développement local.
+
 ## Documentation
 
 Toute la documentation du projet se trouve dans [`docs/`](docs/Accueil.md). C'est aussi un **coffre Obsidian** : ouvre le dossier `docs` comme coffre dans Obsidian pour naviguer dans les notes.

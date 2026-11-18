@@ -5,6 +5,12 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ## [Non publié]
 
+### Ajouté
+- Socle du site : projet Astro 7 + TypeScript + Svelte, adaptateur Cloudflare, configuration Wrangler, `.env.example` (QUE-11).
+
+### Modifié
+- Stack technique : Astro 7 au lieu d'Astro 6 ; Node 22.23.4 ou plus.
+
 ## [0.5.0] - 2026-11-18
 
 Lot 1 terminé : essai de la recherche. La recherche tolérante aux fautes fonctionne (« boulot » trouve le bouleau) et sera servie par un index en fichiers statiques, D1 gratuit étant trop petit. Prochain lot : le socle du site.
