@@ -41,3 +41,8 @@ dist/
 .astro/
 .wrangler/
 .dev.vars
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/

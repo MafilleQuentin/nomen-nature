@@ -27,9 +27,9 @@ const groupe2 = [
       {groupe2.map(({ libelle, href }) => <li><a href={href}>{libelle}</a></li>)}
       <li>
         <span class="langues">
-          <a href="/" aria-current="true" lang="fr" aria-label="Français">FR</a>
+          <a href="/" aria-current="true" lang="fr" aria-label="FR, Français">FR</a>
           <span aria-hidden="true">/</span>
-          <a href="/en/" hreflang="en" lang="en" aria-label="English">EN</a>
+          <a href="/en/" hreflang="en" lang="en" aria-label="EN, English">EN</a>
         </span>
       </li>
     </ul>
@@ -42,7 +42,8 @@ const groupe2 = [
     flex-direction: column-reverse;
     align-items: center;
     gap: var(--space-2);
-    padding: var(--space-5) var(--space-5) var(--space-6);
+    /* 4 px de moins que le Figma en haut et en bas : les liens font 24 px de haut (cibles WCAG 2.5.8). */
+    padding: calc(var(--space-5) - 4px) var(--space-5) calc(var(--space-6) - 4px);
     border-top: 1px solid var(--color-border-subtle);
     text-align: center;
   }
@@ -63,16 +64,27 @@ const groupe2 = [
   .pied ul {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     justify-content: center;
     margin: 0;
     padding: 0;
     list-style: none;
   }
+  .pied li {
+    display: flex;
+    align-items: center;
+  }
   .pied li + li::before {
     content: "·";
     margin: 0 0.6ch;
   }
+  /* Cibles d'au moins 24 × 24 px (WCAG 2.5.8), sans changer la taille du texte. */
   .pied a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    min-height: 24px;
     color: var(--color-text-primary);
     text-decoration: none;
   }
@@ -80,16 +92,17 @@ const groupe2 = [
     color: var(--color-text-accent);
     text-decoration: underline;
   }
+  /* Pas d'écart : les liens FR et EN font déjà 24 px de large. */
   .langues {
     display: inline-flex;
-    gap: 0.6ch;
+    align-items: center;
   }
 
   @media (min-width: 900px) {
     .pied {
       flex-direction: row;
       justify-content: space-between;
-      padding: var(--space-6) var(--space-20);
+      padding: calc(var(--space-6) - 4px) var(--space-20);
       text-align: left;
     }
     .ordi {
@@ -100,6 +113,7 @@ const groupe2 = [
     }
     .pied__liens {
       flex-direction: row;
+      align-items: center;
     }
     .pied ul + ul::before {
       content: "·";
