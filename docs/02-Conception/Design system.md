@@ -76,6 +76,11 @@ Contrastes vérifiés : texte principal 12,9:1, secondaire 8,7:1, texte sur ambr
 - **Variables** : `src/styles/variables.css`. Elles portent le même nom que dans Figma (`color/bg/page` → `--color-bg-page`, `space/4` → `--space-4`, `radius/lg` → `--radius-lg`).
 - **Styles de texte** : une classe par style Figma (`Display/Grand` → `.t-display-grand`, `Mono/Surtitre` → `.t-mono-surtitre`…). L'espacement des lettres, donné en % dans Figma, est converti en `em`.
 - **Polices** : Space Grotesk (700), IBM Plex Sans (400, 600, italique 400) et IBM Plex Mono (400, 600). Elles sont téléchargées depuis Fontsource à la construction et **servies par notre site** : aucun appel à un tiers pendant la visite. Familles : `--font-titre`, `--font-texte`, `--font-mono`. Ce sont 14 fichiers WOFF2 (272 Ko en tout), découpés en latin et latin étendu, que le navigateur ne charge que s'il en a besoin. Des polices de secours ajustées évitent que la page saute pendant le chargement.
+- **Composants** (`src/components/`), repris du Figma avec ses icônes téléchargées (`src/assets/icones/`) :
+  - `Icone` : les 10 icônes, utilisées comme masques, pour qu'elles prennent la couleur du texte (« à surcharger sur fond ambre ») ;
+  - `Logo` (provisoire), `Bouton` (Principal ou Secondaire, Grand ou Compact), `BoutonIcone` (44 px, libellé obligatoire) ;
+  - `EnTete`, avec le menu sur téléphone : un panneau plein écran (`<dialog>`) qui se ferme avec Échap et rend le focus au bouton ;
+  - `PiedDePage`. Le passage de la version téléphone à la version ordinateur se fait à **900 px**.
 - **Page de contrôle** : `/design-system` (non indexée). Elle montre toutes les couleurs, les contrastes calculés (14 paires, toutes AA), les 16 styles de texte, les espacements et les rayons.
 
 ## Pas encore fait
