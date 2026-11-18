@@ -10,6 +10,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 - Essai de la recherche : scripts de téléchargement et d'extraction des noms du Catalogue of Life XR (`tools/essai-recherche/`).
 - Essai de la recherche : schéma D1 avec index par trigrammes et script de chargement dans D1 en local.
 - Essai de la recherche : normalisation et clé phonétique par langue (français, anglais, latin), avec tests.
+- Essai de la recherche : fonction de recherche avec tri et jeu de 40 recherches de test (40/40 dans les 5 premiers résultats).
 
 ### Modifié
 - Sources de données : le Catalogue of Life XR remplace la GBIF Backbone comme référentiel des noms.
