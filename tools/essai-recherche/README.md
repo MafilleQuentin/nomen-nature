@@ -92,7 +92,7 @@ Premières recherches à la main, avant la clé phonétique (QUE-7) :
 | Langue | Principales règles | Exemple |
 |---|---|---|
 | Français | eau/au → o ; lettres finales muettes (e, s, t, d, x, z, p) ; nasales ; ch, qu, ph, c/g doux ; s entre voyelles → z ; h muet ; lettres doublées | bouleau, boulot → `bUlo` ; mésange charbonnière, mezange charbonière → `mezAj Xarbonier` |
-| Anglais | dans l'esprit de Metaphone : kn/wr en début de mot, tch/ch/sh → X, ph → f, th → 0, c/g doux ; on garde la première lettre puis on retire les voyelles | birch, birtch → `brX` ; red fox, red focks → `rd fks` |
+| Anglais | dans l'esprit de Metaphone : kn/wr en début de mot, tch/ch/sh → X, ph → f, th → 0, c/g doux, e final muet ; chaque groupe de voyelles devient « a » | birch, birtch → `barX` ; red fox, red focks → `rad faks` ; oak, oke → `ak` |
 | Latin | ae/oe → e, y → i, ph → f, th → t, ch/c/q → k, lettres doublées | Quercus, Querkus → `kuerkus` ; Philadelphus, Filadelfus → `filadelfus` |
 
 **Tests** (`test_phonetique.py`) : 36 paires qui doivent donner la même clé (fautes d'accent, de son, de lettres doublées…), et 8 paires qui doivent rester différentes (bouleau ≠ boule, chêne ≠ chien, oak ≠ ash…). Tous passent.
@@ -117,3 +117,94 @@ Premiers résultats, à mesurer pour de bon dans QUE-8 :
 - Le tri reste à faire : « Querkus robur » remonte aussi « Caracas Robber Frog » par la clé anglaise.
 - 74 noms en écriture chinoise, cyrillique ou grecque sont étiquetés « anglais » dans le Catalogue : leur clé est vide. À nettoyer au lot 3.
 - La clé devra être **réécrite en TypeScript** pour le Worker, avec les mêmes tests, afin de donner exactement le même résultat à l'import et à la recherche.
+
+## Qualité de la recherche (18.11.2026)
+
+**Fonction de recherche** (`recherche.py`), dans l'ordre :
+
+1. **Candidats** : l'index par trigrammes, pour un morceau de nom (200 au plus), et la clé phonétique de chaque langue, par début de clé (100 au plus par langue).
+2. **Score de chaque nom** :
+   - identique au texte tapé : 100 ; commence par lui : 60 ; un mot commence par lui : 40 ;
+   - même son : 70 en français et en latin, 55 en anglais ; début du son : 35 ou 25 ;
+   - simple morceau : 15 ;
+   - bonus de langue (français 6, latin 4, anglais 3) ; synonyme −10 ; nom plus long que le texte tapé : −0,5 par lettre.
+3. **Par taxon**, on garde son meilleur nom, puis on ajoute :
+   - la **notoriété** : 2 points par nom courant, 30 au plus. C'est un substitut, en attendant le score « bien documentée » du lot 3 ;
+   - le **regroupement** : un genre ou une famille gagne 15 points par membre trouvé, 45 au plus. C'est ce qui fait remonter *Betula* pour « bouleau ».
+4. **Repli** : si la phrase entière ne donne rien, on cherche chaque mot d'au moins 4 lettres, avec 60 % des points.
+
+**Jeu de test** (`evaluer.py`) : 40 recherches réelles, chacune avec ses bonnes réponses. Un cas est réussi si une bonne réponse sort dans les 5 premiers résultats.
+
+```bash
+python -X utf8 evaluer.py
+```
+
+| | Recherche | Ce qu'elle teste | Rang | Premier résultat | Durée |
+|---|---|---|---|---|---|
+| ✅ | « chêne pédonculé » | fr exact | 1 | Quercus robur | 14 ms |
+| ✅ | « chene pedoncule » | fr sans accents | 1 | Quercus robur | 11 ms |
+| ✅ | « bouleau » | fr exact (genre) | 1 | Betula | 13 ms |
+| ✅ | « boulot » | fr faute de son | 1 | Betula | 7 ms |
+| ✅ | « bouleau verruqueux » | fr exact | 1 | Betula pendula | 5 ms |
+| ✅ | « bouleau verukeux » | fr faute de son | 1 | Betula pendula | 2 ms |
+| ✅ | « renard roux » | fr exact | 1 | Vulpes vulpes | 3 ms |
+| ✅ | « renar » | fr faute de son | 1 | Vulpes | 20 ms |
+| ✅ | « écureuil roux » | fr exact | 2 | Tamiasciurus hudsonicus | 5 ms |
+| ✅ | « ecureuil » | fr sans accents | 1 | Sciuridae | 8 ms |
+| ✅ | « mésange charbonnière » | fr exact | 1 | Parus major | 13 ms |
+| ✅ | « mezange charboniere » | fr faute de son | 1 | Parus major | 5 ms |
+| ✅ | « rouge gorge » | fr sans trait d'union | 2 | Turdus migratorius | 4 ms |
+| ✅ | « herisson » | fr sans accents | 1 | Erinaceidae | 13 ms |
+| ✅ | « coquelico » | fr faute de son | 1 | Papaver rhoeas | 7 ms |
+| ✅ | « muget » | fr faute de son | 4 | Mugilidae | 3 ms |
+| ✅ | « pissenlit » | fr exact (genre) | 1 | Taraxacum | 8 ms |
+| ✅ | « amanite tue mouche » | fr sans trait d'union | 1 | Amanita muscaria | 5 ms |
+| ✅ | « cèpe de bordeaux » | fr exact | 3 | Boletus | 21 ms |
+| ✅ | « lynx » | fr exact | 1 | Lynx | 6 ms |
+| ✅ | « loup gris » | fr exact | 1 | Canis lupus | 2 ms |
+| ✅ | « abeille domestique » | fr exact | 1 | Apis mellifera | 11 ms |
+| ✅ | « coccinelle a sept points » | fr sans accents | 1 | Coccinella septempunctata | 7 ms |
+| ✅ | « red fox » | en exact | 1 | Vulpes vulpes | 3 ms |
+| ✅ | « silver birch » | en exact | 4 | Betula papyrifera | 6 ms |
+| ✅ | « birtch » | en faute de son | 1 | Betula | 6 ms |
+| ✅ | « pedunculate oak » | en exact | 1 | Quercus robur | 8 ms |
+| ✅ | « honey bee » | en exact | 1 | Apis mellifera | 5 ms |
+| ✅ | « hedgehog » | en exact | 2 | Diodon hystrix | 9 ms |
+| ✅ | « fly agaric » | en exact | 1 | Amanita muscaria | 3 ms |
+| ✅ | « Quercus robur » | latin exact | 1 | Quercus robur | 16 ms |
+| ✅ | « Querkus robur » | latin faute de son | 1 | Quercus robur | 4 ms |
+| ✅ | « Vulpes vulpes » | latin exact | 1 | Vulpes vulpes | 6 ms |
+| ✅ | « Quercus pedunculata » | latin synonyme | 1 | Quercus robur | 24 ms |
+| ✅ | « Betula pendula » | latin exact | 1 | Betula pendula | 15 ms |
+| ✅ | « Quercus rob » | autocomplétion | 1 | Quercus robur | 16 ms |
+| ✅ | « mesange ch » | autocomplétion | 1 | Parus major | 5 ms |
+| ✅ | « ecureuil r » | autocomplétion | 2 | Tamiasciurus hudsonicus | 3 ms |
+| ✅ | « pissen » | autocomplétion | 1 | Taraxacum | 13 ms |
+| ✅ | « Vulpes v » | autocomplétion | 1 | Vulpes vulpes | 5 ms |
+
+**Score : 40/40** (100 %) dans les 5 premiers résultats.
+Durée (SQLite local) : médiane 7 ms, max 24 ms.
+
+Par catégorie :
+- autocomplétion : 5/5
+- en exact : 6/6
+- en faute de son : 1/1
+- fr exact : 11/11
+- fr faute de son : 6/6
+- fr sans accents : 4/4
+- fr sans trait d'union : 2/2
+- latin exact : 3/3
+- latin faute de son : 1/1
+- latin synonyme : 1/1
+
+**Verdict de QUE-8** : **40/40 dans les 5 premiers résultats, 33/40 en première position**, en 7 ms (médiane) sur SQLite local.
+
+Ce qui a été corrigé en cours de route, en regardant les résultats :
+- La clé anglaise retirait toutes les voyelles, comme Metaphone, si bien que « boulot » ressemblait à « Bluet » et « Belut ». Chaque groupe de voyelles devient maintenant « a » : `balat` contre `blat`.
+- « bouleau » renvoyait deux espèces avant le genre *Betula* : d'où le regroupement.
+- « cèpe de bordeaux » ne renvoyait rien, parce que les données ne connaissent que « Cèpe » : d'où le repli mot par mot.
+
+Limites, à garder en tête :
+- **Les 7 cas réussis mais pas en premier** (écureuil roux, rouge-gorge, muget, cèpe de bordeaux, silver birch, hedgehog, ecureuil r) viennent surtout de noms partagés par plusieurs espèces (« écureuil roux » désigne aussi l'écureuil d'Amérique, « hedgehog » un poisson-porc-épic) ou de sons proches (« muget » fait d'abord remonter *Mugilidae*, les mulets). Un vrai score de notoriété (nombre d'observations GBIF, photo, article Wikipédia) devrait les régler au lot 3.
+- **Le jeu de test a été écrit et le tri réglé par la même personne** (Claude) : il y a un risque de réglage « sur mesure ». Il faudra ajouter des recherches imprévues, par exemple tapées par l'utilisateur ou par des enfants, avant de figer le tri.
+- Les durées sont celles de SQLite sur un ordinateur. La consommation réelle de D1 (lignes lues) est l'objet de QUE-9.

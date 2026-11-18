@@ -7,8 +7,9 @@ Trois clés, une par langue de nom, calculées à l'import pour chaque nom et, a
 de la recherche, pour le texte tapé :
 - cle_fr : règles de prononciation du français (eau → o, lettres finales muettes,
   nasales, ch, qu, ph…) ;
-- cle_en : règles simplifiées de l'anglais, dans l'esprit de Metaphone (voyelles
-  retirées sauf la première, ph → f, ck → k, tch → ch…) ;
+- cle_en : règles simplifiées de l'anglais, dans l'esprit de Metaphone (ph → f,
+  ck → k, tch → ch…) ; chaque groupe de voyelles devient « a » : retirer les voyelles,
+  comme Metaphone, confondait trop de mots courts (boulot, bluet, belut) ;
 - cle_la : latin scientifique, très régulier (ae → e, y → i, ph → f, lettres doublées).
 
 Les clés sont volontairement simples, sans dépendance, pour être réécrites telles
@@ -96,9 +97,10 @@ def _mot_en(mot: str) -> str:
         return mot
     for motif, remplacement in REGLES_EN:
         mot = re.sub(motif, remplacement, mot)
-    if len(mot) > 3:
+    if len(mot) > 2:  # e final muet (oke, pedunculate)
         mot = re.sub(r"e$", "", mot)
-    mot = mot[0] + re.sub(r"[aeiouyh]", "", mot[1:])  # garder la première lettre, retirer voyelles et h
+    mot = mot[0] + mot[1:].replace("h", "")  # h muet sauf en première lettre
+    mot = re.sub(r"[aeiouy]+", "a", mot)  # chaque groupe de voyelles devient « a » : on garde sa place
     return _sans_doubles(mot)
 
 
