@@ -35,3 +35,7 @@
 | **Intégration continue (GitHub Actions)** | Vérifications lancées automatiquement à chaque envoi de code : tests, accessibilité, vitesse, liens cassés. |
 | **Lighthouse** | Outil de Google qui mesure la vitesse, l'accessibilité et le référencement d'une page. |
 | **Sentry** | Service qui signale les erreurs du site en ligne. |
+| **Catalogue of Life (COL) / COL XR** | Liste mondiale de référence des noms d'espèces. La version « XR » (étendue) est complétée par des milliers d'autres listes ; c'est celle qu'utilise GBIF depuis 2026. |
+| **Genre** | Groupe d'espèces très proches, première partie du nom latin (*Quercus* = les chênes). Beaucoup de noms courants désignent un genre plutôt qu'une espèce (« chêne », « bouleau »). |
+| **Synonyme** | Ancien ou autre nom latin d'une espèce (*Quercus pedunculata* est un synonyme de *Quercus robur*). La recherche doit les comprendre et renvoyer vers le nom accepté. |
+| **Essai (spike)** | Petit développement jetable pour vérifier qu'une solution tient la route avant de bâtir dessus. |
