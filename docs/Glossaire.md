@@ -32,6 +32,12 @@
 | **EPSG:4326** | Code d'une façon simple de placer des points sur la Terre (latitude et longitude). Les tuiles GBIF sont disponibles dans ce format. |
 | **d3** | Bibliothèque JavaScript de dessin de données ; d3-geo dessine les cartes, d3-zoom gère le zoom. |
 | **Recherche phonétique** | Recherche par le son plutôt que l'orthographe : « boulot » retrouve « bouleau ». |
+| **Clé phonétique** | Version simplifiée d'un nom qui ne garde que son « son », selon les règles de sa langue : « boulot » et « bouleau » donnent tous deux `bUlo`. Elle est calculée pour chaque nom à l'import, et pour le texte tapé au moment de la recherche. |
+| **Trigramme** | Groupe de 3 lettres qui se suivent (« chêne » → `che`, `hen`, `ene`). Un index par trigrammes retrouve un mot à partir de n'importe quel morceau. |
 | **Intégration continue (GitHub Actions)** | Vérifications lancées automatiquement à chaque envoi de code : tests, accessibilité, vitesse, liens cassés. |
 | **Lighthouse** | Outil de Google qui mesure la vitesse, l'accessibilité et le référencement d'une page. |
 | **Sentry** | Service qui signale les erreurs du site en ligne. |
+| **Catalogue of Life (COL) / COL XR** | Liste mondiale de référence des noms d'espèces. La version « XR » (étendue) est complétée par des milliers d'autres listes ; c'est celle qu'utilise GBIF depuis 2026. |
+| **Genre** | Groupe d'espèces très proches, première partie du nom latin (*Quercus* = les chênes). Beaucoup de noms courants désignent un genre plutôt qu'une espèce (« chêne », « bouleau »). |
+| **Synonyme** | Ancien ou autre nom latin d'une espèce (*Quercus pedunculata* est un synonyme de *Quercus robur*). La recherche doit les comprendre et renvoyer vers le nom accepté. |
+| **Essai (spike)** | Petit développement jetable pour vérifier qu'une solution tient la route avant de bâtir dessus. |
