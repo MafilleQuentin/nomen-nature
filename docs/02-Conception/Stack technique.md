@@ -88,6 +88,6 @@ L'essai du lot 1 ([détails](../../tools/essai-recherche/README.md)) a montré q
 | Première recherche d'un visiteur | 60 Ko en médiane (0,6 s en 4G à 1 Mbit/s), 231 Ko au pire ; puis les fichiers restent en cache |
 
 À reprendre dans les lots suivants :
-- **Lot 2** : vérifier que Cloudflare compresse les fichiers statiques ; sinon, publier des fichiers déjà compressés et les décompresser dans le navigateur.
+- ~~**Lot 2** : vérifier que Cloudflare compresse les fichiers statiques~~ : vérifié le 18.11.2026 sur le site de test. Cloudflare **ne compresse pas les `.tsv`**, mais compresse les `.txt` et `.json` (65 Ko → 12 Ko en brotli). Les fichiers de l'index seront donc publiés en `.txt`, avec le même contenu.
 - **Lot 3** : construire l'index depuis l'import mensuel du Catalogue of Life XR ; ajouter un vrai score de notoriété (observations GBIF, photo, Wikipédia) ; décider, en mesurant le volume, si les listes par pays vont dans D1 ou en fichiers.
 - **Lot 5** : réécrire la clé phonétique et le score en TypeScript, avec les mêmes tests.

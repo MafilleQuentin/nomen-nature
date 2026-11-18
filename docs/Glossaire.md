@@ -43,7 +43,10 @@
 | **lychee** | Outil qui vérifie que les liens d'un site ou d'une documentation ne sont pas cassés. |
 | **Budget de poids** | Poids maximal autorisé pour une page (fichiers, scripts, polices). La vérification Lighthouse échoue s'il est dépassé. |
 | **Lighthouse** | Outil de Google qui mesure la vitesse, l'accessibilité et le référencement d'une page. |
-| **Sentry** | Service qui signale les erreurs du site en ligne. |
+| **Sentry** | Service qui signale les erreurs du site en ligne. Chez nous, seulement celles du serveur, sans aucune donnée sur le visiteur. |
+| **DSN (Sentry)** | Adresse qui permet au site d'envoyer ses erreurs à notre projet Sentry. Gardée dans les secrets Cloudflare, jamais dans le dépôt. |
+| **Site de test** | Copie du site en ligne (`test.nomenature.org`) pour vérifier une version avant de l'ouvrir au public. Les moteurs de recherche ne l'indexent pas. |
+| **Compression (gzip, brotli)** | Le serveur réduit les fichiers texte avant de les envoyer, et le navigateur les remet en état : un fichier de 65 Ko n'en pèse plus que 12. |
 | **Catalogue of Life (COL) / COL XR** | Liste mondiale de référence des noms d'espèces. La version « XR » (étendue) est complétée par des milliers d'autres listes ; c'est celle qu'utilise GBIF depuis 2026. |
 | **Genre** | Groupe d'espèces très proches, première partie du nom latin (*Quercus* = les chênes). Beaucoup de noms courants désignent un genre plutôt qu'une espèce (« chêne », « bouleau »). |
 | **Synonyme** | Ancien ou autre nom latin d'une espèce (*Quercus pedunculata* est un synonyme de *Quercus robur*). La recherche doit les comprendre et renvoyer vers le nom accepté. |
