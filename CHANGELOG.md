@@ -9,6 +9,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 - Étape 5 découpée en 10 lots de développement (feuille de route et projet Linear « Nomen Nature — V1 »).
 - Essai de la recherche : scripts de téléchargement et d'extraction des noms du Catalogue of Life XR (`tools/essai-recherche/`).
 - Essai de la recherche : schéma D1 avec index par trigrammes et script de chargement dans D1 en local.
+- Essai de la recherche : normalisation et clé phonétique par langue (français, anglais, latin), avec tests.
 
 ### Modifié
 - Sources de données : le Catalogue of Life XR remplace la GBIF Backbone comme référentiel des noms.
