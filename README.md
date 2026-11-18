@@ -73,6 +73,8 @@ Avant le premier `npm run test:e2e`, installer le navigateur de test : `npx play
 | Vitesse et qualité | Lighthouse CI ([réglages](lighthouserc.json)) | un score passe sous 90 (100 pour l'accessibilité), ou une page dépasse son budget : 200 Ko en tout, 50 Ko de scripts, 100 Ko de polices, aucune requête vers un tiers |
 | Liens cassés | lychee ([réglages](lychee.toml)) | un lien interne du site ou de la documentation est cassé |
 
+`develop` et `main` sont protégées : on y fusionne seulement par pull request, une fois les quatre vérifications réussies.
+
 Les liens vers les sites externes sont vérifiés chaque lundi par le workflow [Liens externes](.github/workflows/liens-externes.yml).
 
 Les secrets ne sont jamais dans le dépôt : copier `.env.example` en `.dev.vars` pour le développement local.
