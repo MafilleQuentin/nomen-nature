@@ -208,3 +208,21 @@ Limites, à garder en tête :
 - **Les 7 cas réussis mais pas en premier** (écureuil roux, rouge-gorge, muget, cèpe de bordeaux, silver birch, hedgehog, ecureuil r) viennent surtout de noms partagés par plusieurs espèces (« écureuil roux » désigne aussi l'écureuil d'Amérique, « hedgehog » un poisson-porc-épic) ou de sons proches (« muget » fait d'abord remonter *Mugilidae*, les mulets). Un vrai score de notoriété (nombre d'observations GBIF, photo, article Wikipédia) devrait les régler au lot 3.
 - **Le jeu de test a été écrit et le tri réglé par la même personne** (Claude) : il y a un risque de réglage « sur mesure ». Il faudra ajouter des recherches imprévues, par exemple tapées par l'utilisateur ou par des enfants, avant de figer le tri.
 - Les durées sont celles de SQLite sur un ordinateur. La consommation réelle de D1 (lignes lues) est l'objet de QUE-9.
+
+## ⚠️ Alerte : limites de D1 gratuit (18.11.2026)
+
+Vérifié sur les pages [Limits](https://developers.cloudflare.com/d1/platform/limits/) et [Pricing](https://developers.cloudflare.com/d1/platform/pricing/) de Cloudflare (mises à jour le 30.10.2026) :
+
+| Limite | Gratuit | Payant (5 $/mois) | Notre essai |
+|---|---|---|---|
+| Taille d'**une** base | **500 Mo** | 10 Go | **1 272 Mo** |
+| Stockage par compte | 5 Go | 1 To | — |
+| Lignes écrites | **100 000 / jour** | 50 millions / mois inclus | 5,1 M noms + 2,7 M taxons, et chaque index ajoute une écriture par ligne |
+| Lignes lues | 5 millions / jour | 25 milliards / mois inclus | QUE-9 |
+
+Conséquences :
+- **La base complète ne tient pas dans une base D1 gratuite**, et la limite de 500 Mo n'est pas répartissable : le « 5 Go » est un total par compte.
+- **Le chargement serait impossible en gratuit** : au moins 8 millions de lignes écrites, soit plus de 80 jours de quota, et autant à chaque mise à jour mensuelle. Les écritures faites avec Wrangler comptent comme les autres.
+- Le stockage seul (environ 1,3 Go) et les lectures ne posent pas de problème.
+
+C'est le genre de chose que l'essai devait révéler : à trancher avec l'utilisateur avant QUE-9 et le verdict (QUE-10).
