@@ -34,3 +34,10 @@ tools/maquettes/carte_monde_points.json
 tools/essai-recherche/data/
 tools/essai-recherche/node_modules/
 tools/essai-recherche/.wrangler/
+
+# Site (Astro, Wrangler)
+node_modules/
+dist/
+.astro/
+.wrangler/
+.dev.vars

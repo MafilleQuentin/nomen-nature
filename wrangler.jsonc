@@ -1,0 +1,17 @@
+// Configuration du Worker Cloudflare de Nomen Nature.
+// Aucun secret ici : les clés (Pl@ntNet, Sentry…) vont dans les secrets Cloudflare
+// (`wrangler secret put`) et, en local, dans `.dev.vars` (ignoré par git).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "nomen-nature",
+  "main": "@astrojs/cloudflare/entrypoints/server",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist"
+  },
+  "observability": {
+    "enabled": true
+  }
+}
