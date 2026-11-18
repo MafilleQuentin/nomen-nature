@@ -8,9 +8,11 @@
 
 ## État du projet
 
-🟡 **Maquettes et stack technique validées, développement à venir.** Aucune ligne de code pour l'instant : le projet avance étape par étape.
+🟡 **Développement de la V1 commencé.** Le site lui-même n'existe pas encore : le projet avance étape par étape, lot par lot.
 
 Le site sera construit avec [Astro](https://astro.build) et TypeScript, et hébergé sur [Cloudflare Workers](https://workers.cloudflare.com). Détail : [stack technique](docs/02-Conception/Stack%20technique.md).
+
+Le premier lot de développement, un **essai de la recherche**, est terminé : la recherche tolérante aux fautes (« boulot » trouve le bouleau) fonctionnera avec un index en fichiers statiques. Outils et résultats : [`tools/essai-recherche/`](tools/essai-recherche/README.md).
 
 | Étape | État |
 |---|---|
@@ -18,7 +20,7 @@ Le site sera construit avec [Astro](https://astro.build) et TypeScript, et hébe
 | 2. Parcours utilisateurs (FigJam) | ✅ Terminé |
 | 3. Maquettes Figma (mobile et ordinateur) | ✅ Terminé |
 | 4. Choix de la stack technique | ✅ Terminé |
-| 5. Développement de la V1, lot par lot | ⏳ Prochaine étape |
+| 5. Développement de la V1, lot par lot | ⏳ En cours (lot 1 sur 10 terminé) |
 
 Détail : [feuille de route](docs/Feuille%20de%20route.md).
 

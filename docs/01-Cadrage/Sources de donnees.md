@@ -14,7 +14,7 @@
 | **Pl@ntNet** | Identification des plantes par photo | Gratuit jusqu'à 500/jour ; plan non-profit jusqu'à 10 000/jour | Une seule clé par organisation ; plan non-profit refusé en cas de pub ou d'abonnement |
 | **Wikidata** | Relier les identifiants entre les bases, noms traduits | Gratuit | CC0, aucune obligation |
 | **Natural Earth** | Frontières des pays et des continents | Gratuit | Domaine public |
-| **Catalogue of Life** | Référentiel de classification | Gratuit | CC BY, citer l'édition |
+| **Catalogue of Life XR** | Référentiel des noms et de la classification (celui de GBIF depuis 2026), noms courants | Gratuit | CC BY 4.0, citer l'édition (ex. COL26.10 XR, DOI 10.48580/dgzlf) |
 
 ## GBIF, la colonne vertébrale
 
@@ -23,6 +23,7 @@
 - Filtres par **pays** et par **continent** : ils rendent possibles les trois niveaux de la carte.
 - **Tuiles de carte** de densité d'observations toutes prêtes, et fond de carte gratuit (attribution OpenStreetMap).
 - L'ancienne API « Species v1 » est dépréciée au profit de la « Taxon API v2 » : à prendre en compte dès le départ.
+- *Mise à jour du 18.11.2026* : depuis juin 2026, GBIF classe les observations avec le **Catalogue of Life XR** (version étendue, mensuelle). L'ancienne « GBIF Backbone » n'est plus mise à jour. Les identifiants d'espèces sont désormais des codes courts (ex. `4R5YN`) ; l'API d'occurrences les renvoie avec `checklistKey=7ddf754f-d193-4cc9-b351-99906754a03b`. Nomen part donc directement du Catalogue of Life XR. L'archive mensuelle est téléchargeable sans compte depuis `download.checklistbank.org/col/monthly/` (voir `tools/essai-recherche/`).
 - Bonne pratique : enregistrer un « derived dataset » sur GBIF pour obtenir un DOI qui cite toutes les sources utilisées.
 
 ## Identification par photo

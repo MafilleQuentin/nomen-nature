@@ -29,3 +29,8 @@ __pycache__/
 # Données téléchargées (Natural Earth) et sorties générées
 tools/maquettes/data/
 tools/maquettes/carte_monde_points.json
+
+# Essai de la recherche (lot 1) : export du Catalogue of Life, bases et sorties générées
+tools/essai-recherche/data/
+tools/essai-recherche/node_modules/
+tools/essai-recherche/.wrangler/

@@ -1,0 +1,11 @@
+{
+  "name": "nomen-essai-recherche",
+  "private": true,
+  "description": "Essai de la recherche (lot 1) : base D1 locale",
+  "scripts": {
+    "d1": "wrangler d1"
+  },
+  "devDependencies": {
+    "wrangler": "4.157.0"
+  }
+}

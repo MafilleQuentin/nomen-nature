@@ -1,0 +1,8 @@
+# Configuration minimale pour la base D1 locale de l'essai (aucun déploiement).
+name = "nomen-essai-recherche"
+compatibility_date = "2026-11-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nomen-essai"
+database_id = "00000000-0000-0000-0000-000000000000" # base locale seulement

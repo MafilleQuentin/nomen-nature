@@ -5,6 +5,22 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ## [Non publié]
 
+## [0.5.0] - 2026-11-18
+
+Lot 1 terminé : essai de la recherche. La recherche tolérante aux fautes fonctionne (« boulot » trouve le bouleau) et sera servie par un index en fichiers statiques, D1 gratuit étant trop petit. Prochain lot : le socle du site.
+
+### Ajouté
+- Étape 5 découpée en 10 lots de développement (feuille de route et projet Linear « Nomen Nature — V1 »).
+- Essai de la recherche : scripts de téléchargement et d'extraction des noms du Catalogue of Life XR (`tools/essai-recherche/`).
+- Essai de la recherche : schéma D1 avec index par trigrammes et script de chargement dans D1 en local.
+- Essai de la recherche : normalisation et clé phonétique par langue (français, anglais, latin), avec tests.
+- Essai de la recherche : fonction de recherche avec tri et jeu de 40 recherches de test (40/40 dans les 5 premiers résultats).
+- Essai de la recherche : index en fichiers statiques (construction, recherche « comme le navigateur », mesure du poids par recherche).
+
+### Modifié
+- Sources de données : le Catalogue of Life XR remplace la GBIF Backbone comme référentiel des noms.
+- Stack technique : la recherche passe par un index en fichiers statiques au lieu de D1 (D1 gratuit limité à 500 Mo par base et 100 000 écritures par jour), sans synonymes latins (verdict du lot 1).
+
 ## [0.4.0] - 2026-11-18
 
 Stack technique choisie : Astro + Cloudflare. Prochaine étape : le développement de la V1, lot par lot.
@@ -55,7 +71,8 @@ Fin du cadrage : le projet est défini, aucune ligne de code encore.
 - Coffre Obsidian dans `docs/`.
 - Licence MIT.
 
-[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.4.0...HEAD
+[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.1.0...v0.2.0
