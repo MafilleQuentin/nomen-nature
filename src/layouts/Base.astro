@@ -34,7 +34,8 @@ const absolue = (chemin: string) => new URL(chemin, Astro.site).href;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{titre}</title>
     <meta name="description" content={description} />
-    {!indexer && <meta name="robots" content="noindex" />}
+    {/* Le site de test (construit avec --mode essai) n'est jamais indexé. */}
+    {(!indexer || import.meta.env.MODE === "essai") && <meta name="robots" content="noindex" />}
     {page && indexer && <link rel="canonical" href={absolue(lien(page, langue))} />}
     {page && langues.map((l) => <link rel="alternate" hreflang={l} href={absolue(versions[l])} />)}
     <!-- x-default : la racine, qui envoie vers la langue du navigateur. -->

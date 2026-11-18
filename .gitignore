@@ -2,6 +2,8 @@
 .env
 .env.*
 !.env.example
+# Seulement le nom de l'environnement Cloudflare du site de test, aucun secret.
+!.env.essai
 *.local.json
 
 # Obsidian: personal workspace state (the vault config itself is versioned)

@@ -15,11 +15,13 @@
     "check": "astro check",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
-    "test": "astro check && vitest run && playwright test"
+    "test": "astro check && vitest run && playwright test",
+    "deploy:test": "astro build --mode essai && wrangler deploy"
   },
   "dependencies": {
     "@astrojs/cloudflare": "14.4.4",
     "@astrojs/svelte": "9.1.2",
+    "@sentry/cloudflare": "11.10.0",
     "astro": "7.4.7",
     "svelte": "5.57.3"
   },
