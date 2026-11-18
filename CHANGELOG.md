@@ -10,6 +10,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 - Design system en CSS : variables du Figma, 16 styles de texte, polices hébergées chez nous, page de contrôle `/design-system` (QUE-12).
 - Gabarit de page : en-tête, menu sur téléphone, pied de page, lien d'évitement ; composants Icône, Logo, Bouton, Bouton icône (QUE-13).
 - Site bilingue : chaque page existe en français (`/fr/…`) et en anglais (`/en/…`) avec des adresses traduites ; textes de l'interface dans les deux langues ; choix de la langue dans l'en-tête, le menu et le pied de page ; balises `hreflang` et adresse canonique ; la racine envoie vers la langue du navigateur, sans cookie (QUE-14).
+- Page introuvable « Ce sentier ne mène nulle part », d'après la maquette (ordinateur et téléphone) : vrai code 404, en français ou en anglais selon l'adresse puis le navigateur, avec une barre de recherche et le retour à la carte (QUE-15).
 - Tests d'accessibilité automatiques (Playwright + axe) sur le site compilé, sur ordinateur et sur téléphone : aucune violation WCAG 2.2 AA, menu au clavier, lien d'évitement (`npm test`) (QUE-13).
 
 ### Modifié
