@@ -78,3 +78,16 @@ Voir aussi : [Sources de données](../01-Cadrage/Sources%20de%20donnees.md) · [
 ## Ajustement après l'essai de la recherche (18.11.2026)
 
 L'essai du lot 1 ([détails](../../tools/essai-recherche/README.md)) a montré que la recherche fonctionne bien (40/40 recherches de test), mais que son index (1,3 Go) ne tient pas dans D1 gratuit, limité à **500 Mo par base** et à **100 000 écritures par jour**. Décision de l'utilisateur : **servir la recherche par des fichiers statiques**. Les noms et leurs clés phonétiques sont découpés en petits fichiers selon leur début, publiés avec le site. Les requêtes vers ces fichiers sont gratuites et illimitées (20 000 fichiers au plus, 25 Mo chacun). Le navigateur charge le fichier qui correspond au texte tapé, puis trie les résultats.
+
+**Verdict du lot 1** (validé par l'utilisateur) : index **sans synonymes latins**, avec des fichiers d'environ 64 Ko.
+
+| Mesure | Résultat |
+|---|---|
+| Qualité (40 recherches réelles) | 39/40 dans les 5 premiers, 32/40 en premier |
+| Fichiers publiés | 10 868 sur 20 000 autorisés (127 Mo compressés) ; moins après le filtre « espèces observées » du lot 3 |
+| Première recherche d'un visiteur | 60 Ko en médiane (0,6 s en 4G à 1 Mbit/s), 231 Ko au pire ; puis les fichiers restent en cache |
+
+À reprendre dans les lots suivants :
+- **Lot 2** : vérifier que Cloudflare compresse les fichiers statiques ; sinon, publier des fichiers déjà compressés et les décompresser dans le navigateur.
+- **Lot 3** : construire l'index depuis l'import mensuel du Catalogue of Life XR ; ajouter un vrai score de notoriété (observations GBIF, photo, Wikipédia) ; décider, en mesurant le volume, si les listes par pays vont dans D1 ou en fichiers.
+- **Lot 5** : réécrire la clé phonétique et le score en TypeScript, avec les mêmes tests.

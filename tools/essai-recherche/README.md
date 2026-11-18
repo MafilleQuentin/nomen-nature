@@ -269,3 +269,7 @@ Plus le manifeste, chargé une seule fois : 105 à 123 Ko compressés. Le calcul
 - Le manifeste pourrait être découpé par dictionnaire, pour ne charger que ce qui sert.
 - La recherche d'un mot au milieu d'un nom (« pédonculé » seul) n'existe plus sans les trigrammes. Aucun cas du jeu de test n'en avait besoin ; à surveiller avec de vraies recherches.
 - Le dictionnaire `courts` classe par notoriété provisoire : « che » ne propose pas encore *Quercus*. Le score de notoriété du lot 3 devrait corriger ça.
+
+## Verdict (QUE-10, 18.11.2026)
+
+Validé par l'utilisateur : **index de recherche en fichiers statiques, sans synonymes latins** (`construire_index.py --sans-synonymes --taille-cible 65536`). Résultat : 39/40 recherches de test réussies, 60 Ko par première recherche, 10 868 fichiers sur 20 000. Ces outils restent un **essai** : le vrai index sera construit au lot 3 (import mensuel) et la recherche réécrite en TypeScript au lot 5. Ils serviront de référence, notamment le jeu de test `evaluer.py` et les tests de `phonetique.py`.
