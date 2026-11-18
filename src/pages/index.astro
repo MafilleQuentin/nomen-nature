@@ -1,22 +1,26 @@
 ---
 // Page provisoire du socle (lot 2) : elle sera remplacée par l'accueil au lot 7.
+import Base from "../layouts/Base.astro";
+
 const titre = "Nomen Nature";
 const description = "Redonner un nom au vivant : explorer la faune, la flore et les champignons du monde entier.";
 ---
 
-<!doctype html>
-<html lang="fr">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{titre}</title>
-    <meta name="description" content={description} />
-  </head>
-  <body>
-    <main>
-      <h1>{titre}</h1>
-      <p>{description}</p>
-      <p>Le site est en construction.</p>
-    </main>
-  </body>
-</html>
+<Base titre={titre} description={description}>
+  <main class="page">
+    <p class="t-mono-surtitre surtitre">En construction</p>
+    <h1 class="t-display-grand">{titre}</h1>
+    <p class="t-texte-grand">{description}</p>
+  </main>
+</Base>
+
+<style>
+  .page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: var(--space-20) var(--space-4);
+  }
+  .surtitre {
+    color: var(--color-text-highlight);
+  }
+</style>
