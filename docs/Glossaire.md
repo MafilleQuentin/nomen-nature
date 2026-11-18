@@ -45,6 +45,7 @@
 | **Lighthouse** | Outil de Google qui mesure la vitesse, l'accessibilité et le référencement d'une page. |
 | **Sentry** | Service qui signale les erreurs du site en ligne. Chez nous, seulement celles du serveur, sans aucune donnée sur le visiteur. |
 | **DSN (Sentry)** | Adresse qui permet au site d'envoyer ses erreurs à notre projet Sentry. Gardée dans les secrets Cloudflare, jamais dans le dépôt. |
+| **Analyses intégrées de Cloudflare** | Statistiques (requêtes, pages vues, visites, pays) que Cloudflare calcule sur ses serveurs pour chaque domaine, sans rien ajouter dans la page : ni script, ni cookie. |
 | **Site de test** | Copie du site en ligne (`test.nomenature.org`) pour vérifier une version avant de l'ouvrir au public. Les moteurs de recherche ne l'indexent pas. |
 | **Compression (gzip, brotli)** | Le serveur réduit les fichiers texte avant de les envoyer, et le navigateur les remet en état : un fichier de 65 Ko n'en pèse plus que 12. |
 | **Catalogue of Life (COL) / COL XR** | Liste mondiale de référence des noms d'espèces. La version « XR » (étendue) est complétée par des milliers d'autres listes ; c'est celle qu'utilise GBIF depuis 2026. |

@@ -35,7 +35,7 @@ Un site **Astro** hébergé gratuitement chez **Cloudflare**, qui gère déjà l
 | Identification | Point d'accès sur notre Worker, qui appelle Pl@ntNet | Clé en secret Cloudflare, limite par visiteur, message « reviens demain » à l'approche du quota. Photo réduite dans le téléphone avant l'envoi. |
 | Style | **CSS simple avec variables** | Les variables Figma portent déjà leur nom CSS (`--color-bg-page`…). |
 | Polices | Space Grotesk et IBM Plex, **hébergées chez nous** | Licence libre (OFL) ; aucun appel à Google Fonts, donc rien n'est transmis à un tiers. |
-| Statistiques | **Cloudflare Web Analytics** | Sans cookies, gratuit : pas de bannière. |
+| Statistiques | **Analyses intégrées de Cloudflare** *(au lieu de Web Analytics, modifié le 18.11.2026)* | Calculées par les serveurs de Cloudflare : aucun script, aucun cookie, aucun tiers chez le visiteur, gratuit, pas de bannière. |
 | Suivi des erreurs | **Sentry**, offre gratuite | Voir les plantages en ligne. À mentionner dans la politique de confidentialité. |
 | Tests et qualité | **Vitest**, **Playwright** + **axe**, **Lighthouse CI**, **lychee**, dans **GitHub Actions** | Couvre automatiquement la checklist : tests, accessibilité, vitesse, liens cassés. |
 
