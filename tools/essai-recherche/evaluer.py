@@ -100,20 +100,43 @@ def noms_dans_les_donnees(base: sqlite3.Connection, attendus: list[str]) -> list
     return noms
 
 
+DEBIT_4G_OCTETS_PAR_S = 1_000_000 / 8  # 4G médiocre : 1 Mbit/s utile
+LATENCE_4G_S = 0.1  # par aller-retour ; les fichiers d'une recherche sont demandés en parallèle
+
+
 def main() -> None:
     details = "--details" in sys.argv
+    par_fichiers = "--fichiers" in sys.argv
     base = sqlite3.connect(BASE)
-    reussis, durees, lignes = 0, [], []
+    if par_fichiers:
+        import recherche_fichiers
+
+        def chercher(texte: str):
+            recherche_fichiers.lire_fichier.cache_clear()  # chaque recherche part d'un cache vide
+            return recherche_fichiers.rechercher(texte, limite=5)
+    else:
+        def chercher(texte: str):
+            return rechercher(base, texte, limite=5)
+
+    reussis, premiers_rangs, durees, lignes = 0, 0, [], []
+    poids, nb_fichiers = [], []
     par_categorie: dict[str, list[bool]] = {}
     for texte, categorie, attendus in CAS:
-        resultats, trace = rechercher(base, texte, limite=5)
+        resultats, trace = chercher(texte)
         rang = next((i for i, r in enumerate(resultats, 1) if bonne_reponse(r, attendus)), None)
         ok = rang is not None
         reussis += ok
+        premiers_rangs += rang == 1
         durees.append(trace.duree_ms)
         par_categorie.setdefault(categorie.split(" (")[0], []).append(ok)
         premier = resultats[0].nom_scientifique if resultats else "—"
-        lignes.append(f"| {'✅' if ok else '❌'} | « {texte} » | {categorie} | {rang or '—'} | {premier} | {trace.duree_ms:.0f} ms |")
+        if par_fichiers:
+            poids.append(trace.octets)
+            nb_fichiers.append(len(trace.fichiers))
+            transfert = f" {len(trace.fichiers)} | {trace.octets / 1024:.0f} Ko |"
+        else:
+            transfert = ""
+        lignes.append(f"| {'✅' if ok else '❌'} | « {texte} » | {categorie} | {rang or '—'} | {premier} | {trace.duree_ms:.0f} ms |{transfert}")
         if details or not ok:
             print(f"\n{'OK ' if ok else 'ÉCHEC'} « {texte} » → attendu {attendus}")
             for i, r in enumerate(resultats, 1):
@@ -121,12 +144,26 @@ def main() -> None:
             if not ok:
                 print(f"   noms dans les données : {noms_dans_les_donnees(base, attendus) or 'aucun nom courant fr/en'}")
 
-    print("\n| | Recherche | Ce qu'elle teste | Rang | Premier résultat | Durée |")
-    print("|---|---|---|---|---|---|")
+    if par_fichiers:
+        print("\n| | Recherche | Ce qu'elle teste | Rang | Premier résultat | Calcul | Fichiers | Poids |")
+        print("|---|---|---|---|---|---|---|---|")
+    else:
+        print("\n| | Recherche | Ce qu'elle teste | Rang | Premier résultat | Durée |")
+        print("|---|---|---|---|---|---|")
     print("\n".join(lignes))
-    print(f"\n**Score : {reussis}/{len(CAS)}** ({100 * reussis / len(CAS):.0f} %) dans les 5 premiers résultats.")
+    print(f"\n**Score : {reussis}/{len(CAS)}** ({100 * reussis / len(CAS):.0f} %) dans les 5 premiers résultats, "
+          f"{premiers_rangs}/{len(CAS)} en premier.")
     durees.sort()
-    print(f"Durée (SQLite local) : médiane {durees[len(durees) // 2]:.0f} ms, max {durees[-1]:.0f} ms.")
+    source = "fichiers, calcul seul" if par_fichiers else "SQLite local"
+    print(f"Durée ({source}) : médiane {durees[len(durees) // 2]:.0f} ms, max {durees[-1]:.0f} ms.")
+    if par_fichiers:
+        poids.sort()
+        nb_fichiers.sort()
+        mediane, maximum = poids[len(poids) // 2], poids[-1]
+        print(f"Fichiers chargés par recherche : médiane {nb_fichiers[len(nb_fichiers) // 2]}, max {nb_fichiers[-1]}.")
+        print(f"Poids compressé par recherche (cache vide) : médiane {mediane / 1024:.0f} Ko, max {maximum / 1024:.0f} Ko.")
+        for nom, octets in (("médiane", mediane), ("max", maximum)):
+            print(f"Temps de transfert estimé en 4G à 1 Mbit/s ({nom}) : {LATENCE_4G_S + octets / DEBIT_4G_OCTETS_PAR_S:.1f} s")
     print("\nPar catégorie :")
     for categorie, resultats_cat in sorted(par_categorie.items()):
         print(f"- {categorie} : {sum(resultats_cat)}/{len(resultats_cat)}")

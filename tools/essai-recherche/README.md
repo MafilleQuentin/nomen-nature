@@ -226,3 +226,46 @@ Conséquences :
 - Le stockage seul (environ 1,3 Go) et les lectures ne posent pas de problème.
 
 C'est le genre de chose que l'essai devait révéler : à trancher avec l'utilisateur avant QUE-9 et le verdict (QUE-10).
+
+## Index en fichiers statiques (QUE-9, 18.11.2026)
+
+Décision de l'utilisateur après l'alerte ci-dessus : la recherche passe par des **fichiers statiques**. Chez Cloudflare, les requêtes vers ces fichiers sont gratuites et illimitées, avec au plus 20 000 fichiers de 25 Mo chacun (pages Workers Limits et Static Assets du 12-13.11.2026).
+
+**Construction** (`construire_index.py`, à partir de `data/essai.sqlite`) : trois dictionnaires de lignes triées, découpées en fichiers d'environ 128 Ko (ou 64 Ko), et un `manifeste.json` qui donne la première clé de chaque fichier :
+
+| Dictionnaire | Trié par | Sert à |
+|---|---|---|
+| `noms/` | nom normalisé (`chene pedoncule`) | début du nom, autocomplétion |
+| `cles/` | langue + clé phonétique (`fr|bUlo`) | fautes de son |
+| `courts/` | début de 3 lettres, puis notoriété | recherches très courtes : sans lui, « che » ne verrait que les premiers noms dans l'ordre alphabétique |
+
+Chaque ligne contient aussi les infos du taxon (rang, nom scientifique, genre, famille, notoriété) : une recherche n'a besoin d'aucun autre fichier.
+
+**Recherche** (`recherche_fichiers.py`) : ce que fera le navigateur. On trouve le bon fichier dans le manifeste par dichotomie, on charge au plus 3 fichiers par dictionnaire, puis on applique le même score et le même tri qu'avec SQLite. Le poids compté est celui des fichiers compressés, avec un **cache vide** : c'est le pire cas, la première recherche d'un visiteur.
+
+```bash
+python -X utf8 construire_index.py --sans-synonymes --taille-cible 65536
+```
+
+```bash
+python -X utf8 evaluer.py --fichiers
+```
+
+| Variante | Fichiers | Total compressé | Score top 5 / en premier | Poids par recherche (médiane / max) | 4G à 1 Mbit/s (médiane / max) |
+|---|---|---|---|---|---|
+| Avec synonymes, fichiers de 128 Ko | 8 999 | 202 Mo | **40/40** / 33 | 115 Ko / 370 Ko | 1,0 s / 3,1 s |
+| **Sans synonymes, fichiers de 64 Ko** | 10 868 | 127 Mo | **39/40** / 32 | **60 Ko / 231 Ko** | **0,6 s / 2,0 s** |
+| *Pour mémoire : SQLite (D1)* | — | 1,2 Go | 40/40 / 33 | — | — |
+
+Plus le manifeste, chargé une seule fois : 105 à 123 Ko compressés. Le calcul (tri, score) prend 2 à 80 ms.
+
+**Verdict de QUE-9** :
+- **Qualité identique à SQLite** : la recherche par fichiers ne perd rien, sauf les synonymes si on les retire. Le seul échec de la variante légère est « Quercus pedunculata ».
+- **Sous les limites gratuites** : 9 000 à 11 000 fichiers sur 20 000. Le lot 3 ne gardera que les espèces observées (environ 1,5 million sur 2,4), ce qui réduira encore de 30 à 40 %.
+- **Rapide en 4G** : environ 60 Ko pour une première recherche avec la variante légère, puis presque rien, car les fichiers déjà chargés restent en cache (taper « boul », puis « boule », puis « bouleau » réutilise les mêmes fichiers).
+
+À régler plus tard :
+- La compression des fichiers statiques n'est pas documentée par Cloudflare. À vérifier au lot 2 (déploiement de test) ; sinon, publier des `.tsv.gz` et les décompresser dans le navigateur (`DecompressionStream`).
+- Le manifeste pourrait être découpé par dictionnaire, pour ne charger que ce qui sert.
+- La recherche d'un mot au milieu d'un nom (« pédonculé » seul) n'existe plus sans les trigrammes. Aucun cas du jeu de test n'en avait besoin ; à surveiller avec de vraies recherches.
+- Le dictionnaire `courts` classe par notoriété provisoire : « che » ne propose pas encore *Quercus*. Le score de notoriété du lot 3 devrait corriger ça.
