@@ -5,6 +5,14 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ## [Non publié]
 
+## [0.4.0] - 2026-11-18
+
+Stack technique choisie : Astro + Cloudflare. Prochaine étape : le développement de la V1, lot par lot.
+
+### Ajouté
+- Stack technique choisie : Astro 6 + TypeScript, îlots Svelte, hébergement Cloudflare Workers, base Cloudflare D1, carte d3-geo en Equal Earth (`docs/02-Conception/Stack technique.md`).
+- Glossaire complété avec les termes techniques de la stack.
+
 ## [0.3.0] - 2026-11-17
 
 Maquettes terminées : toute la V1 est dessinée dans Figma. Prochaine étape : le choix de la stack technique.
@@ -47,7 +55,8 @@ Fin du cadrage : le projet est défini, aucune ligne de code encore.
 - Coffre Obsidian dans `docs/`.
 - Licence MIT.
 
-[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.3.0...HEAD
+[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/MafilleQuentin/nomen-nature/releases/tag/v0.1.0

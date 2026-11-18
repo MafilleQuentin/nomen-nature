@@ -8,15 +8,17 @@
 
 ## État du projet
 
-🟡 **Maquettes terminées, choix de la stack technique à venir.** Aucune ligne de code pour l'instant : le projet avance étape par étape, et la maquette Figma est validée avant tout développement.
+🟡 **Maquettes et stack technique validées, développement à venir.** Aucune ligne de code pour l'instant : le projet avance étape par étape.
+
+Le site sera construit avec [Astro](https://astro.build) et TypeScript, et hébergé sur [Cloudflare Workers](https://workers.cloudflare.com). Détail : [stack technique](docs/02-Conception/Stack%20technique.md).
 
 | Étape | État |
 |---|---|
 | 1. Cadrage et brief | ✅ Terminé |
 | 2. Parcours utilisateurs (FigJam) | ✅ Terminé |
 | 3. Maquettes Figma (mobile et ordinateur) | ✅ Terminé |
-| 4. Choix de la stack technique | ⏳ Prochaine étape |
-| 5. Développement de la V1, lot par lot | ⬜ |
+| 4. Choix de la stack technique | ✅ Terminé |
+| 5. Développement de la V1, lot par lot | ⏳ Prochaine étape |
 
 Détail : [feuille de route](docs/Feuille%20de%20route.md).
 
