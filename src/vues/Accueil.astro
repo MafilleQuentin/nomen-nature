@@ -1,0 +1,34 @@
+---
+// Accueil provisoire du socle (lot 2) : il sera remplacé par la vraie page d'accueil au lot 7.
+// Une « vue » contient la page ; src/pages/fr/… et src/pages/en/… ne font que l'appeler
+// avec leur langue, pour que les adresses puissent être traduites.
+import type { Langue } from "../i18n/langues";
+import { t } from "../i18n/textes";
+import Base from "../layouts/Base.astro";
+
+interface Props {
+  langue: Langue;
+}
+
+const { langue } = Astro.props;
+const { titre, description, enConstruction } = t(langue).accueil;
+---
+
+<Base titre={titre} description={description} langue={langue} page="accueil">
+  <div class="page">
+    <p class="t-mono-surtitre surtitre">{enConstruction}</p>
+    <h1 class="t-display-grand">{titre}</h1>
+    <p class="t-texte-grand">{description}</p>
+  </div>
+</Base>
+
+<style>
+  .page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: var(--space-20) var(--space-4);
+  }
+  .surtitre {
+    color: var(--color-text-highlight);
+  }
+</style>

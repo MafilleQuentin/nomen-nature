@@ -1,0 +1,33 @@
+// Configuration du Worker Cloudflare de Nomen Nature.
+// Aucun secret ici : les clés (Pl@ntNet, Sentry…) vont dans les secrets Cloudflare
+// (`wrangler secret put`) et, en local, dans `.dev.vars` (ignoré par git).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "nomen-nature",
+  // Serveur d'Astro enveloppé par Sentry (erreurs du serveur seulement).
+  "main": "./src/worker.ts",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist"
+  },
+  "observability": {
+    "enabled": true
+  },
+  // En local (npm run dev, preview, tests) : pas de domaine, pas de clé Sentry.
+  "vars": {
+    "ENVIRONNEMENT": "local"
+  },
+  "env": {
+    // Site de test : https://test.nomenature.org (npm run deploy:test), non indexé.
+    // Clé Sentry : secret Cloudflare (wrangler secret put SENTRY_DSN --name nomen-nature-test).
+    "test": {
+      "name": "nomen-nature-test",
+      "routes": [{ "pattern": "test.nomenature.org", "custom_domain": true }],
+      "vars": {
+        "ENVIRONNEMENT": "test"
+      }
+    }
+  }
+}

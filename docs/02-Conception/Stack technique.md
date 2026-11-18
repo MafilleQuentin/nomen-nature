@@ -23,9 +23,9 @@ Un site **Astro** hébergé gratuitement chez **Cloudflare**, qui gère déjà l
 
 | Brique | Choix | Pourquoi |
 |---|---|---|
-| Site | **Astro 6** + **TypeScript** | Fait pour les sites de contenu. Pages générées à la demande puis mises en cache, bilingue `/fr/` et `/en/`, plan du site. |
+| Site | **Astro 7** + **TypeScript** *(Astro 6 au moment du choix, remplacé par la version 7 au démarrage du lot 2)* | Fait pour les sites de contenu. Pages générées à la demande puis mises en cache, bilingue `/fr` et `/en` *(adresses traduites, voir le journal des décisions du 18.11.2026)*, plan du site. |
 | Parties interactives | **Svelte** (îlots Astro) | Très peu de code envoyé au navigateur, code lisible. |
-| Hébergement | **Cloudflare Workers**, offre gratuite | Même compte que le domaine, HTTPS automatique, cache dans le monde entier, pris en charge nativement par Astro 6. |
+| Hébergement | **Cloudflare Workers**, offre gratuite | Même compte que le domaine, HTTPS automatique, cache dans le monde entier, pris en charge nativement par Astro. |
 | Recherche | **Index en fichiers statiques** *(modifié le 18.11.2026, voir plus bas)* | Noms FR/EN/latin et leur clé phonétique, découpés en petits fichiers publiés avec le site ; le navigateur charge seulement ceux qui correspondent au début du texte tapé, puis trie. |
 | Base de données | **Cloudflare D1** (SQLite) — *à réévaluer au lot 3* | Listes par pays et par continent triées par « bien documentées », statuts UICN. En gratuit, une base est limitée à 500 Mo et à 100 000 écritures par jour : le volume des listes est à vérifier. |
 | Remplissage de la base | Script d'import mensuel (GitHub Actions) | Depuis GBIF, Catalogue of Life et Wikidata. |
@@ -35,7 +35,7 @@ Un site **Astro** hébergé gratuitement chez **Cloudflare**, qui gère déjà l
 | Identification | Point d'accès sur notre Worker, qui appelle Pl@ntNet | Clé en secret Cloudflare, limite par visiteur, message « reviens demain » à l'approche du quota. Photo réduite dans le téléphone avant l'envoi. |
 | Style | **CSS simple avec variables** | Les variables Figma portent déjà leur nom CSS (`--color-bg-page`…). |
 | Polices | Space Grotesk et IBM Plex, **hébergées chez nous** | Licence libre (OFL) ; aucun appel à Google Fonts, donc rien n'est transmis à un tiers. |
-| Statistiques | **Cloudflare Web Analytics** | Sans cookies, gratuit : pas de bannière. |
+| Statistiques | **Analyses intégrées de Cloudflare** *(au lieu de Web Analytics, modifié le 18.11.2026)* | Calculées par les serveurs de Cloudflare : aucun script, aucun cookie, aucun tiers chez le visiteur, gratuit, pas de bannière. |
 | Suivi des erreurs | **Sentry**, offre gratuite | Voir les plantages en ligne. À mentionner dans la politique de confidentialité. |
 | Tests et qualité | **Vitest**, **Playwright** + **axe**, **Lighthouse CI**, **lychee**, dans **GitHub Actions** | Couvre automatiquement la checklist : tests, accessibilité, vitesse, liens cassés. |
 
@@ -88,6 +88,6 @@ L'essai du lot 1 ([détails](../../tools/essai-recherche/README.md)) a montré q
 | Première recherche d'un visiteur | 60 Ko en médiane (0,6 s en 4G à 1 Mbit/s), 231 Ko au pire ; puis les fichiers restent en cache |
 
 À reprendre dans les lots suivants :
-- **Lot 2** : vérifier que Cloudflare compresse les fichiers statiques ; sinon, publier des fichiers déjà compressés et les décompresser dans le navigateur.
+- ~~**Lot 2** : vérifier que Cloudflare compresse les fichiers statiques~~ : vérifié le 18.11.2026 sur le site de test. Cloudflare **ne compresse pas les `.tsv`**, mais compresse les `.txt` et `.json` (65 Ko → 12 Ko en brotli). Les fichiers de l'index seront donc publiés en `.txt`, avec le même contenu.
 - **Lot 3** : construire l'index depuis l'import mensuel du Catalogue of Life XR ; ajouter un vrai score de notoriété (observations GBIF, photo, Wikipédia) ; décider, en mesurant le volume, si les listes par pays vont dans D1 ou en fichiers.
 - **Lot 5** : réécrire la clé phonétique et le score en TypeScript, avec les mêmes tests.

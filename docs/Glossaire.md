@@ -24,6 +24,8 @@
 | **Îlot (island)** | Morceau interactif d'une page Astro (la carte, la recherche…) ; le reste de la page reste du simple HTML. |
 | **Svelte** | Outil pour écrire les parties interactives ; il produit très peu de code dans le navigateur. |
 | **TypeScript** | JavaScript avec des types : beaucoup d'erreurs sont repérées avant même de lancer le site. |
+| **hreflang** | Balise qui indique aux moteurs de recherche les versions d'une page dans les autres langues (`/fr` ↔ `/en`). `x-default` désigne la version à proposer quand aucune langue ne correspond. |
+| **Accept-Language** | Information envoyée par le navigateur à chaque page, qui donne les langues préférées de la personne (« fr-FR, en ; q=0.8 »). La racine du site s'en sert pour choisir la langue, sans cookie. |
 | **Cloudflare Workers** | Petits programmes qui tournent sur les serveurs de Cloudflare, près du visiteur. C'est notre serveur. |
 | **D1** | Base de données de Cloudflare (SQLite). Elle contient notre index de recherche et nos listes. |
 | **Cache** | Copie d'une page ou d'une réponse gardée de côté pour la resservir aussitôt, sans tout recalculer. |
@@ -35,8 +37,17 @@
 | **Clé phonétique** | Version simplifiée d'un nom qui ne garde que son « son », selon les règles de sa langue : « boulot » et « bouleau » donnent tous deux `bUlo`. Elle est calculée pour chaque nom à l'import, et pour le texte tapé au moment de la recherche. |
 | **Trigramme** | Groupe de 3 lettres qui se suivent (« chêne » → `che`, `hen`, `ene`). Un index par trigrammes retrouve un mot à partir de n'importe quel morceau. |
 | **Intégration continue (GitHub Actions)** | Vérifications lancées automatiquement à chaque envoi de code : tests, accessibilité, vitesse, liens cassés. |
+| **Playwright** | Outil qui pilote un vrai navigateur pour tester le site comme un visiteur : cliquer, taper au clavier, vérifier ce qui s'affiche. |
+| **axe** | Outil qui vérifie automatiquement l'accessibilité d'une page (règles WCAG) ; nous le lançons depuis Playwright. |
+| **Vitest** | Outil de tests unitaires : il vérifie de petites fonctions isolées (par ex. le choix de la langue d'après le navigateur), sans navigateur, en quelques millisecondes. |
+| **lychee** | Outil qui vérifie que les liens d'un site ou d'une documentation ne sont pas cassés. |
+| **Budget de poids** | Poids maximal autorisé pour une page (fichiers, scripts, polices). La vérification Lighthouse échoue s'il est dépassé. |
 | **Lighthouse** | Outil de Google qui mesure la vitesse, l'accessibilité et le référencement d'une page. |
-| **Sentry** | Service qui signale les erreurs du site en ligne. |
+| **Sentry** | Service qui signale les erreurs du site en ligne. Chez nous, seulement celles du serveur, sans aucune donnée sur le visiteur. |
+| **DSN (Sentry)** | Adresse qui permet au site d'envoyer ses erreurs à notre projet Sentry. Gardée dans les secrets Cloudflare, jamais dans le dépôt. |
+| **Analyses intégrées de Cloudflare** | Statistiques (requêtes, pages vues, visites, pays) que Cloudflare calcule sur ses serveurs pour chaque domaine, sans rien ajouter dans la page : ni script, ni cookie. |
+| **Site de test** | Copie du site en ligne (`test.nomenature.org`) pour vérifier une version avant de l'ouvrir au public. Les moteurs de recherche ne l'indexent pas. |
+| **Compression (gzip, brotli)** | Le serveur réduit les fichiers texte avant de les envoyer, et le navigateur les remet en état : un fichier de 65 Ko n'en pèse plus que 12. |
 | **Catalogue of Life (COL) / COL XR** | Liste mondiale de référence des noms d'espèces. La version « XR » (étendue) est complétée par des milliers d'autres listes ; c'est celle qu'utilise GBIF depuis 2026. |
 | **Genre** | Groupe d'espèces très proches, première partie du nom latin (*Quercus* = les chênes). Beaucoup de noms courants désignent un genre plutôt qu'une espèce (« chêne », « bouleau »). |
 | **Synonyme** | Ancien ou autre nom latin d'une espèce (*Quercus pedunculata* est un synonyme de *Quercus robur*). La recherche doit les comprendre et renvoyer vers le nom accepté. |

@@ -2,6 +2,8 @@
 .env
 .env.*
 !.env.example
+# Seulement le nom de l'environnement Cloudflare du site de test, aucun secret.
+!.env.essai
 *.local.json
 
 # Obsidian: personal workspace state (the vault config itself is versioned)
@@ -34,3 +36,18 @@ tools/maquettes/carte_monde_points.json
 tools/essai-recherche/data/
 tools/essai-recherche/node_modules/
 tools/essai-recherche/.wrangler/
+
+# Site (Astro, Wrangler)
+node_modules/
+dist/
+.astro/
+.wrangler/
+.dev.vars
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+
+# Lighthouse CI
+.lighthouseci/
