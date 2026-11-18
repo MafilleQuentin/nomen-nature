@@ -23,7 +23,7 @@ Un site **Astro** hébergé gratuitement chez **Cloudflare**, qui gère déjà l
 
 | Brique | Choix | Pourquoi |
 |---|---|---|
-| Site | **Astro 7** + **TypeScript** *(Astro 6 au moment du choix, remplacé par la version 7 au démarrage du lot 2)* | Fait pour les sites de contenu. Pages générées à la demande puis mises en cache, bilingue `/fr/` et `/en/`, plan du site. |
+| Site | **Astro 7** + **TypeScript** *(Astro 6 au moment du choix, remplacé par la version 7 au démarrage du lot 2)* | Fait pour les sites de contenu. Pages générées à la demande puis mises en cache, bilingue `/fr` et `/en` *(adresses traduites, voir le journal des décisions du 18.11.2026)*, plan du site. |
 | Parties interactives | **Svelte** (îlots Astro) | Très peu de code envoyé au navigateur, code lisible. |
 | Hébergement | **Cloudflare Workers**, offre gratuite | Même compte que le domaine, HTTPS automatique, cache dans le monde entier, pris en charge nativement par Astro. |
 | Recherche | **Index en fichiers statiques** *(modifié le 18.11.2026, voir plus bas)* | Noms FR/EN/latin et leur clé phonétique, découpés en petits fichiers publiés avec le site ; le navigateur charge seulement ceux qui correspondent au début du texte tapé, puis trie. |

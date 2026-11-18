@@ -24,6 +24,8 @@
 | **Îlot (island)** | Morceau interactif d'une page Astro (la carte, la recherche…) ; le reste de la page reste du simple HTML. |
 | **Svelte** | Outil pour écrire les parties interactives ; il produit très peu de code dans le navigateur. |
 | **TypeScript** | JavaScript avec des types : beaucoup d'erreurs sont repérées avant même de lancer le site. |
+| **hreflang** | Balise qui indique aux moteurs de recherche les versions d'une page dans les autres langues (`/fr` ↔ `/en`). `x-default` désigne la version à proposer quand aucune langue ne correspond. |
+| **Accept-Language** | Information envoyée par le navigateur à chaque page, qui donne les langues préférées de la personne (« fr-FR, en ; q=0.8 »). La racine du site s'en sert pour choisir la langue, sans cookie. |
 | **Cloudflare Workers** | Petits programmes qui tournent sur les serveurs de Cloudflare, près du visiteur. C'est notre serveur. |
 | **D1** | Base de données de Cloudflare (SQLite). Elle contient notre index de recherche et nos listes. |
 | **Cache** | Copie d'une page ou d'une réponse gardée de côté pour la resservir aussitôt, sans tout recalculer. |

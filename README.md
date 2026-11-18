@@ -46,7 +46,9 @@ npm install
 npm run dev
 ```
 
-Le site s'ouvre sur <http://localhost:4321>. Le premier démarrage prend une vingtaine de secondes.
+Le site s'ouvre sur <http://localhost:4321>, qui envoie vers `/fr` ou `/en` selon la langue du navigateur. Le premier démarrage prend une vingtaine de secondes.
+
+Les textes de l'interface sont dans `src/i18n/textes.ts` (français et anglais) et les adresses des pages dans `src/lib/liens.ts`.
 
 | Commande | Rôle |
 |---|---|
