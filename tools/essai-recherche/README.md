@@ -11,12 +11,22 @@ Les données téléchargées et générées vont dans `data/`, **ignoré par git
 | QUE-5 | `telecharger.py` | Télécharge le Catalogue of Life XR : l'export à plat (137 Mo) et, depuis l'archive mensuelle de 1,4 Go, **seulement** la table des noms courants (35 Mo, grâce aux requêtes HTTP partielles). |
 | QUE-5 | `extraire_noms.py` | Garde les animaux, plantes et champignons, et écrit `data/taxa.tsv` (taxons) et `data/noms.tsv` (noms cherchables). |
 
+| QUE-6 | `schema.sql`, `charger.py` | Charge les taxons et les noms dans une base SQLite (`sqlite`, pour comparer des variantes) ou dans la base **D1 locale** de Wrangler (`d1`), avec un index par trigrammes qui ignore majuscules et accents. |
+
 ```bash
 python telecharger.py
 ```
 
 ```bash
 python -X utf8 extraire_noms.py
+```
+
+```bash
+npm install
+```
+
+```bash
+python -X utf8 charger.py d1
 ```
 
 ## Source
@@ -50,3 +60,20 @@ C'est volontairement le **cas le plus lourd** : toutes les espèces du Catalogue
 - Un même nom courant peut désigner plusieurs taxons (« Silver Birch » : 4). Les résultats devront être triés, par exemple les espèces bien documentées d'abord.
 - Seules 2 % des espèces ont un nom français. Wikidata pourra en ajouter au lot 3 si besoin.
 - Les synonymes latins doublent presque le nombre de noms : on mesurera la recherche avec et sans eux.
+
+## Chargement dans D1 (18.11.2026)
+
+**Schéma** (`schema.sql`) : une table `taxon`, une table `nom` (un nom par ligne) et un index plein texte `nom_fts`. L'index découpe les noms en **trigrammes** (groupes de 3 lettres), sans tenir compte des majuscules ni des accents : « chene pedoncule » trouve « chêne pédonculé », et « Quercus rob » trouve *Quercus robur*. Il pointe vers la table `nom` au lieu de recopier les noms (« contenu externe »).
+
+| Variante | Noms | Taille | Chargement |
+|---|---|---|---|
+| SQLite, avec synonymes | 5 133 164 | 975 Mo | 45 s |
+| SQLite, sans synonymes | 3 118 063 | 709 Mo | 28 s |
+| **D1 local (Wrangler 4.157), avec synonymes** | 5 133 164 | **993 Mo** | 4 min (41 fichiers SQL) + 23 s pour l'index |
+
+**Verdict de QUE-6** : la base complète tient largement dans les 5 Go gratuits de D1, soit environ un cinquième. D1 accepte l'index par trigrammes avec `remove_diacritics`, et une recherche répond en quelques millisecondes en local.
+
+Premières recherches à la main, avant la clé phonétique (QUE-7) :
+- « boulot » ne trouve pas le bouleau : c'est le rôle de la clé phonétique.
+- Le tri est à travailler (QUE-8) : « bouleau » est posé sur deux espèces avant le genre *Betula*, et « chêne » fait remonter des noms latins comme *Cheneya*.
+- **D1 local ne donne pas les lignes lues** : `meta` ne contient que la durée, et `sqlite_version()` est refusé. Pour QUE-9, il faudra une base D1 en ligne (compte Cloudflare) ou une estimation par `EXPLAIN QUERY PLAN`.
