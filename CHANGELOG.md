@@ -15,7 +15,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ### Modifié
 - Sources de données : le Catalogue of Life XR remplace la GBIF Backbone comme référentiel des noms.
-- Stack technique : la recherche passe par un index en fichiers statiques au lieu de D1 (D1 gratuit limité à 500 Mo par base et 100 000 écritures par jour).
+- Stack technique : la recherche passe par un index en fichiers statiques au lieu de D1 (D1 gratuit limité à 500 Mo par base et 100 000 écritures par jour), sans synonymes latins (verdict du lot 1).
 
 ## [0.4.0] - 2026-11-18
 
