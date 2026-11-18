@@ -2,67 +2,78 @@
 // En-tête (Figma « En-tête », 76:60) et menu sur téléphone (« Menu · Téléphone », 95:427).
 // Ordinateur : logo, navigation, langue. Téléphone : logo, langue, bouton menu qui ouvre
 // un panneau plein écran (<dialog> natif : focus piégé, touche Échap, retour du focus).
+// Les textes viennent de src/i18n/textes.ts, les adresses de src/lib/liens.ts.
 import courbes from "../assets/motifs/courbes-menu.svg?url";
-import { liens } from "../lib/liens";
+import { langues, nomsLangues, type Langue } from "../i18n/langues";
+import { t } from "../i18n/textes";
+import { lien } from "../lib/liens";
 import Icone, { type NomIcone } from "./Icone.astro";
 import Logo from "./Logo.astro";
 
+interface Props {
+  langue: Langue;
+  /** Adresse de la page courante dans chaque langue. */
+  versions: Record<Langue, string>;
+}
+
+const { langue, versions } = Astro.props;
+const textes = t(langue);
+// Deux langues pour l'instant : le lien de l'en-tête mène à l'autre.
+const autre: Langue = langue === "fr" ? "en" : "fr";
+
 const navigation = [
-  { libelle: "Explorer", href: liens.carte },
-  { libelle: "Identifier", href: liens.identifier },
-  { libelle: "Espèces menacées", href: liens.menacees },
-  { libelle: "À propos", href: liens.aPropos },
+  { libelle: textes.enTete.explorer, href: lien("carte", langue) },
+  { libelle: textes.enTete.identifier, href: lien("identifier", langue) },
+  { libelle: textes.enTete.menacees, href: lien("menacees", langue) },
+  { libelle: textes.enTete.aPropos, href: lien("aPropos", langue) },
 ];
 
 const menu: { libelle: string; href: string; icone: NomIcone }[] = [
-  { libelle: "Explorer la carte", href: liens.carte, icone: "globe" },
-  { libelle: "Autour de moi", href: liens.autourDeMoi, icone: "position" },
-  { libelle: "Identifier une plante", href: liens.identifier, icone: "appareil-photo" },
-  { libelle: "Espèces menacées", href: liens.menacees, icone: "feuille" },
-  { libelle: "Rechercher", href: liens.recherche, icone: "recherche" },
+  { libelle: textes.menu.carte, href: lien("carte", langue), icone: "globe" },
+  { libelle: textes.menu.autourDeMoi, href: lien("autourDeMoi", langue), icone: "position" },
+  { libelle: textes.menu.identifier, href: lien("identifier", langue), icone: "appareil-photo" },
+  { libelle: textes.menu.menacees, href: lien("menacees", langue), icone: "feuille" },
+  { libelle: textes.menu.recherche, href: lien("recherche", langue), icone: "recherche" },
 ];
 
 const annexes = [
-  { libelle: "À propos", href: liens.aPropos },
-  { libelle: "Sources et crédits", href: liens.sources },
-  { libelle: "Confidentialité", href: liens.confidentialite },
-  { libelle: "Mentions légales", href: liens.mentionsLegales },
+  { libelle: textes.annexes.aPropos, href: lien("aPropos", langue) },
+  { libelle: textes.annexes.sources, href: lien("sources", langue) },
+  { libelle: textes.annexes.confidentialite, href: lien("confidentialite", langue) },
+  { libelle: textes.annexes.mentionsLegales, href: lien("mentionsLegales", langue) },
 ];
-
-// La version anglaise arrive avec QUE-14.
-const versionAnglaise = "/en/";
 ---
 
 <header class="en-tete">
-  <Logo />
+  <Logo langue={langue} />
 
-  <nav class="navigation" aria-label="Navigation principale">
+  <nav class="navigation" aria-label={textes.enTete.navigation}>
     <ul class="t-mono-navigation">
       {navigation.map(({ libelle, href }) => <li><a href={href}>{libelle}</a></li>)}
     </ul>
   </nav>
 
   <div class="actions">
-    <a class="langue" href={versionAnglaise} hreflang="en" lang="en" aria-label="FR, English version">
+    <a class="langue" href={versions[autre]} hreflang={autre} lang={autre} aria-label={textes.enTete.autreLangue}>
       <Icone nom="globe" taille={18} class="langue__icone-ordi" />
       <Icone nom="globe" taille={22} class="langue__icone-tel" />
-      <span class="t-libelle-petit langue__code" aria-hidden="true">FR</span>
+      <span class="t-libelle-petit langue__code" aria-hidden="true">{nomsLangues[langue].code}</span>
     </a>
-    <button class="bouton-menu" type="button" aria-label="Ouvrir le menu" aria-haspopup="dialog" aria-controls="menu" aria-expanded="false" data-ouvrir-menu>
+    <button class="bouton-menu" type="button" aria-label={textes.enTete.ouvrirMenu} aria-haspopup="dialog" aria-controls="menu" aria-expanded="false" data-ouvrir-menu>
       <Icone nom="menu" taille={24} />
     </button>
   </div>
 </header>
 
-<dialog id="menu" class="menu" aria-label="Menu" style={`--courbes: url("${courbes}")`}>
+<dialog id="menu" class="menu" aria-label={textes.enTete.menu} style={`--courbes: url("${courbes}")`}>
   <div class="menu__haut">
-    <Logo />
-    <button class="bouton-fermer" type="button" aria-label="Fermer le menu" data-fermer-menu>
+    <Logo langue={langue} />
+    <button class="bouton-fermer" type="button" aria-label={textes.enTete.fermerMenu} data-fermer-menu>
       <Icone nom="fermer" taille={26} />
     </button>
   </div>
 
-  <nav class="menu__navigation" aria-label="Menu">
+  <nav class="menu__navigation" aria-label={textes.enTete.menu}>
     <ul>
       {menu.map(({ libelle, href, icone }) => (
         <li>
@@ -78,9 +89,18 @@ const versionAnglaise = "/en/";
 
   <div class="menu__bas">
     <div class="menu__langue" role="group" aria-labelledby="menu-langue">
-      <span id="menu-langue" class="t-mono-surtitre secondaire">Langue</span>
-      <a class="puce puce--selectionnee t-libelle-petit" href="/" aria-current="true" lang="fr">Français</a>
-      <a class="puce t-libelle-petit" href={versionAnglaise} hreflang="en" lang="en">English</a>
+      <span id="menu-langue" class="t-mono-surtitre secondaire">{textes.menu.langue}</span>
+      {langues.map((l) => (
+        <a
+          class:list={["puce t-libelle-petit", { "puce--selectionnee": l === langue }]}
+          href={versions[l]}
+          hreflang={l === langue ? undefined : l}
+          lang={l}
+          aria-current={l === langue ? "true" : undefined}
+        >
+          {nomsLangues[l].nom}
+        </a>
+      ))}
     </div>
     <ul class="menu__annexes t-mono-legende">
       {annexes.map(({ libelle, href }) => <li><a href={href}>{libelle}</a></li>)}

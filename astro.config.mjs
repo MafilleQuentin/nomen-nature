@@ -14,11 +14,20 @@ import { defineConfig, fontProviders } from "astro/config";
 // - Polices : téléchargées depuis Fontsource à la construction, puis servies par notre
 //   site (aucun appel à Google Fonts ni à un tiers pendant la visite). Licence OFL.
 //   Seules les graisses utilisées par le design system ; latin et latin étendu.
+// - Bilingue : chaque page existe sous /fr/… et /en/…, avec des adresses traduites
+//   (/fr/a-propos ↔ /en/about, table dans src/lib/liens.ts). Pas de routage i18n d'Astro :
+//   il ne gère pas les adresses traduites, et sa détection de la langue du navigateur
+//   ignore « en-GB » quand seul « en » est déclaré. La racine redirige elle-même vers la
+//   langue du navigateur (src/pages/index.ts).
+// - Adresses sans barre finale (/fr/a-propos) : pages construites en fichiers .html,
+//   que Cloudflare sert sans extension.
 /** @type {[string, ...string[]]} */
 const sousEnsembles = ["latin", "latin-ext"];
 
 export default defineConfig({
   site: "https://nomenature.org",
+  trailingSlash: "never",
+  build: { format: "file" },
   session: false,
   adapter: cloudflare({ imageService: "compile" }),
   integrations: [svelte()],

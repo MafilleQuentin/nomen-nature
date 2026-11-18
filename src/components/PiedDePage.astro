@@ -1,25 +1,36 @@
 ---
 // Pied de page (Figma « Pied de page », 93:99), présent sur toutes les pages :
 // mention « gratuit et sans publicité », sources des données, pages annexes et langue.
-import { liens } from "../lib/liens";
+import { langues, nomsLangues, type Langue } from "../i18n/langues";
+import { t } from "../i18n/textes";
+import { lien } from "../lib/liens";
+
+interface Props {
+  langue: Langue;
+  /** Adresse de la page courante dans chaque langue. */
+  versions: Record<Langue, string>;
+}
+
+const { langue, versions } = Astro.props;
+const textes = t(langue);
 
 // Deux groupes, pour que la coupure sur téléphone tombe au bon endroit (comme dans Figma).
 const groupe1 = [
-  { libelle: "À propos", href: liens.aPropos },
-  { libelle: "Sources et crédits", href: liens.sources },
+  { libelle: textes.annexes.aPropos, href: lien("aPropos", langue) },
+  { libelle: textes.annexes.sources, href: lien("sources", langue) },
 ];
 const groupe2 = [
-  { libelle: "Confidentialité", href: liens.confidentialite },
-  { libelle: "Mentions légales", href: liens.mentionsLegales },
+  { libelle: textes.annexes.confidentialite, href: lien("confidentialite", langue) },
+  { libelle: textes.annexes.mentionsLegales, href: lien("mentionsLegales", langue) },
 ];
 ---
 
 <footer class="pied t-mono-legende">
   <p class="pied__mention">
-    <span class="ordi">Nomen Nature · gratuit et sans publicité · données GBIF, Wikipédia, UICN, Pl@ntNet</span>
-    <span class="tel">Gratuit et sans publicité</span>
+    <span class="ordi">{textes.piedDePage.mention}</span>
+    <span class="tel">{textes.piedDePage.mentionCourte}</span>
   </p>
-  <nav class="pied__liens" aria-label="Pages annexes">
+  <nav class="pied__liens" aria-label={textes.annexes.titre}>
     <ul>
       {groupe1.map(({ libelle, href }) => <li><a href={href}>{libelle}</a></li>)}
     </ul>
@@ -27,9 +38,21 @@ const groupe2 = [
       {groupe2.map(({ libelle, href }) => <li><a href={href}>{libelle}</a></li>)}
       <li>
         <span class="langues">
-          <a href="/" aria-current="true" lang="fr" aria-label="FR, Français">FR</a>
-          <span aria-hidden="true">/</span>
-          <a href="/en/" hreflang="en" lang="en" aria-label="EN, English">EN</a>
+          {langues.map((l, i) => (
+            <>
+              {i > 0 && <span aria-hidden="true">/</span>}
+              {/* Le nom accessible commence par le code affiché (WCAG 2.5.3). */}
+              <a
+                href={versions[l]}
+                hreflang={l === langue ? undefined : l}
+                lang={l}
+                aria-current={l === langue ? "true" : undefined}
+                aria-label={`${nomsLangues[l].code}, ${nomsLangues[l].nom}`}
+              >
+                {nomsLangues[l].code}
+              </a>
+            </>
+          ))}
         </span>
       </li>
     </ul>

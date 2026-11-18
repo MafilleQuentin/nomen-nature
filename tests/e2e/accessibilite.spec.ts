@@ -4,7 +4,8 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
 const pages = [
-  { nom: "accueil", chemin: "/" },
+  { nom: "accueil (fr)", chemin: "/fr" },
+  { nom: "accueil (en)", chemin: "/en" },
   { nom: "design system", chemin: "/design-system" },
 ];
 
@@ -28,15 +29,17 @@ for (const { nom, chemin } of pages) {
 
 test("menu sur téléphone ouvert : aucune violation axe", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "telephone", "Le menu plein écran n'existe que sur téléphone.");
-  await page.goto("/");
-  await page.getByRole("button", { name: "Ouvrir le menu" }).click();
-  await expect(page.getByRole("dialog", { name: "Menu" })).toBeVisible();
-  await auditer(page);
+  for (const [chemin, ouvrir] of [["/fr", "Ouvrir le menu"], ["/en", "Open menu"]] as const) {
+    await page.goto(chemin);
+    await page.getByRole("button", { name: ouvrir }).click();
+    await expect(page.getByRole("dialog", { name: "Menu" })).toBeVisible();
+    await auditer(page);
+  }
 });
 
 test("menu sur téléphone : Échap ferme et rend le focus au bouton", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "telephone", "Le menu plein écran n'existe que sur téléphone.");
-  await page.goto("/");
+  await page.goto("/fr");
   const bouton = page.getByRole("button", { name: "Ouvrir le menu" });
   await bouton.click();
   await expect(bouton).toHaveAttribute("aria-expanded", "true");
@@ -47,7 +50,7 @@ test("menu sur téléphone : Échap ferme et rend le focus au bouton", async ({ 
 });
 
 test("le lien d'évitement est le premier élément atteint au clavier", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/fr");
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Aller au contenu" })).toBeFocused();
 });

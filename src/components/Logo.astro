@@ -2,10 +2,18 @@
 // Logo provisoire (Figma « Logo », 75:2) : feuille menthe + mot-symbole « Nomen ».
 // À remplacer par le logo définitif (QUE-41).
 import feuille from "../assets/icones/logo-feuille.svg?url";
-import { liens } from "../lib/liens";
+import type { Langue } from "../i18n/langues";
+import { t } from "../i18n/textes";
+import { lien } from "../lib/liens";
+
+interface Props {
+  langue: Langue;
+}
+
+const { langue } = Astro.props;
 ---
 
-<a class="logo" href={liens.accueil} aria-label="Nomen Nature, accueil">
+<a class="logo" href={lien("accueil", langue)} aria-label={t(langue).general.logo}>
   <img src={feuille} alt="" width="30" height="30" />
   <span class="t-logo">Nomen</span>
 </a>
