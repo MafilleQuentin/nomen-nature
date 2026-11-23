@@ -5,6 +5,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ## [Non publié]
 
+## [0.7.0] - 2026-11-23
+
+Lot 3 terminé : les données. Un import mensuel automatique réunit le Catalogue of Life XR, les observations GBIF, la World Checklist of Vascular Plants et Wikidata pour produire l'index de la recherche, les 13 groupes courants, le statut UICN, le score « bien documentée » et les listes de 251 pays et 7 continents. Prochain lot : la fiche espèce.
+
 ### Ajouté
 - Note de conception « Données » : volumes mesurés sur les vraies données (1 648 413 espèces observées, 5 986 994 couples espèce × pays) et architecture validée (QUE-18).
 - Import mensuel des données en TypeScript (`npm run donnees:import`) : dernière version du Catalogue of Life XR, téléchargements SQL de GBIF (réutilisés s'ils sont récents, refus d'un résultat presque vide), index de la recherche limité aux espèces observées (7 965 fichiers `.txt`, 39/40 au jeu de test du lot 1) (QUE-18).
@@ -105,7 +109,8 @@ Fin du cadrage : le projet est défini, aucune ligne de code encore.
 - Coffre Obsidian dans `docs/`.
 - Licence MIT.
 
-[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.6.0...HEAD
+[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.3.0...v0.4.0
