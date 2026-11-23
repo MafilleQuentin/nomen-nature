@@ -4,8 +4,9 @@
 // 1. Catalogue of Life XR, dernière version (col.ts) ;
 // 2. observations GBIF : réutilise un téléchargement récent ou en demande un (~20 minutes) (gbif.ts) ;
 // 3. groupes courants des espèces observées, avec les formes de vie de WCVP (groupes.ts) ;
-// 4. index de la recherche (index-recherche.ts) ;
-// 5. sources.json : éditions, DOI, licences et citations, pour la page des crédits.
+// 4. statut UICN et score « bien documentée », avec Wikidata (score.ts) : data/especes.tsv ;
+// 5. index de la recherche (index-recherche.ts) ;
+// 6. sources.json : éditions, DOI, licences et citations, pour la page des crédits.
 //
 // Le paquet est le dossier tools/donnees/data/paquet/ : à zipper tel quel (le workflow
 // GitHub le fait), puis à installer dans public/donnees/ avant de construire le site
@@ -18,6 +19,7 @@ import { extraire, version } from "./col.ts";
 import { preparer } from "./gbif.ts";
 import { CITATION_WCVP, classer, telechargerWcvp } from "./groupes.ts";
 import { construire } from "./index-recherche.ts";
+import { CITATION_WIKIDATA, calculer } from "./score.ts";
 
 const DONNEES = "tools/donnees/data";
 export const PAQUET = join(DONNEES, "paquet");
@@ -38,13 +40,17 @@ etape("3. Groupes courants");
 const groupes = await classer(dossierCol, join(DONNEES, "gbif", "especes.tsv"), await telechargerWcvp(join(DONNEES, "wcvp")), join(DONNEES, "groupes.tsv"));
 console.log(groupes);
 
-etape("4. Index de la recherche");
+etape("4. Score « bien documentée »");
+const documentation = await calculer(dossierCol, DONNEES);
+console.log(documentation);
+
+etape("5. Index de la recherche");
 rmSync(PAQUET, { recursive: true, force: true });
 mkdirSync(PAQUET, { recursive: true });
 const index = await construire(dossierCol, join(DONNEES, "gbif", "especes.tsv"), join(PAQUET, "recherche"));
 console.log(index);
 
-etape("5. Sources");
+etape("6. Sources");
 const sources = {
   construction: new Date().toISOString(),
   catalogue_of_life: {
@@ -57,7 +63,8 @@ const sources = {
   },
   gbif: gbif.telechargements,
   wcvp: { usage: "formes de vie des plantes (groupe « arbres »)", licence: "CC BY 3.0", citation: CITATION_WCVP },
-  chiffres: { especes_observees: gbif.especes, index_fichiers: index.fichiers, groupes },
+  wikidata: { usage: "photos et articles Wikipédia (score « bien documentée »)", licence: "CC0", citation: CITATION_WIKIDATA },
+  chiffres: { especes_observees: gbif.especes, index_fichiers: index.fichiers, groupes, documentation },
 };
 writeFileSync(join(PAQUET, "sources.json"), JSON.stringify(sources, null, 2) + "\n");
 const mois = sources.construction.slice(0, 7);

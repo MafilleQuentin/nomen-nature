@@ -7,6 +7,7 @@ const s = JSON.parse(readFileSync("tools/donnees/data/paquet/sources.json", "utf
   catalogue_of_life: { edition: string; doi: string; citation: string; licence: string };
   gbif: { doi: string; licence: string; citation: string; lignes: number }[];
   wcvp?: { citation: string; licence: string };
+  wikidata?: { citation: string; licence: string };
   chiffres: { especes_observees: number; index_fichiers: number; groupes?: Record<string, number> };
 };
 const nombre = (n: number) => n.toLocaleString("fr-CH");
@@ -22,4 +23,4 @@ Installé dans le site par \`npm run donnees:installer\`, avant la construction.
 
 - ${s.catalogue_of_life.citation} — licence ${s.catalogue_of_life.licence}
 ${s.gbif.map((g) => `- ${g.citation} — licence ${g.licence.includes("by-nc") ? "CC BY-NC 4.0" : g.licence}`).join("\n")}
-${s.wcvp ? `- ${s.wcvp.citation} — licence ${s.wcvp.licence}\n` : ""}`);
+${s.wcvp ? `- ${s.wcvp.citation} — licence ${s.wcvp.licence}\n` : ""}${s.wikidata ? `- ${s.wikidata.citation} — ${s.wikidata.licence}\n` : ""}`);

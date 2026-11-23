@@ -94,9 +94,27 @@ Chaque espèce observée entre dans un seul des 13 groupes du brief, d'après sa
 
 **96 %** des plantes vasculaires observées sont reliées à WCVP par leur nom (synonymes de WCVP compris). Une espèce n'est que dans un groupe : un arbre en fleurs est un arbre.
 
+## Statut UICN et score « bien documentée » (QUE-20, validé le 23.11.2026)
+
+- **Statut UICN** : celui des observations GBIF ; un statut évalué l'emporte sur « NE ». 34 953 espèces observées sont menacées (CR, EN, VU).
+- **Score sur 10** : photo 3, nom français 3, article Wikipédia 2 (français) ou 1 (anglais seulement), observations dans le monde 1 (≥ 1 000) ou 2 (≥ 100 000). Les listes trient par score, puis par observations dans le pays.
+- **« Bien documentée »** : photo + nom français + article Wikipédia → **30 224 espèces**, qui auront la fiche complète (lot 4) ; les autres, la fiche simple.
+- **Source** : Wikidata (CC0), propriété P10585 « identifiant Catalogue of Life », interrogé par [QLever](https://qlever.dev) : les 2,3 millions d'espèces en 7 secondes (le service officiel de Wikidata dépasse sa limite de 60 secondes). Code : [`score.ts`](../../tools/donnees/score.ts).
+
+| Sur 1 648 413 espèces observées | Espèces |
+|---|---|
+| Dans Wikidata | 1 012 593 (61 %) |
+| Photo | 168 813 (10 %) |
+| Article Wikipédia anglais / français | 228 910 (14 %) / 76 111 (4,6 %) |
+| Nom français (Catalogue of Life) | 52 603 (3,2 %) |
+| Score 0 / 10 sur 10 | 1 302 675 / 2 704 |
+
+La table de l'import, `data/especes.tsv`, garde pour chaque espèce son groupe, son statut UICN, ses observations, son score, son nom français, son identifiant Wikidata, sa photo Commons et ses articles : elle servira aux listes (QUE-21) et aux fiches (lot 4).
+
 ## Questions ouvertes (lots suivants)
 
-- **QUE-20** : source exacte de la photo et de l'article Wikipédia (Wikidata : propriété « identifiant Catalogue of Life »), et pondération du score.
+- **Noms français** : seulement 3,2 % des espèces observées en ont un dans le Catalogue of Life, et Wikidata n'en ajoute que 249. Le titre de l'article Wikipédia français est souvent le nom français (« Chêne pédonculé ») : à étudier pour la recherche et les fiches (76 111 espèces ont un article).
+
 - **QUE-21** : table pays → continent, et seuil d'observations pour qu'une espèce figure dans la liste d'un pays.
 
 Voir aussi : [Stack technique](Stack%20technique.md) · [Sources de données](../01-Cadrage/Sources%20de%20donnees.md) · [Essai de la recherche](../../tools/essai-recherche/README.md)

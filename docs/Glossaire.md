@@ -45,6 +45,9 @@
 | **Lighthouse** | Outil de Google qui mesure la vitesse, l'accessibilité et le référencement d'une page. |
 | **WCVP** | *World Checklist of Vascular Plants*, la liste mondiale des plantes vasculaires tenue par les jardins botaniques de Kew. Nomen y prend la forme de vie de chaque plante pour reconnaître les arbres. Licence CC BY 3.0. |
 | **Forme de vie** | Allure générale d'une plante : arbre, arbuste, herbe annuelle, liane… (« tree », « shrub », « annual »… dans WCVP). |
+| **Wikidata** | Base de connaissances libre (CC0) liée à Wikipédia. Nomen y trouve, pour chaque espèce, sa photo (Wikimedia Commons) et ses articles Wikipédia, grâce à l'identifiant du Catalogue of Life. |
+| **QLever** | Moteur de requêtes sur Wikidata (université de Fribourg-en-Brisgau), assez rapide pour lire les 2,3 millions d'espèces en quelques secondes. |
+| **Score « bien documentée »** | Note sur 10 d'une espèce (photo, nom français, article Wikipédia, nombre d'observations) : elle classe les listes. « Bien documentée » = photo, nom français et article ; ces espèces ont la fiche complète. |
 | **Téléchargement SQL (GBIF)** | Demande faite à GBIF sous forme de requête SQL (ex. « nombre d'observations par espèce et par pays ») ; GBIF la calcule sur ses milliards d'observations en 15 à 20 minutes et renvoie un fichier. Il faut un compte GBIF. |
 | **DOI** | Identifiant permanent d'un jeu de données ou d'un article (ex. `10.15468/dl.hjxn9v`), qui permet de le citer. GBIF en attribue un à chaque téléchargement. |
 | **NE (non évaluée)** | Espèce que l'UICN n'a pas encore évaluée : la grande majorité (1,5 million sur 1,65 million d'espèces observées). Ce n'est pas un statut de menace. |

@@ -150,3 +150,27 @@ describe("les 13 groupes courants (QUE-19)", async () => {
     expect(groupe(classification, "shrub")).toBeUndefined();
   });
 });
+
+describe("score « bien documentée » (QUE-20)", async () => {
+  const { bienDocumentee, cellule, fichierCommons, score } = await import("../../tools/donnees/score.ts");
+  const doc = (photo: boolean, nomFrancais: boolean, wikipedia: "fr" | "en" | "", observations: number) => ({ photo, nomFrancais, wikipedia, observations });
+
+  it.each([
+    ["chêne pédonculé : tout, très observé", doc(true, true, "fr", 1_606_550), 10, true],
+    ["photo, nom, article anglais seulement", doc(true, true, "en", 500), 7, true],
+    ["photo seule, observée 1 000 fois", doc(true, false, "", 1_000), 4, false],
+    ["article anglais, 99 999 observations", doc(false, false, "en", 99_999), 2, false],
+    ["rien, 999 observations", doc(false, false, "", 999), 0, false],
+    ["nom français sans photo ni article", doc(false, true, "", 50), 3, false],
+  ] as const)("%s → %i", (_cas, d, attendu, bien) => {
+    expect(score(d)).toBe(attendu);
+    expect(bienDocumentee(d)).toBe(bien);
+  });
+
+  it("lit les cellules de QLever et le nom du fichier Commons", () => {
+    expect(cellule('"4R5YN"')).toBe("4R5YN");
+    expect(cellule("<http://www.wikidata.org/entity/Q165145>")).toBe("http://www.wikidata.org/entity/Q165145");
+    expect(fichierCommons("http://commons.wikimedia.org/wiki/Special:FilePath/Paprastasis%20azuolas.JPG")).toBe("Paprastasis azuolas.JPG");
+    expect(fichierCommons("")).toBe("");
+  });
+});
