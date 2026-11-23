@@ -12,11 +12,20 @@ Les fichiers téléchargés et produits vont dans `tools/donnees/data/`, ignoré
 | [`gbif-sql.ts`](gbif-sql.ts) | Téléchargements SQL de GBIF : valider, demander, attendre, télécharger. `obtenir` réutilise un résultat identique de moins de 25 jours du compte, sinon demande et attend (~20 minutes), et **refuse un résultat presque vide**. Identifiants dans `.env` (`GBIF_UTILISATEUR`, `GBIF_MOT_DE_PASSE`) |
 | [`gbif.ts`](gbif.ts) | Obtient les deux téléchargements et écrit `data/gbif/especes.tsv` (id, observations, statut UICN), `pays.tsv` (pays, id, observations) et `gbif.json` (DOI, licences, citations) |
 | [`index-recherche.ts`](index-recherche.ts) | Construit l'index de la recherche (dictionnaires `noms`, `cles`, `courts` et `manifeste.json`) à partir du Catalogue of Life et des espèces observées, en fichiers `.txt` d'environ 64 Ko, dans `data/index/` |
+| [`import.ts`](import.ts) | `npm run donnees:import` : enchaîne Catalogue of Life, GBIF et index, écrit `sources.json` (éditions, DOI, licences, citations) ; le paquet est le dossier `data/paquet/` |
+| [`installer.ts`](installer.ts) | `npm run donnees:installer` : installe le paquet de la dernière release GitHub « donnees-AAAA-MM » dans `public/donnees/` avant la construction du site (`--local` : le paquet construit sur ce poste) |
+| [`notes-release.ts`](notes-release.ts) | Texte de la release de données |
 | [`requetes/`](requetes/) | Les requêtes SQL envoyées à GBIF : espèces observées, espèces par pays, diagnostic des colonnes |
 | [`mesurer.ts`](mesurer.ts) | Mesures du 23.11.2026 (volumes, statuts UICN, lien avec le COL XR) |
 | [`zip.ts`](zip.ts) | Lit un seul fichier dans un zip, local ou distant (requêtes partielles), sans dépendance |
 
 La clé phonétique de la recherche est dans [`src/lib/recherche/phonetique.ts`](../../src/lib/recherche/phonetique.ts), partagée avec le navigateur.
+
+## Chaque mois, sur GitHub
+
+- Workflow [Données mensuelles](../../.github/workflows/donnees.yml) : le 20 du mois (une fois sur `main`), ou à la main. Import, paquet zippé, release « donnees-AAAA-MM » (qui ne prend pas la place de « latest »).
+- Workflow [Déploiement du site de test](../../.github/workflows/deploiement-test.yml) : après chaque import réussi et chaque fusion dans `develop`. Installe le paquet, construit, déploie sur https://test.nomenature.org et vérifie quelques adresses.
+- Secrets GitHub : `GBIF_UTILISATEUR`, `GBIF_MOT_DE_PASSE`, `CLOUDFLARE_API_TOKEN` (deux politiques : le compte, pour *Workers Scripts*, et le domaine nomenature.org, pour *Workers Routes*), `CLOUDFLARE_ACCOUNT_ID`.
 
 ## Utilisation
 

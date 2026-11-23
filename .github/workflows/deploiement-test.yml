@@ -10,8 +10,7 @@ name: Déploiement du site de test
 
 on:
   push:
-    # TEMPORAIRE (23.11.2026) : feat/donnees, pour un premier essai ; à retirer après.
-    branches: [develop, feat/donnees]
+    branches: [develop]
   workflow_run:
     workflows: ["Données mensuelles"]
     types: [completed]

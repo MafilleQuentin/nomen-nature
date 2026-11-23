@@ -152,12 +152,19 @@ export async function construire(dossierCol: string, fichierEspeces: string, sor
   // 3. Entrées des dictionnaires « noms » et « clés ».
   const parNom: Entree[] = [];
   const parCle: Entree[] = [];
+  let introuvables = 0;
   for (const { taxon, nom, langue, type } of noms) {
     const t = taxons.get(taxon);
     if (!t) continue;
+    const nomNormalise = normaliser(nom);
+    // Nom sans aucune lettre latine (ex. chinois étiqueté « anglais » dans le Catalogue of Life) :
+    // vide une fois normalisé, il ne pourrait jamais être trouvé.
+    if (!nomNormalise) {
+      introuvables++;
+      continue;
+    }
     const n = notoriete.get(taxon) ?? 0;
     const reste = [nom, langue, type, taxon, t.rang, t.nom, t.genre, t.famille, String(n)].join("\t");
-    const nomNormalise = normaliser(nom);
     parNom.push({ tri: nomNormalise, ligne: `${nomNormalise}\t${reste}`, notoriete: n });
     const k = cle(nom, langue);
     if (k) {
@@ -183,6 +190,7 @@ export async function construire(dossierCol: string, fichierEspeces: string, sor
     genres: [...taxons.values()].filter((t) => t.rang === "genus").length,
     familles: [...taxons.values()].filter((t) => t.rang === "family").length,
     noms_total: noms.length,
+    noms_sans_lettre_latine: introuvables,
     fichiers,
     ...Object.fromEntries(
       Object.entries(dictionnaires).map(([nom, d]) => [
