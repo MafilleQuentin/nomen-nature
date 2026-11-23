@@ -10,7 +10,8 @@ name: Déploiement du site de test
 
 on:
   push:
-    branches: [develop]
+    # TEMPORAIRE (23.11.2026) : feat/donnees, pour un premier essai ; à retirer après.
+    branches: [develop, feat/donnees]
   workflow_run:
     workflows: ["Données mensuelles"]
     types: [completed]
@@ -34,9 +35,11 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
+      # Après un import (workflow_run, lancé depuis main) : on construit develop. Sinon, la branche
+      # qui a déclenché le déploiement.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: develop
+          ref: ${{ github.event_name == 'workflow_run' && 'develop' || github.sha }}
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .node-version
