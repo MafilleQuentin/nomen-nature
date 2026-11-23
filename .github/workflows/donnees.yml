@@ -14,10 +14,6 @@ on:
   schedule:
     - cron: "0 3 20 * *"
   workflow_dispatch:
-  # TEMPORAIRE (23.11.2026) : premier essai depuis la branche du lot 3, à retirer après.
-  push:
-    branches: [feat/donnees]
-    paths: [.github/workflows/donnees.yml]
 
 permissions:
   contents: write # créer la release de données
