@@ -3,6 +3,8 @@
 import { Readable } from "node:stream";
 import { describe, expect, it } from "vitest";
 import { lignesTsv, nettoyer } from "../../tools/donnees/col.ts";
+import { choisirUicn } from "../../tools/donnees/gbif.ts";
+import { lireRequete } from "../../tools/donnees/gbif-sql.ts";
 import { entrees, ouvrirParNom, sourceLocale } from "../../tools/donnees/zip.ts";
 
 const ARCHIVE = "tests/unit/fixtures/exemple.zip"; // créée avec le module zipfile de Python
@@ -58,5 +60,27 @@ describe("nettoyage des noms courants", () => {
     ["Renard roux", "Renard roux"],
   ])("« %s » → « %s »", (brut, propre) => {
     expect(nettoyer(brut)).toBe(propre);
+  });
+});
+
+describe("statut UICN d'une espèce (règle de la note Données)", () => {
+  const statuts = (paires: [string, number][]) => new Map(paires);
+  it.each([
+    ["un statut évalué l'emporte sur NE, même moins observé", [["NE", 5000], ["LC", 3]], "LC"],
+    ["un statut évalué l'emporte sur l'absence de statut", [["", 100], ["VU", 1]], "VU"],
+    ["entre deux statuts évalués, le plus observé", [["LC", 10], ["NT", 50]], "NT"],
+    ["sans statut évalué : NE", [["NE", 7]], "NE"],
+    ["aucun statut du tout : NE", [["", 7]], "NE"],
+  ] as [string, [string, number][], string][])("%s", (_cas, paires, attendu) => {
+    expect(choisirUicn(statuts(paires))).toBe(attendu);
+  });
+});
+
+describe("requêtes SQL envoyées à GBIF", () => {
+  it("sont mises sur une seule ligne, sans commentaires", () => {
+    const sql = lireRequete("tools/donnees/requetes/especes-par-pays.sql");
+    expect(sql).not.toContain("\n");
+    expect(sql).toMatch(/^SELECT countrycode, specieskey, COUNT\(\*\) AS observations FROM occurrence WHERE /);
+    expect(sql).toContain("occurrencestatus = 'DETECTED'");
   });
 });

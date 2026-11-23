@@ -28,6 +28,7 @@ Détail : [script de mesure](../../tools/donnees/mesurer.ts).
 - Le statut UICN est donné par observation et varie parfois pour une même espèce (85 362 espèces, souvent « LC » et « NE »). **Règle : un statut évalué l'emporte toujours sur « NE ».**
 - Le code pays `ZZ` (pays inconnu, souvent en haute mer) regroupe 165 469 espèces : il n'aura pas de liste (les océans sont hors de la V1).
 - Un téléchargement prend 15 à 20 minutes chez GBIF.
+- **Licence des téléchargements GBIF : CC BY-NC 4.0** (certaines sources interdisent l'usage commercial). Compatible avec Nomen, non commercial pour toujours ; à indiquer dans les crédits avec le DOI de chaque téléchargement.
 
 ## Proposition
 
