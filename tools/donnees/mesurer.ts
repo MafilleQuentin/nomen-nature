@@ -41,11 +41,13 @@ const nombre = (n: number) => n.toLocaleString("fr-CH");
 const pourcent = (a: number, b: number) => `${((100 * a) / b).toFixed(1)} %`;
 
 // --- 1. Catalogue of Life XR : espèces acceptées, par nom et par règne ---
+const idsCol = new Set<string>(); // identifiants COL des espèces acceptées
 const col = new Map<string, string>(); // « règne|nom » → identifiant COL
 const colParNom = new Map<string, string[]>(); // nom → identifiants (homonymes entre règnes)
 for await (const t of lignes(fichierCol)) {
   if (t["rang"] !== "species") continue;
   const nom = t["nom_scientifique"] ?? "";
+  idsCol.add(t["id"] ?? "");
   col.set(`${t["regne"]}|${nom}`, t["id"] ?? "");
   colParNom.set(nom, [...(colParNom.get(nom) ?? []), t["id"] ?? ""]);
 }
@@ -58,6 +60,7 @@ const parUicn = new Map<string, number>();
 const especesGbif = new Set<string>();
 let especes = 0;
 let observations = 0;
+let relieesParId = 0;
 let reliees = 0;
 let relieesNomSeul = 0;
 let observationsReliees = 0;
@@ -78,7 +81,11 @@ for await (const e of lignes(fichierEspeces)) {
   const uicn = e["iucnredlistcategory"] || "(aucun)";
   parUicn.set(uicn, (parUicn.get(uicn) ?? 0) + 1);
   const nom = e["species"] ?? "";
-  if (col.has(`${regne}|${nom}`)) {
+  if (idsCol.has(e["specieskey"] ?? "")) {
+    // GBIF utilise déjà l'identifiant du Catalogue of Life XR : lien direct.
+    relieesParId++;
+    observationsReliees += n;
+  } else if (col.has(`${regne}|${nom}`)) {
     reliees++;
     observationsReliees += n;
   } else if (colParNom.get(nom)?.length === 1) {
@@ -100,9 +107,11 @@ noter(`- Statut UICN : ${[...parUicn].sort((a, b) => b[1] - a[1]).map(([c, n]) =
 noter();
 noter("## Correspondance avec le Catalogue of Life XR (nom scientifique)");
 noter();
+noter(`- Exemples d'identifiants GBIF : ${[...especesGbif].slice(0, 5).join(", ")}`);
+noter(`- Reliées par l'identifiant COL XR : ${nombre(relieesParId)} (${pourcent(relieesParId, especes)})`);
 noter(`- Reliées par nom et règne : ${nombre(reliees)} (${pourcent(reliees, especes)})`);
 noter(`- Reliées par le nom seul (pas d'homonyme) : ${nombre(relieesNomSeul)} (${pourcent(relieesNomSeul, especes)})`);
-noter(`- **Total relié : ${pourcent(reliees + relieesNomSeul, especes)} des espèces, ${pourcent(observationsReliees, observations)} des observations**`);
+noter(`- **Total relié : ${pourcent(relieesParId + reliees + relieesNomSeul, especes)} des espèces, ${pourcent(observationsReliees, observations)} des observations**`);
 noter(`- Non reliées les plus observées : ${nonReliees.sort((a, b) => b.obs - a.obs).slice(0, 15).map((x) => `${x.nom} (${nombre(x.obs)})`).join(", ")}`);
 noter();
 
