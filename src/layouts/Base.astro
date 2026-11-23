@@ -6,7 +6,7 @@ import EnTete from "../components/EnTete.astro";
 import PiedDePage from "../components/PiedDePage.astro";
 import { langues, type Langue } from "../i18n/langues";
 import { t } from "../i18n/textes";
-import { lien, traductions, type Page } from "../lib/liens";
+import { traductions, type Page } from "../lib/liens";
 import "../styles/global.css";
 
 interface Props {
@@ -15,15 +15,18 @@ interface Props {
   langue: Langue;
   /** Clé de la page dans la table des adresses : donne ses versions dans les autres langues. */
   page?: Page;
+  /** Ou, pour une page hors de la table (fiche espèce), ses adresses dans chaque langue. */
+  adresses?: Record<Langue, string>;
   indexer?: boolean;
 }
 
-const { titre, description, langue, page, indexer = true } = Astro.props;
+const { titre, description, langue, page, adresses, indexer = true } = Astro.props;
 const textes = t(langue);
 
 // Versions de la page dans chaque langue. Une page sans clé (page de contrôle) renvoie
 // vers l'accueil de l'autre langue et n'annonce pas de version traduite.
-const versions = page ? traductions(page) : traductions("accueil");
+const versions = adresses ?? (page ? traductions(page) : traductions("accueil"));
+const traduite = Boolean(page || adresses);
 const absolue = (chemin: string) => new URL(chemin, Astro.site).href;
 ---
 
@@ -36,10 +39,10 @@ const absolue = (chemin: string) => new URL(chemin, Astro.site).href;
     <meta name="description" content={description} />
     {/* Le site de test (construit avec --mode essai) n'est jamais indexé. */}
     {(!indexer || import.meta.env.MODE === "essai") && <meta name="robots" content="noindex" />}
-    {page && indexer && <link rel="canonical" href={absolue(lien(page, langue))} />}
-    {page && langues.map((l) => <link rel="alternate" hreflang={l} href={absolue(versions[l])} />)}
-    <!-- x-default : la racine, qui envoie vers la langue du navigateur. -->
-    {page && <link rel="alternate" hreflang="x-default" href={absolue("/")} />}
+    {traduite && indexer && <link rel="canonical" href={absolue(versions[langue])} />}
+    {traduite && langues.map((l) => <link rel="alternate" hreflang={l} href={absolue(versions[l])} />)}
+    <!-- x-default : la racine pour les pages de la table (elle envoie vers la langue du navigateur), le français pour une fiche. -->
+    {traduite && <link rel="alternate" hreflang="x-default" href={absolue(page ? "/" : versions.fr)} />}
     <meta name="theme-color" content="#0f2a21" />
     <!-- Préchargement : seulement les polices visibles dès l'arrivée (titres et texte courant). -->
     <Font cssVariable="--font-titre" preload={[{ subset: "latin" }]} />
