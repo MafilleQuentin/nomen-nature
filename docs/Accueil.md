@@ -29,6 +29,7 @@ Bienvenue dans le coffre du projet. Ce coffre est tenu à jour par Claude à cha
 | [Design system](02-Conception/Design%20system.md) | Couleurs, typographies, espacements et composants du site |
 | [Directions visuelles](02-Conception/Directions%20visuelles.md) | Les 3 ambiances proposées (couleurs, polices, page d'accueil) |
 | [Stack technique](02-Conception/Stack%20technique.md) | Les technologies et l'hébergement du site, et pourquoi |
+| [Données](02-Conception/Donnees.md) | Volumes mesurés et architecture des données (lot 3), à valider |
 
 ## Liens utiles
 

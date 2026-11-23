@@ -58,6 +58,8 @@ const parSeuil = new Map(seuils.map((s) => [s, 0]));
 const parRegne = new Map<string, number>();
 const parUicn = new Map<string, number>();
 const especesGbif = new Set<string>();
+const especesReliees = new Set<string>();
+let lignesEnDouble = 0;
 let especes = 0;
 let observations = 0;
 let relieesParId = 0;
@@ -69,7 +71,9 @@ for await (const e of lignes(fichierEspeces)) {
   const n = Number(e["observations"] ?? 0);
   if (especesGbif.has(e["specieskey"] ?? "")) {
     // Même espèce sur plusieurs lignes (statut UICN ou classification qui varient) : comptée une fois.
+    lignesEnDouble++;
     observations += n;
+    if (especesReliees.has(e["specieskey"] ?? "")) observationsReliees += n;
     continue;
   }
   especesGbif.add(e["specieskey"] ?? "");
@@ -85,6 +89,7 @@ for await (const e of lignes(fichierEspeces)) {
     // GBIF utilise déjà l'identifiant du Catalogue of Life XR : lien direct.
     relieesParId++;
     observationsReliees += n;
+    especesReliees.add(e["specieskey"] ?? "");
   } else if (col.has(`${regne}|${nom}`)) {
     reliees++;
     observationsReliees += n;
@@ -101,6 +106,7 @@ noter();
 noter("## Espèces observées (GBIF)");
 noter();
 noter(`- Espèces : **${nombre(especes)}** ; observations : ${nombre(observations)}`);
+noter(`- Espèces sur plusieurs lignes (classification ou statut UICN qui varient d'une observation à l'autre) : ${nombre(lignesEnDouble)} lignes en plus`);
 noter(`- Par règne : ${[...parRegne].map(([r, n]) => `${r} ${nombre(n)}`).join(", ")}`);
 noter(`- Au moins N observations : ${seuils.map((s) => `≥ ${nombre(s)} : ${nombre(parSeuil.get(s) ?? 0)}`).join(" · ")}`);
 noter(`- Statut UICN : ${[...parUicn].sort((a, b) => b[1] - a[1]).map(([c, n]) => `${c} ${nombre(n)}`).join(", ")}`);
