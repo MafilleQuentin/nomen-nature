@@ -1,6 +1,6 @@
 # Données
 
-*Note de conception du lot 3, écrite le 23.11.2026 après une mesure sur les vraies données. **À valider par l'utilisateur** avant d'écrire l'import mensuel.*
+*Note de conception du lot 3, écrite le 23.11.2026 après une mesure sur les vraies données. **Validée par l'utilisateur le 23.11.2026.***
 
 Le lot 3 prépare toutes les données dont les lots suivants ont besoin : l'index de la recherche, les espèces et leur classification, les groupes courants, le statut UICN, le score « bien documentée » et les listes par pays et par continent. Cette note dit d'où viennent ces données, combien elles pèsent, et où les ranger.
 
