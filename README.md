@@ -16,7 +16,9 @@ Le premier lot de développement, un **essai de la recherche**, est terminé : l
 
 Le troisième lot, les **données**, est terminé (v0.7.0) : un import mensuel automatique prépare l'index de la recherche, les groupes, les statuts UICN, le score « bien documentée » et les listes par pays et par continent ([`tools/donnees/`](tools/donnees/README.md)).
 
-Le deuxième lot, le **socle du site**, est terminé (v0.6.0) : gabarit bilingue (français et anglais) fidèle aux maquettes, page 404, tests automatiques sur GitHub, et un site de test en ligne sur <https://test.nomenature.org> (non indexé, encore sans contenu).
+Le deuxième lot, le **socle du site**, est terminé (v0.6.0) : gabarit bilingue (français et anglais) fidèle aux maquettes, page 404, tests automatiques sur GitHub, et un site de test en ligne sur <https://test.nomenature.org> (non indexé).
+
+Le quatrième lot, la **fiche espèce**, est en cours : chaque espèce observée a sa page, en français (`/fr/espece/quercus-robur`) et en anglais (`/en/species/quercus-robur`), avec son statut, ses noms, le résumé Wikipédia, ses chiffres et des espèces proches. Photos, carte de répartition et version « fiche courte » arrivent dans la suite du lot.
 
 | Étape | État |
 |---|---|
@@ -24,7 +26,7 @@ Le deuxième lot, le **socle du site**, est terminé (v0.6.0) : gabarit bilingue
 | 2. Parcours utilisateurs (FigJam) | ✅ Terminé |
 | 3. Maquettes Figma (mobile et ordinateur) | ✅ Terminé |
 | 4. Choix de la stack technique | ✅ Terminé |
-| 5. Développement de la V1, lot par lot | ⏳ En cours (lot 1 sur 10 terminé) |
+| 5. Développement de la V1, lot par lot | ⏳ En cours (lots 1 à 3 sur 10 terminés, lot 4 en cours) |
 
 Détail : [feuille de route](docs/Feuille%20de%20route.md).
 
@@ -63,8 +65,8 @@ Les textes de l'interface sont dans `src/i18n/textes.ts` (français et anglais) 
 | `npm run test:unit` | Tests unitaires (Vitest), sans navigateur |
 | `npm run test:e2e` | Tests dans un vrai navigateur, dont l'audit d'accessibilité axe, sur le site compilé |
 | `npm test` | Tous les tests (types, unitaires, puis navigateur) |
-| `npm run donnees:import` | Import des données : Catalogue of Life, observations GBIF, index de la recherche (voir [`tools/donnees/`](tools/donnees/README.md)) |
-| `npm run donnees:installer` | Installe le dernier paquet de données publié dans `public/donnees/`, avant la construction |
+| `npm run donnees:import` | Import des données : Catalogue of Life, observations GBIF, index de la recherche, listes, fiches (voir [`tools/donnees/`](tools/donnees/README.md)) |
+| `npm run donnees:installer` | Installe le dernier paquet de données publié dans `public/donnees/`, avant la construction (`-- --exemple` : quelques fiches pour les tests, sans téléchargement) |
 | `npm run deploy:test` | Construit et publie le site de test sur <https://test.nomenature.org> (après `npx wrangler login`) |
 
 Avant le premier `npm run test:e2e`, installer le navigateur de test : `npx playwright install chromium`.

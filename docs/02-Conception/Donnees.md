@@ -121,6 +121,17 @@ Code : [`listes.ts`](../../tools/donnees/listes.ts). Décisions de l'utilisateur
 - **Résultat** : 251 pays, 7 continents, **3 498 fichiers** (88 Mo bruts ; le plus lourd, les fleurs d'Afrique, 85 Ko en brotli). Paquet complet : **11 464 fichiers**, sous la limite de 20 000. Exemple, Suisse : 28 195 espèces, dont 247 menacées ; oiseaux en tête : pinson des arbres, fauvette à tête noire, merle noir, mésange charbonnière.
 - **Nom français principal** : le Catalogue of Life ne marque aucun nom « préféré » ; on prend celui qui correspond au titre de l'article Wikipédia français, sinon le premier (1 885 noms améliorés : « fayard » → « hêtre commun », « Casseron » → « Seiche commune »). Les majuscules sont inégales d'une source à l'autre : à uniformiser à l'affichage (lot 7).
 
+## Fiches espèces (lot 4, QUE-22, 23.11.2026)
+
+Décisions de l'utilisateur ([journal des décisions](../Decisions.md)) : données de base en **fichiers regroupés par genre**, contenus tiers (photos, tuiles) **servis par notre serveur**, encadré **« Sais-tu ? » d'après Wikidata**, adresse **`/fr/espece/quercus-robur`**. Code : [`fiches.ts`](../../tools/donnees/fiches.ts) (import), [`src/lib/especes/`](../../src/lib/especes/) (adresse, format, lecture par le serveur, mise en forme).
+
+- **3 000 fichiers** `fiches/<n>.json` ; le numéro vient du premier mot de l'adresse (le genre), donc un genre entier est dans un seul fichier. 148 Ko en médiane, 1 Mo au plus (*Hieracium*, 3 599 espèces), lu en 3 ms par le serveur ; 502 Mo en tout (moins de 100 Mo une fois compressés). Paquet : **14 464 fichiers**, sous la limite de 20 000.
+- Par espèce : noms (latin, auteur, français, anglais : celui du titre de l'article Wikipédia anglais s'il correspond), statut UICN, groupe, classification, observations, **nombre de pays** et **continent principal** (GBIF), Wikidata, photo Commons, articles Wikipédia, faits et **4 espèces proches** (les mieux classées du même genre, puis de la même famille), avec de quoi afficher leur carte.
+- **Homonymes** : 381 espèces partagent leur nom latin avec une autre (autre règne) ; la plus observée garde l'adresse simple, les autres ont leur identifiant à la fin (`morus-alba-…`).
+- **« Sais-tu ? »** : Wikidata a peu de ces faits pour les espèces reliées au Catalogue of Life : **5 897 espèces** (masses et envergures d'oiseaux surtout, longévité de quelques arbres et animaux : 929 ans pour le chêne pédonculé). L'encadré n'apparaît que pour elles.
+- **Résumé** : introduction de l'article Wikipédia (français, sinon anglais avec la mention de la langue), appelée par notre serveur, coupée à la fin d'une phrase vers 450 caractères ; la fiche s'affiche sans résumé si Wikipédia ne répond pas en 2,5 s.
+- La famille et le genre restent en latin dans le fil d'Ariane (« Fagaceae › Quercus ») : leurs noms français (« Fagacées », « Chênes ») ne sont dans aucune de nos sources.
+
 ## Questions ouvertes (lots suivants)
 
 - **Noms français** : seulement 3,2 % des espèces observées en ont un dans le Catalogue of Life, et Wikidata n'en ajoute que 249. Le titre de l'article Wikipédia français est souvent le nom français (« Chêne pédonculé ») : à étudier pour la recherche et les fiches (76 111 espèces ont un article).

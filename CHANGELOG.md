@@ -5,6 +5,12 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ## [Non publié]
 
+### Ajouté
+- Fiche espèce complète, d'après la maquette « Chêne pédonculé » (ordinateur et téléphone), en français (`/fr/espece/quercus-robur`) et en anglais (`/en/species/quercus-robur`), rendue à la demande par le serveur : fil d'Ariane, badge de statut UICN, noms courant, latin et dans l'autre langue, encadré « Sais-tu ? » (faits de Wikidata), résumé Wikipédia avec lien, chiffres (pays, observations, aire principale), 4 espèces proches, sources ; page introuvable (404) pour une espèce inconnue (QUE-22).
+- Import : 3 000 fichiers de fiches où chaque genre est rangé en entier (1 648 413 espèces, 4 espèces proches chacune, faits « Sais-tu ? » pour 5 897), branchés dans l'import mensuel (QUE-22).
+- Composants `BadgeStatut` (avec EX et EW, couleurs officielles de l'UICN), `Statistique` et `CarteEspece` (QUE-22).
+- Données d'exemple pour les tests (`npm run donnees:installer -- --exemple`) ; la fiche du chêne pédonculé est contrôlée par Playwright, axe et Lighthouse dans l'intégration continue (QUE-22).
+
 ## [0.7.0] - 2026-11-23
 
 Lot 3 terminé : les données. Un import mensuel automatique réunit le Catalogue of Life XR, les observations GBIF, la World Checklist of Vascular Plants et Wikidata pour produire l'index de la recherche, les 13 groupes courants, le statut UICN, le score « bien documentée » et les listes de 251 pays et 7 continents. Prochain lot : la fiche espèce.
