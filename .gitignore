@@ -51,3 +51,6 @@ blob-report/
 
 # Lighthouse CI
 .lighthouseci/
+
+# Données téléchargées par les outils du lot 3 (GBIF, Catalogue of Life)
+tools/donnees/data/
