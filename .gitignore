@@ -54,3 +54,6 @@ blob-report/
 
 # Données téléchargées par les outils du lot 3 (GBIF, Catalogue of Life)
 tools/donnees/data/
+
+# Paquet de données installé avant la construction (npm run donnees:installer)
+public/donnees/
