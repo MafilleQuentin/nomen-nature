@@ -5,6 +5,22 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ## [Non publié]
 
+## [0.7.0] - 2026-11-23
+
+Lot 3 terminé : les données. Un import mensuel automatique réunit le Catalogue of Life XR, les observations GBIF, la World Checklist of Vascular Plants et Wikidata pour produire l'index de la recherche, les 13 groupes courants, le statut UICN, le score « bien documentée » et les listes de 251 pays et 7 continents. Prochain lot : la fiche espèce.
+
+### Ajouté
+- Note de conception « Données » : volumes mesurés sur les vraies données (1 648 413 espèces observées, 5 986 994 couples espèce × pays) et architecture validée (QUE-18).
+- Import mensuel des données en TypeScript (`npm run donnees:import`) : dernière version du Catalogue of Life XR, téléchargements SQL de GBIF (réutilisés s'ils sont récents, refus d'un résultat presque vide), index de la recherche limité aux espèces observées (7 965 fichiers `.txt`, 39/40 au jeu de test du lot 1) (QUE-18).
+- Clé phonétique et normalisation de la recherche en TypeScript, partagées entre l'import et le navigateur, identiques à la version Python sur 5,1 millions de noms (QUE-18).
+- Workflows « Données mensuelles » (le 20 du mois, release de données `donnees-AAAA-MM`) et « Déploiement du site de test » (après chaque fusion dans `develop` et chaque import) ; installation des données dans le site (`npm run donnees:installer`) (QUE-18).
+- Les 13 groupes courants pour chaque espèce observée ; « arbres » d'après la forme de vie de la World Checklist of Vascular Plants (Kew, CC BY 3.0) (QUE-19).
+- Statut UICN et score « bien documentée » (photo, nom français, article Wikipédia, observations), avec Wikidata interrogé par QLever ; 30 224 espèces bien documentées (QUE-20).
+- Listes d'espèces par pays (251) et par continent (7) : par groupe, les 500 mieux classées plus toutes les menacées, à partir de 5 observations ; nom français principal choisi d'après le titre de l'article Wikipédia (QUE-21).
+
+### Modifié
+- Continents des listes d'après GBIF (continent de chaque observation) plutôt que déduits des pays.
+
 ## [0.6.0] - 2026-11-18
 
 Lot 2 terminé : le socle du site. Gabarit bilingue fidèle aux maquettes, page 404, tests automatiques qui bloquent les fusions, et un site de test en ligne sur https://test.nomenature.org (non indexé). Prochain lot : les données.
@@ -93,7 +109,8 @@ Fin du cadrage : le projet est défini, aucune ligne de code encore.
 - Coffre Obsidian dans `docs/`.
 - Licence MIT.
 
-[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.6.0...HEAD
+[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.3.0...v0.4.0

@@ -1,6 +1,6 @@
 {
   "name": "nomen-nature",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "description": "Nomen Nature : explorer la biodiversité mondiale, gratuit et non commercial",
   "license": "MIT",
@@ -16,7 +16,9 @@
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test": "astro check && vitest run && playwright test",
-    "deploy:test": "astro build --mode essai && wrangler deploy"
+    "deploy:test": "astro build --mode essai && wrangler deploy",
+    "donnees:import": "node --max-old-space-size=6144 tools/donnees/import.ts",
+    "donnees:installer": "node tools/donnees/installer.ts"
   },
   "dependencies": {
     "@astrojs/cloudflare": "14.4.4",

@@ -1,0 +1,60 @@
+# Import mensuel des données (lot 3, QUE-18) : Catalogue of Life XR, observations GBIF, index
+# de la recherche. Le paquet est publié en release GitHub « donnees-AAAA-MM » (pas « latest » :
+# les releases de version du site restent en tête), puis le site de test est redéployé
+# (workflow « Déploiement du site de test »).
+#
+# Le 20 de chaque mois : le Catalogue of Life XR paraît vers le 16. Un workflow programmé ne
+# tourne que depuis la branche par défaut (main) ; à la main : onglet Actions, « Run workflow ».
+#
+# Secrets : GBIF_UTILISATEUR et GBIF_MOT_DE_PASSE (compte GBIF, pour les téléchargements SQL).
+
+name: Données mensuelles
+
+on:
+  schedule:
+    - cron: "0 3 20 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write # créer la release de données
+
+concurrency:
+  group: donnees
+  cancel-in-progress: false
+
+jobs:
+  importer:
+    name: Import et release de données
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240 # GBIF prend ~20 minutes, parfois bien plus
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - name: Import (Catalogue of Life, GBIF, index)
+        run: npm run donnees:import
+        env:
+          GBIF_UTILISATEUR: ${{ secrets.GBIF_UTILISATEUR }}
+          GBIF_MOT_DE_PASSE: ${{ secrets.GBIF_MOT_DE_PASSE }}
+      - name: Paquet
+        run: |
+          nom="$(tr -d '\n' < tools/donnees/data/paquet-nom.txt)"
+          echo "PAQUET=$nom" >> "$GITHUB_ENV"
+          (cd tools/donnees/data/paquet && zip -qr -9 "../$nom.zip" .)
+          node tools/donnees/notes-release.ts > tools/donnees/data/notes.md
+          ls -l "tools/donnees/data/$nom.zip"
+      - name: Release de données
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          fichier="tools/donnees/data/$PAQUET.zip"
+          if gh release view "$PAQUET" > /dev/null 2>&1; then
+            gh release upload "$PAQUET" "$fichier" --clobber
+            gh release edit "$PAQUET" --notes-file tools/donnees/data/notes.md
+          else
+            gh release create "$PAQUET" "$fichier" --title "Données $PAQUET" \
+              --notes-file tools/donnees/data/notes.md --latest=false --target "$GITHUB_SHA"
+          fi
