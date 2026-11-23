@@ -84,3 +84,30 @@ describe("requêtes SQL envoyées à GBIF", () => {
     expect(sql).toContain("occurrencestatus = 'DETECTED'");
   });
 });
+
+describe("construction de l'index de recherche", async () => {
+  const { mkdtempSync, readFileSync, readdirSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const { debutsCourts, ecrireDictionnaire, PAR_PREFIXE_COURT } = await import("../../tools/donnees/index-recherche.ts");
+  const entree = (tri: string, notoriete = 0) => ({ tri, ligne: `${tri}\tnom`, notoriete });
+
+  it("débuts courts : les plus connus d'abord, puis les plus courts, 30 au plus", () => {
+    const entrees = [entree("chenille", 1), entree("chene", 5), entree("chevreuil", 5), entree("ch"), ...Array.from({ length: 40 }, (_, i) => entree(`che${i}`))];
+    const courts = debutsCourts(entrees, "n", 3);
+    expect(courts).toHaveLength(PAR_PREFIXE_COURT);
+    expect(courts.slice(0, 3).map((c) => c.ligne)).toEqual(["nche\tchene\tnom", "nche\tchevreuil\tnom", "nche\tchenille\tnom"]);
+    expect(courts[0]?.tri).toBe("nche\t001");
+  });
+
+  it("découpe en fichiers triés, sans couper une même clé, et note la première clé", () => {
+    const dossier = mkdtempSync(join(tmpdir(), "index-"));
+    const entrees = [entree("b"), entree("a"), ...Array.from({ length: 5 }, () => entree("c")), entree("d")];
+    // Lignes de 6 octets, cible de 5 : un fichier par clé, mais les 5 lignes « c » restent ensemble.
+    const d = ecrireDictionnaire(entrees, dossier, 5);
+    expect(d.premiers).toEqual(["a", "b", "c", "d"]);
+    expect(readdirSync(dossier)).toEqual(["0000.txt", "0001.txt", "0002.txt", "0003.txt"]);
+    expect(readFileSync(join(dossier, "0002.txt"), "utf8").split("\n").filter(Boolean)).toHaveLength(5);
+    expect(d.tailles_gz).toHaveLength(4);
+  });
+});
