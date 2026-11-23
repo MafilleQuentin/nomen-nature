@@ -55,6 +55,8 @@ jobs:
       - run: npm ci
       - name: Navigateur de test
         run: npx playwright install --with-deps chromium
+      - name: Données d'exemple (quelques fiches espèces, tests/fixtures/donnees)
+        run: npm run donnees:installer -- --exemple
       - name: Tests de bout en bout (construit puis sert le site avec Wrangler)
         run: npm run test:e2e
       - name: Rapport en cas d'échec
@@ -76,6 +78,8 @@ jobs:
           node-version-file: .node-version
           cache: npm
       - run: npm ci
+      - name: Données d'exemple (fiche du chêne pédonculé mesurée)
+        run: npm run donnees:installer -- --exemple
       - run: npm run build
       # Lighthouse CI n'est pas dans package.json : il ajoute 300 paquets au projet.
       # Version épinglée ; les rapports restent sur GitHub (pas d'envoi chez un tiers).
