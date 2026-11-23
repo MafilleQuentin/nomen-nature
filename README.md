@@ -61,6 +61,8 @@ Les textes de l'interface sont dans `src/i18n/textes.ts` (français et anglais) 
 | `npm run test:unit` | Tests unitaires (Vitest), sans navigateur |
 | `npm run test:e2e` | Tests dans un vrai navigateur, dont l'audit d'accessibilité axe, sur le site compilé |
 | `npm test` | Tous les tests (types, unitaires, puis navigateur) |
+| `npm run donnees:import` | Import des données : Catalogue of Life, observations GBIF, index de la recherche (voir [`tools/donnees/`](tools/donnees/README.md)) |
+| `npm run donnees:installer` | Installe le dernier paquet de données publié dans `public/donnees/`, avant la construction |
 | `npm run deploy:test` | Construit et publie le site de test sur <https://test.nomenature.org> (après `npx wrangler login`) |
 
 Avant le premier `npm run test:e2e`, installer le navigateur de test : `npx playwright install chromium`.
@@ -77,6 +79,8 @@ Avant le premier `npm run test:e2e`, installer le navigateur de test : `npx play
 | Liens cassés | lychee ([réglages](lychee.toml)) | un lien interne du site ou de la documentation est cassé |
 
 `develop` et `main` sont protégées : on y fusionne seulement par pull request, une fois les quatre vérifications réussies.
+
+Chaque mois, le workflow [Données mensuelles](.github/workflows/donnees.yml) met à jour les données et les publie en release « donnees-AAAA-MM » ; le site de test est redéployé après chaque import et chaque fusion dans `develop`.
 
 Les liens vers les sites externes sont vérifiés chaque lundi par le workflow [Liens externes](.github/workflows/liens-externes.yml).
 
