@@ -43,6 +43,8 @@
 | **lychee** | Outil qui vérifie que les liens d'un site ou d'une documentation ne sont pas cassés. |
 | **Budget de poids** | Poids maximal autorisé pour une page (fichiers, scripts, polices). La vérification Lighthouse échoue s'il est dépassé. |
 | **Lighthouse** | Outil de Google qui mesure la vitesse, l'accessibilité et le référencement d'une page. |
+| **WCVP** | *World Checklist of Vascular Plants*, la liste mondiale des plantes vasculaires tenue par les jardins botaniques de Kew. Nomen y prend la forme de vie de chaque plante pour reconnaître les arbres. Licence CC BY 3.0. |
+| **Forme de vie** | Allure générale d'une plante : arbre, arbuste, herbe annuelle, liane… (« tree », « shrub », « annual »… dans WCVP). |
 | **Téléchargement SQL (GBIF)** | Demande faite à GBIF sous forme de requête SQL (ex. « nombre d'observations par espèce et par pays ») ; GBIF la calcule sur ses milliards d'observations en 15 à 20 minutes et renvoie un fichier. Il faut un compte GBIF. |
 | **DOI** | Identifiant permanent d'un jeu de données ou d'un article (ex. `10.15468/dl.hjxn9v`), qui permet de le citer. GBIF en attribue un à chaque téléchargement. |
 | **NE (non évaluée)** | Espèce que l'UICN n'a pas encore évaluée : la grande majorité (1,5 million sur 1,65 million d'espèces observées). Ce n'est pas un statut de menace. |

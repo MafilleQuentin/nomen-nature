@@ -111,3 +111,42 @@ describe("construction de l'index de recherche", async () => {
     expect(d.tailles_gz).toHaveLength(4);
   });
 });
+
+describe("les 13 groupes courants (QUE-19)", async () => {
+  const { groupe } = await import("../../tools/donnees/groupes.ts");
+  const c = (regne: string, embranchement: string, classe: string, ordre = "") => ({ regne, embranchement, classe, ordre });
+  it.each([
+    ["renard roux", c("Animalia", "Chordata", "Mammalia", "Carnivora"), "", "mammiferes"],
+    ["mésange", c("Animalia", "Chordata", "Aves", "Passeriformes"), "", "oiseaux"],
+    ["lézard", c("Animalia", "Chordata", "Reptilia", "Squamata"), "", "reptiles"],
+    ["grenouille", c("Animalia", "Chordata", "Amphibia", "Anura"), "", "amphibiens"],
+    ["truite", c("Animalia", "Chordata", "Teleostei", "Salmoniformes"), "", "poissons"],
+    ["requin", c("Animalia", "Chordata", "Elasmobranchii", "Lamniformes"), "", "poissons"],
+    ["cœlacanthe (sans classe)", c("Animalia", "Chordata", "", "Coelacanthiformes"), "", "poissons"],
+    ["coccinelle", c("Animalia", "Arthropoda", "Insecta", "Coleoptera"), "", "insectes"],
+    ["épeire", c("Animalia", "Arthropoda", "Arachnida", "Araneae"), "", "araignees"],
+    ["escargot", c("Animalia", "Mollusca", "Gastropoda", "Stylommatophora"), "", "mollusques"],
+    ["amanite", c("Fungi", "Basidiomycota", "Agaricomycetes", "Agaricales"), "", "champignons"],
+    ["chêne", c("Plantae", "Tracheophyta", "Magnoliopsida", "Fagales"), "tree", "arbres"],
+    ["noisetier", c("Plantae", "Tracheophyta", "Magnoliopsida", "Fagales"), "shrub or tree", "arbres"],
+    ["pin", c("Plantae", "Tracheophyta", "Pinopsida", "Pinales"), "tree", "arbres"],
+    ["coquelicot", c("Plantae", "Tracheophyta", "Magnoliopsida", "Ranunculales"), "annual", "fleurs"],
+    ["plante à fleurs sans forme connue", c("Plantae", "Tracheophyta", "Liliopsida", "Poales"), "", "fleurs"],
+    ["fougère aigle", c("Plantae", "Tracheophyta", "Polypodiopsida", "Polypodiales"), "perennial", "fougeres"],
+    ["lycopode", c("Plantae", "Tracheophyta", "Lycopodiopsida", "Lycopodiales"), "", "fougeres"],
+    ["sphaigne", c("Plantae", "Bryophyta", "Sphagnopsida", "Sphagnales"), "", "mousses"],
+    ["hépatique", c("Plantae", "Marchantiophyta", "Marchantiopsida", "Marchantiales"), "", "mousses"],
+  ] as const)("%s → %s", (_nom, classification, forme, attendu) => {
+    expect(groupe(classification, forme)).toBe(attendu);
+  });
+
+  it.each([
+    ["crabe", c("Animalia", "Arthropoda", "Malacostraca", "Decapoda")],
+    ["acarien (pas une araignée)", c("Animalia", "Arthropoda", "Arachnida", "Trombidiformes")],
+    ["méduse", c("Animalia", "Cnidaria", "Scyphozoa", "Semaeostomeae")],
+    ["algue rouge", c("Plantae", "Rhodophyta", "Florideophyceae", "Ceramiales")],
+    ["genévrier rampant (conifère non arbre)", c("Plantae", "Tracheophyta", "Pinopsida", "Pinales")],
+  ] as const)("%s → aucun groupe", (_nom, classification) => {
+    expect(groupe(classification, "shrub")).toBeUndefined();
+  });
+});

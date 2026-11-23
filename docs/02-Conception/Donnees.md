@@ -71,9 +71,31 @@ La clé phonétique et le tri de la recherche sont réécrits en TypeScript, ave
 - **Cloudflare R2 pour le paquet de données** : possible (10 Go gratuits), mais un service de plus ; la release GitHub suffit.
 - **Données dans le dépôt git** : plusieurs centaines de mégaoctets chaque mois.
 
+## Groupes courants (QUE-19, validé le 23.11.2026)
+
+Chaque espèce observée entre dans un seul des 13 groupes du brief, d'après sa classification dans le Catalogue of Life, et pour « arbres » d'après sa **forme de vie** dans la [World Checklist of Vascular Plants](https://doi.org/10.34885/egs6-cp24) (WCVP, Kew, licence **CC BY 3.0**, à créditer). Code : [`groupes.ts`](../../tools/donnees/groupes.ts).
+
+| Groupe | Règle | Espèces observées |
+|---|---|---|
+| Mammifères | classe Mammalia | 7 980 |
+| Oiseaux | classe Aves | 11 596 |
+| Reptiles | classe Reptilia | 12 845 |
+| Amphibiens | classe Amphibia | 8 723 |
+| Poissons | classes Teleostei, Elasmobranchii, Holocephali, Chondrostei, Holostei, Cladistii, Myxini, Petromyzonti, Cephalaspidomorphi ; ordres des cœlacanthes et dipneustes | 37 517 |
+| Insectes | classe Insecta | 693 358 |
+| Araignées | ordre Araneae (pas les acariens ni les scorpions) | 37 091 |
+| Mollusques | embranchement Mollusca | 107 847 |
+| Champignons | règne Fungi, lichens compris | 137 673 |
+| Arbres | plante vasculaire dont la forme de vie WCVP contient « tree » (« tree », « shrub or tree »…) | 55 709 |
+| Fleurs | autres plantes à fleurs (Magnoliopsida, Liliopsida), herbes comprises | 279 678 |
+| Fougères | Polypodiopsida et Lycopodiopsida | 13 557 |
+| Mousses | Bryophyta, Marchantiophyta, Anthocerotophyta | 18 180 |
+| *Aucun* | crustacés, vers, coraux, méduses, échinodermes, éponges, algues… : trouvables par la recherche, sans liste | 226 659 |
+
+**96 %** des plantes vasculaires observées sont reliées à WCVP par leur nom (synonymes de WCVP compris). Une espèce n'est que dans un groupe : un arbre en fleurs est un arbre.
+
 ## Questions ouvertes (lots suivants)
 
-- **QUE-19** : comment classer « arbres » et « fleurs », qui ne sont pas des groupes scientifiques.
 - **QUE-20** : source exacte de la photo et de l'article Wikipédia (Wikidata : propriété « identifiant Catalogue of Life »), et pondération du score.
 - **QUE-21** : table pays → continent, et seuil d'observations pour qu'une espèce figure dans la liste d'un pays.
 

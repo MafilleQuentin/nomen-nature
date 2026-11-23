@@ -6,7 +6,8 @@ const s = JSON.parse(readFileSync("tools/donnees/data/paquet/sources.json", "utf
   construction: string;
   catalogue_of_life: { edition: string; doi: string; citation: string; licence: string };
   gbif: { doi: string; licence: string; citation: string; lignes: number }[];
-  chiffres: { especes_observees: number; index_fichiers: number };
+  wcvp?: { citation: string; licence: string };
+  chiffres: { especes_observees: number; index_fichiers: number; groupes?: Record<string, number> };
 };
 const nombre = (n: number) => n.toLocaleString("fr-CH");
 
@@ -14,11 +15,11 @@ console.log(`Paquet de données de Nomen Nature, construit le ${s.construction.s
 
 - **Espèces observées** : ${nombre(s.chiffres.especes_observees)}
 - **Index de la recherche** : ${nombre(s.chiffres.index_fichiers)} fichiers
-
+${s.chiffres.groupes ? `- **Groupes courants** : ${Object.entries(s.chiffres.groupes).filter(([g]) => !g.startsWith("plantes")).map(([g, n]) => `${g} ${nombre(n)}`).join(", ")}\n` : ""}
 Installé dans le site par \`npm run donnees:installer\`, avant la construction.
 
 ## Sources
 
 - ${s.catalogue_of_life.citation} — licence ${s.catalogue_of_life.licence}
 ${s.gbif.map((g) => `- ${g.citation} — licence ${g.licence.includes("by-nc") ? "CC BY-NC 4.0" : g.licence}`).join("\n")}
-`);
+${s.wcvp ? `- ${s.wcvp.citation} — licence ${s.wcvp.licence}\n` : ""}`);
