@@ -148,11 +148,16 @@ export async function obtenir(fichierSql: string, options: Options = {}): Promis
   const nom = basename(fichierSql, ".sql");
   const sql = lireRequete(fichierSql);
   const depuis = Date.now() - reutiliserJours * 86_400_000;
-  let t = (await recents()).find(
-    (r) => r.sql === sql && r.statut === "SUCCEEDED" && r.lignes >= lignesMin && Date.parse(r.creation) >= depuis,
-  );
+  const identiques = (await recents()).filter((r) => r.sql === sql && Date.parse(r.creation) >= depuis);
+  let t = identiques.find((r) => r.statut === "SUCCEEDED" && r.lignes >= lignesMin);
+  const enCours = identiques.find((r) => !TERMINES.has(r.statut));
   if (t) {
     console.log(`${nom} : réutilise ${t.cle} du ${t.creation.slice(0, 10)} (${t.lignes} lignes)`);
+  } else if (enCours) {
+    // Même requête déjà en calcul chez GBIF (import relancé, essai en parallèle) : on l'attend.
+    console.log(`${nom} : attend ${enCours.cle}, déjà en cours chez GBIF`);
+    t = await attendre(enCours.cle);
+    if (t.statut !== "SUCCEEDED") throw new Error(`${nom} : GBIF a terminé avec le statut ${t.statut}.`);
   } else {
     await valider(sql);
     const cle = await demander(sql);

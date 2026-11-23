@@ -10,9 +10,10 @@ Les fichiers téléchargés et produits vont dans `tools/donnees/data/`, ignoré
 |---|---|
 | [`col.ts`](col.ts) | Trouve la dernière version du Catalogue of Life XR, télécharge l'export (~137 Mo), prend la table des noms courants dans l'archive mensuelle (~35 Mo sur 1,4 Go) et écrit `taxons.tsv`, `noms.tsv` et `version.json` dans `data/col/<clé>/` |
 | [`gbif-sql.ts`](gbif-sql.ts) | Téléchargements SQL de GBIF : valider, demander, attendre, télécharger. `obtenir` réutilise un résultat identique de moins de 25 jours du compte, sinon demande et attend (~20 minutes), et **refuse un résultat presque vide**. Identifiants dans `.env` (`GBIF_UTILISATEUR`, `GBIF_MOT_DE_PASSE`) |
-| [`gbif.ts`](gbif.ts) | Obtient les deux téléchargements et écrit `data/gbif/especes.tsv` (id, observations, statut UICN), `pays.tsv` (pays, id, observations) et `gbif.json` (DOI, licences, citations) |
+| [`gbif.ts`](gbif.ts) | Obtient les trois téléchargements et écrit `data/gbif/especes.tsv` (id, observations, statut UICN), `pays.tsv`, `continents.tsv` et `gbif.json` (DOI, licences, citations). Attend une requête identique déjà en cours plutôt que d'en demander une autre |
 | [`groupes.ts`](groupes.ts) | Range chaque espèce observée dans l'un des 13 groupes courants (classification du Catalogue of Life ; « arbres » d'après la forme de vie de WCVP, Kew, CC BY 3.0, téléchargé chaque mois s'il a plus de 30 jours) ; écrit `data/groupes.tsv` |
 | [`score.ts`](score.ts) | Statut UICN et score « bien documentée » : photo et articles Wikipédia lus dans Wikidata (par QLever), nom français du Catalogue of Life ; écrit `data/especes.tsv` (groupe, statut, observations, score, nom français, Wikidata, photo, articles) |
+| [`listes.ts`](listes.ts) | Listes par pays et par continent : par groupe, les 500 espèces les mieux classées plus toutes les menacées (5 observations au moins), et un résumé par région ; dans `data/paquet/listes/` |
 | [`index-recherche.ts`](index-recherche.ts) | Construit l'index de la recherche (dictionnaires `noms`, `cles`, `courts` et `manifeste.json`) à partir du Catalogue of Life et des espèces observées, en fichiers `.txt` d'environ 64 Ko, dans `data/index/` |
 | [`import.ts`](import.ts) | `npm run donnees:import` : enchaîne Catalogue of Life, GBIF et index, écrit `sources.json` (éditions, DOI, licences, citations) ; le paquet est le dossier `data/paquet/` |
 | [`installer.ts`](installer.ts) | `npm run donnees:installer` : installe le paquet de la dernière release GitHub « donnees-AAAA-MM » dans `public/donnees/` avant la construction du site (`--local` : le paquet construit sur ce poste) |
@@ -49,5 +50,7 @@ node --max-old-space-size=6144 tools/donnees/index-recherche.ts tools/donnees/da
 **Groupes courants** (23.11.2026, 13 secondes) : 1 421 754 espèces observées dans un des 13 groupes, dont 55 709 arbres ; 226 659 hors groupes (crustacés, vers, algues…) ; 96 % des plantes vasculaires reliées à WCVP. Détail : note [Données](../../docs/02-Conception/Donnees.md#groupes-courants-que-19-valide-le-23112026).
 
 **Score** (23.11.2026, 25 secondes) : 30 224 espèces « bien documentées » (photo, nom français, article) ; 2 704 à 10/10, 1 302 675 à 0. Détail : note [Données](../../docs/02-Conception/Donnees.md).
+
+**Listes** (23.11.2026, 28 secondes) : 251 pays et 7 continents, 3 498 fichiers. Import complet : **4 minutes** (téléchargements GBIF réutilisés), paquet de 11 464 fichiers.
 
 Sources : Catalogue of Life (CC BY 4.0, citer l'édition et son DOI, dans `version.json`) ; GBIF (**CC BY-NC 4.0** pour nos téléchargements, car certaines sources interdisent l'usage commercial : compatible avec un site non commercial ; citer le DOI de chaque téléchargement, dans `gbif.json`) ; Wikidata (CC0) ; WCVP (CC BY 3.0, Govaerts R (ed.), Royal Botanic Gardens, Kew, https://doi.org/10.34885/egs6-cp24).

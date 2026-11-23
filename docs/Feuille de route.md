@@ -19,7 +19,7 @@ Découpés le 18.11.2026 dans le projet Linear [Nomen Nature — V1](https://lin
 |---|---|---|---|---|
 | 1 | **Essai de la recherche** : noms du Catalogue of Life XR, clé phonétique, 40 recherches de test ; verdict : **index en fichiers statiques sans synonymes** (D1 gratuit trop petit) | QUE-5 à QUE-10 | v0.5.0 | ✅ Terminé (18.11.2026) |
 | 2 | **Socle** : Astro + TypeScript + Svelte, variables CSS, gabarit, bilingue, 404, intégration continue, déploiement de test | QUE-11 à QUE-17 | v0.6.0 | ✅ Terminé |
-| 3 | **Données** : import mensuel (index de recherche en fichiers ; D1 ou fichiers pour les listes, à mesurer), groupes courants, statut UICN, score « bien documentée », listes par pays et continent | QUE-18 à QUE-21 | v0.7.0 | ⏳ Prochain |
+| 3 | **Données** : import mensuel (index de recherche en fichiers ; D1 ou fichiers pour les listes, à mesurer), groupes courants, statut UICN, score « bien documentée », listes par pays et continent | QUE-18 à QUE-21 | v0.7.0 | ✅ Développé (fusion et release à faire) |
 | 4 | **Fiche espèce** : complète et peu documentée, photos créditées, carte de répartition, référencement et cache | QUE-22 à QUE-26 | v0.8.0 | ⬜ |
 | 5 | **Recherche** : autocomplétion, résultats, « Tu voulais dire… », filtres | QUE-27, QUE-28 | v0.9.0 | ⬜ |
 | 6 | **Carte** : monde → continent → pays en d3, panneau d'espèces, courbes de niveau réelles | QUE-29 à QUE-31 | v0.10.0 | ⬜ |

@@ -174,3 +174,32 @@ describe("score « bien documentée » (QUE-20)", async () => {
     expect(fichierCommons("")).toBe("");
   });
 });
+
+describe("listes par pays et par continent (QUE-21)", async () => {
+  const { selectionner } = await import("../../tools/donnees/listes.ts");
+  const c = (id: string, score: number, observations: number, uicn = "LC") => ({ id, score, observations, uicn });
+
+  it("trie par score, puis par observations dans la région", () => {
+    const liste = selectionner([c("a", 3, 10), c("b", 10, 5), c("c", 3, 500), c("d", 10, 50)]);
+    expect(liste.map((x) => x.id)).toEqual(["d", "b", "c", "a"]);
+  });
+
+  it("garde les N premières, plus toutes les menacées au-delà", () => {
+    const liste = selectionner([c("a", 9, 10), c("b", 8, 10), c("c", 7, 10), c("menacee", 0, 5, "EN"), c("d", 6, 10), c("quasi", 0, 5, "NT")], 3);
+    expect(liste.map((x) => x.id)).toEqual(["a", "b", "c", "menacee"]);
+  });
+});
+
+describe("nom français principal", async () => {
+  const { nomPrincipal } = await import("../../tools/donnees/score.ts");
+  it("préfère le nom qui correspond au titre de l'article Wikipédia", () => {
+    expect(nomPrincipal(["Casseron", "Seiche commune"], "Seiche_commune")).toBe("Seiche commune");
+    expect(nomPrincipal(["La Decticelle trompeuse", "Decticelle trompeuse"], "Decticelle_trompeuse")).toBe("Decticelle trompeuse");
+    expect(nomPrincipal(["moule comestible", "moule commune"], "Moule_commune_(mollusque)")).toBe("moule commune");
+  });
+  it("garde le premier nom si aucun ne correspond, et rien s'il n'y en a pas", () => {
+    expect(nomPrincipal(["fayard", "hêtre"], "Hêtre_commun")).toBe("fayard");
+    expect(nomPrincipal(["renard roux"], "")).toBe("renard roux");
+    expect(nomPrincipal([], "Quercus_robur")).toBe("");
+  });
+});

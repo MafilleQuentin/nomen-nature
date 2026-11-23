@@ -16,6 +16,7 @@
 // Utilisation seule : node tools/donnees/score.ts <dossier COL>
 import { createReadStream, createWriteStream, mkdirSync } from "node:fs";
 import { join } from "node:path";
+import { normaliser } from "../../src/lib/recherche/phonetique.ts";
 import { lignesTsv } from "./col.ts";
 import { AGENT } from "./zip.ts";
 
@@ -52,6 +53,16 @@ export function score(d: Documentation): number {
 /** Fiche complète (lot 4) : photo, nom français et article Wikipédia. */
 export function bienDocumentee(d: Documentation): boolean {
   return d.photo && d.nomFrancais && d.wikipedia !== "";
+}
+
+/**
+ * Nom français principal d'une espèce. Le Catalogue of Life ne marque aucun nom « préféré » ; quand
+ * l'un de ses noms correspond au titre de l'article Wikipédia français, c'est presque toujours le
+ * nom d'usage (« Seiche commune » plutôt que « Casseron ») ; sinon, le premier nom.
+ */
+export function nomPrincipal(noms: string[], titreWikipedia: string): string {
+  const titre = normaliser(titreWikipedia.replaceAll("_", " ").replace(/\s*\([^()]*\)$/, ""));
+  return (titre && noms.find((n) => normaliser(n) === titre)) || noms[0] || "";
 }
 
 /** Valeur d'une cellule TSV de QLever : « "4R5YN" » → 4R5YN, « <https://…/Q165145> » → https://…/Q165145. */
@@ -100,9 +111,13 @@ export async function wikidata(): Promise<Map<string, Wikidata>> {
 /** Table des espèces observées avec groupe, statut UICN et score ; renvoie les chiffres. */
 export async function calculer(dossierCol: string, donnees: string) {
   const wd = await wikidata();
-  const nomsFr = new Map<string, string>();
+  const nomsFr = new Map<string, string[]>();
   for await (const n of lignesTsv(createReadStream(join(dossierCol, "noms.tsv")))) {
-    if (n["langue"] === "fr" && n["type"] === "courant" && !nomsFr.has(n["taxon_id"] ?? "")) nomsFr.set(n["taxon_id"] ?? "", n["nom"] ?? "");
+    if (n["langue"] !== "fr" || n["type"] !== "courant") continue;
+    const id = n["taxon_id"] ?? "";
+    const liste = nomsFr.get(id) ?? [];
+    liste.push(n["nom"] ?? "");
+    nomsFr.set(id, liste);
   }
   const groupes = new Map<string, string>();
   for await (const g of lignesTsv(createReadStream(join(donnees, "groupes.tsv")))) groupes.set(g["id"] ?? "", g["groupe"] ?? "");
@@ -116,7 +131,7 @@ export async function calculer(dossierCol: string, donnees: string) {
   for await (const e of lignesTsv(createReadStream(join(donnees, "gbif", "especes.tsv")))) {
     const id = e["id"] ?? "";
     const w = wd.get(id);
-    const nomFr = nomsFr.get(id) ?? "";
+    const nomFr = nomPrincipal(nomsFr.get(id) ?? [], w?.fr ?? "");
     const d: Documentation = {
       photo: Boolean(w?.photo),
       nomFrancais: Boolean(nomFr),

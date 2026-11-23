@@ -111,10 +111,19 @@ Chaque espèce observée entre dans un seul des 13 groupes du brief, d'après sa
 
 La table de l'import, `data/especes.tsv`, garde pour chaque espèce son groupe, son statut UICN, ses observations, son score, son nom français, son identifiant Wikidata, sa photo Commons et ses articles : elle servira aux listes (QUE-21) et aux fiches (lot 4).
 
+## Listes par pays et par continent (QUE-21, 23.11.2026)
+
+Code : [`listes.ts`](../../tools/donnees/listes.ts). Décisions de l'utilisateur : **5 observations au moins** dans la région, et **continents d'après GBIF** (continent de chaque observation, 3e téléchargement SQL mensuel) plutôt que déduits des pays.
+
+- Un fichier par région et par groupe (`listes/pays/ch/oiseaux.json`, `listes/continents/europe/mammiferes.json`) : les **500 espèces les mieux classées** (score, puis observations dans la région), **plus toutes les espèces menacées** (CR, EN, VU) de la région, pour que le filtre « menacées » n'en oublie aucune. Chaque ligne : identifiant, nom latin, nom français, nom anglais, statut UICN, score, observations dans la région, photo Commons.
+- Un résumé par région (`resume.json` : espèces et menacées par groupe) et `listes/regions.json`.
+- Pas de liste pour le pays inconnu `ZZ`.
+- **Résultat** : 251 pays, 7 continents, **3 498 fichiers** (88 Mo bruts ; le plus lourd, les fleurs d'Afrique, 85 Ko en brotli). Paquet complet : **11 464 fichiers**, sous la limite de 20 000. Exemple, Suisse : 28 195 espèces, dont 247 menacées ; oiseaux en tête : pinson des arbres, fauvette à tête noire, merle noir, mésange charbonnière.
+- **Nom français principal** : le Catalogue of Life ne marque aucun nom « préféré » ; on prend celui qui correspond au titre de l'article Wikipédia français, sinon le premier (1 885 noms améliorés : « fayard » → « hêtre commun », « Casseron » → « Seiche commune »). Les majuscules sont inégales d'une source à l'autre : à uniformiser à l'affichage (lot 7).
+
 ## Questions ouvertes (lots suivants)
 
 - **Noms français** : seulement 3,2 % des espèces observées en ont un dans le Catalogue of Life, et Wikidata n'en ajoute que 249. Le titre de l'article Wikipédia français est souvent le nom français (« Chêne pédonculé ») : à étudier pour la recherche et les fiches (76 111 espèces ont un article).
 
-- **QUE-21** : table pays → continent, et seuil d'observations pour qu'une espèce figure dans la liste d'un pays.
 
 Voir aussi : [Stack technique](Stack%20technique.md) · [Sources de données](../01-Cadrage/Sources%20de%20donnees.md) · [Essai de la recherche](../../tools/essai-recherche/README.md)

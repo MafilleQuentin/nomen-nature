@@ -6,7 +6,8 @@
 // 3. groupes courants des espèces observées, avec les formes de vie de WCVP (groupes.ts) ;
 // 4. statut UICN et score « bien documentée », avec Wikidata (score.ts) : data/especes.tsv ;
 // 5. index de la recherche (index-recherche.ts) ;
-// 6. sources.json : éditions, DOI, licences et citations, pour la page des crédits.
+// 6. listes par pays et par continent (listes.ts) ;
+// 7. sources.json : éditions, DOI, licences et citations, pour la page des crédits.
 //
 // Le paquet est le dossier tools/donnees/data/paquet/ : à zipper tel quel (le workflow
 // GitHub le fait), puis à installer dans public/donnees/ avant de construire le site
@@ -19,6 +20,7 @@ import { extraire, version } from "./col.ts";
 import { preparer } from "./gbif.ts";
 import { CITATION_WCVP, classer, telechargerWcvp } from "./groupes.ts";
 import { construire } from "./index-recherche.ts";
+import { construireListes } from "./listes.ts";
 import { CITATION_WIKIDATA, calculer } from "./score.ts";
 
 const DONNEES = "tools/donnees/data";
@@ -50,7 +52,11 @@ mkdirSync(PAQUET, { recursive: true });
 const index = await construire(dossierCol, join(DONNEES, "gbif", "especes.tsv"), join(PAQUET, "recherche"));
 console.log(index);
 
-etape("6. Sources");
+etape("6. Listes par pays et par continent");
+const listes = await construireListes(dossierCol, DONNEES, join(PAQUET, "listes"));
+console.log(listes);
+
+etape("7. Sources");
 const sources = {
   construction: new Date().toISOString(),
   catalogue_of_life: {
@@ -64,7 +70,7 @@ const sources = {
   gbif: gbif.telechargements,
   wcvp: { usage: "formes de vie des plantes (groupe « arbres »)", licence: "CC BY 3.0", citation: CITATION_WCVP },
   wikidata: { usage: "photos et articles Wikipédia (score « bien documentée »)", licence: "CC0", citation: CITATION_WIKIDATA },
-  chiffres: { especes_observees: gbif.especes, index_fichiers: index.fichiers, groupes, documentation },
+  chiffres: { especes_observees: gbif.especes, index_fichiers: index.fichiers, listes, groupes, documentation },
 };
 writeFileSync(join(PAQUET, "sources.json"), JSON.stringify(sources, null, 2) + "\n");
 const mois = sources.construction.slice(0, 7);

@@ -5,6 +5,8 @@
 // Sorties, dans tools/donnees/data/gbif/ :
 // - especes.tsv : id, observations, uicn — une ligne par espèce ;
 // - pays.tsv : pays, id, observations — une ligne par couple espèce × pays ;
+// - continents.tsv : continent, id, observations — une ligne par couple espèce × continent
+//   (continent de chaque observation d'après ses coordonnées, décision du 23.11.2026) ;
 // - gbif.json : clés, dates, DOI et licences des téléchargements (à citer), et chiffres.
 //
 // Utilisation : node tools/donnees/gbif.ts
@@ -16,7 +18,7 @@ import { ouvrirParNom, sourceLocale } from "./zip.ts";
 
 const REQUETES = "tools/donnees/requetes";
 // Volumes du 23.11.2026 : 1 734 319 et 5 986 994 lignes. Bien en dessous, quelque chose a changé.
-const LIGNES_MIN = { especes: 1_000_000, pays: 3_000_000 };
+const LIGNES_MIN = { especes: 1_000_000, pays: 3_000_000, continents: 1_000_000 };
 
 /** Catégories UICN « évaluées » : tout sauf NE (non évaluée) et l'absence de statut. */
 const NON_EVALUEE = new Set(["", "NE"]);
@@ -57,9 +59,10 @@ async function ecrireFlux(chemin: string, lignes: AsyncIterable<string[]> | Iter
 }
 
 export async function preparer(dossier = DOSSIER) {
-  const [especes, pays] = await Promise.all([
+  const [especes, pays, continents] = await Promise.all([
     obtenir(join(REQUETES, "especes.sql"), { lignesMin: LIGNES_MIN.especes, dossier }),
     obtenir(join(REQUETES, "especes-par-pays.sql"), { lignesMin: LIGNES_MIN.pays, dossier }),
+    obtenir(join(REQUETES, "especes-par-continent.sql"), { lignesMin: LIGNES_MIN.continents, dossier }),
   ]);
 
   // 1. Une ligne par espèce : observations additionnées, statut UICN choisi.
@@ -88,11 +91,21 @@ export async function preparer(dossier = DOSSIER) {
     })(),
   );
 
+  // 3. Couples espèce × continent.
+  const nCouplesContinent = await ecrireFlux(
+    join(dossier, "continents.tsv"),
+    (async function* () {
+      yield ["continent", "id", "observations"];
+      for await (const c of lignesDuZip(continents.fichier)) yield [c["continent"] ?? "", c["specieskey"] ?? "", c["observations"] ?? "0"];
+    })(),
+  );
+
   const resume = {
     preparation: new Date().toISOString(),
     especes: nEspeces,
     couples_espece_pays: nCouples,
-    telechargements: [especes, pays].map(({ cle, creation, lignes, doi, licence }) => ({
+    couples_espece_continent: nCouplesContinent,
+    telechargements: [especes, pays, continents].map(({ cle, creation, lignes, doi, licence }) => ({
       cle,
       creation,
       lignes,
