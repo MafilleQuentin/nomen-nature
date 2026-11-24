@@ -39,6 +39,9 @@ jobs:
         env:
           GBIF_UTILISATEUR: ${{ secrets.GBIF_UTILISATEUR }}
           GBIF_MOT_DE_PASSE: ${{ secrets.GBIF_MOT_DE_PASSE }}
+      # Les 40 recherches du lot 1 sur le nouvel index : l'import échoue sous 38/40 (QUE-27).
+      - name: Qualité de la recherche
+        run: node tools/donnees/evaluer-recherche.ts tools/donnees/data/paquet/recherche
       - name: Paquet
         run: |
           nom="$(tr -d '\n' < tools/donnees/data/paquet-nom.txt)"

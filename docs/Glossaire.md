@@ -37,6 +37,8 @@
 | **d3** | Bibliothèque JavaScript de dessin de données ; d3-geo dessine les cartes, d3-zoom gère le zoom. |
 | **Recherche phonétique** | Recherche par le son plutôt que l'orthographe : « boulot » retrouve « bouleau ». |
 | **Clé phonétique** | Version simplifiée d'un nom qui ne garde que son « son », selon les règles de sa langue : « boulot » et « bouleau » donnent tous deux `bUlo`. Elle est calculée pour chaque nom à l'import, et pour le texte tapé au moment de la recherche. |
+| **Suggestions (autocomplétion)** | Liste d'espèces proposées sous la barre de recherche pendant la frappe. On la parcourt aux flèches du clavier ; Entrée ouvre la fiche choisie. |
+| **Combobox** | Motif d'accessibilité d'un champ accompagné d'une liste de choix : le lecteur d'écran annonce la liste, le nombre de propositions et celle qui est choisie. |
 | **Trigramme** | Groupe de 3 lettres qui se suivent (« chêne » → `che`, `hen`, `ene`). Un index par trigrammes retrouve un mot à partir de n'importe quel morceau. |
 | **Intégration continue (GitHub Actions)** | Vérifications lancées automatiquement à chaque envoi de code : tests, accessibilité, vitesse, liens cassés. |
 | **Playwright** | Outil qui pilote un vrai navigateur pour tester le site comme un visiteur : cliquer, taper au clavier, vérifier ce qui s'affiche. |

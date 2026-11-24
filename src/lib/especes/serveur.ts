@@ -60,12 +60,17 @@ export async function jsonEnCache<T>(adresse: string, duree = TRENTE_JOURS): Pro
 const MAX_EN_MEMOIRE = 16;
 const memoire = new Map<string, FichierFiches>();
 
-async function lireFichier(chemin: string, origine: URL): Promise<FichierFiches | undefined> {
+/** Lit un fichier du site (dist/) : par le binding ASSETS en ligne, sinon par le réseau (astro dev). */
+export async function lireFichierDuSite(chemin: string, origine: URL): Promise<Response> {
+  const adresse = new URL(chemin, origine);
+  return env?.ASSETS ? env.ASSETS.fetch(adresse) : fetch(adresse);
+}
+
+/** Un fichier de fiches (/donnees/fiches/<n>.json), gardé en mémoire. */
+export async function lireFichier(chemin: string, origine: URL): Promise<FichierFiches | undefined> {
   const connu = memoire.get(chemin);
   if (connu) return connu;
-  const adresse = new URL(chemin, origine);
-  // ASSETS en ligne et avec Wrangler ; sinon (astro dev), le serveur de développement sert public/.
-  const reponse = env?.ASSETS ? await env.ASSETS.fetch(adresse) : await fetch(adresse);
+  const reponse = await lireFichierDuSite(chemin, origine);
   if (!reponse.ok) return undefined;
   const fichier = (await reponse.json()) as FichierFiches;
   memoire.set(chemin, fichier);
