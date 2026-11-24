@@ -8,7 +8,7 @@
 | 2 | Parcours utilisateurs | ✅ Terminé (17.11.2026) | [Parcours utilisateurs](02-Conception/Parcours%20utilisateurs.md) : 4 schémas dans le FigJam |
 | 3 | Maquettes Figma | ✅ Terminé (17.11.2026) | [Style visuel](02-Conception/Style%20visuel.md), [design system](02-Conception/Design%20system.md), [écrans clés](02-Conception/Ecrans%20cles.md) et [écrans secondaires](02-Conception/Ecrans%20secondaires.md) validés |
 | 4 | Stack technique | ✅ Terminé (18.11.2026) | [Stack technique](02-Conception/Stack%20technique.md) : Astro + Cloudflare, consignée dans les [décisions](Decisions.md) |
-| 5 | Développement V1 | ⏳ **En cours** (lots 1 à 3 terminés) | Livré lot par lot, chaque lot testé et publié en release |
+| 5 | Développement V1 | ⏳ **En cours** (lots 1 à 4 terminés) | Livré lot par lot, chaque lot testé et publié en release |
 | 6 | Mise en ligne | ⬜ | Site public sur `nomenature.org` |
 
 ## Lots de l'étape 5
@@ -20,8 +20,8 @@ Découpés le 18.11.2026 dans le projet Linear [Nomen Nature — V1](https://lin
 | 1 | **Essai de la recherche** : noms du Catalogue of Life XR, clé phonétique, 40 recherches de test ; verdict : **index en fichiers statiques sans synonymes** (D1 gratuit trop petit) | QUE-5 à QUE-10 | v0.5.0 | ✅ Terminé (18.11.2026) |
 | 2 | **Socle** : Astro + TypeScript + Svelte, variables CSS, gabarit, bilingue, 404, intégration continue, déploiement de test | QUE-11 à QUE-17 | v0.6.0 | ✅ Terminé |
 | 3 | **Données** : import mensuel (index de recherche en fichiers ; D1 ou fichiers pour les listes, à mesurer), groupes courants, statut UICN, score « bien documentée », listes par pays et continent | QUE-18 à QUE-21 | v0.7.0 | ✅ Terminé |
-| 4 | **Fiche espèce** : complète et peu documentée, photos créditées, carte de répartition, référencement et cache | QUE-22 à QUE-26 | v0.8.0 | ⏳ En cours (QUE-22 à QUE-25 faits, QUE-26 en relecture) |
-| 5 | **Recherche** : autocomplétion, résultats, « Tu voulais dire… », filtres | QUE-27, QUE-28 | v0.9.0 | ⬜ |
+| 4 | **Fiche espèce** : complète et peu documentée, photos créditées, carte de répartition, référencement et cache | QUE-22 à QUE-26 | v0.8.0 | ✅ Terminé (24.11.2026) |
+| 5 | **Recherche** : autocomplétion, résultats, « Tu voulais dire… », filtres | QUE-27, QUE-28 | v0.9.0 | ⏳ Prochain |
 | 6 | **Carte** : monde → continent → pays en d3, panneau d'espèces, courbes de niveau réelles | QUE-29 à QUE-31 | v0.10.0 | ⬜ |
 | 7 | **Listes et accueil** : page pays, liste d'un groupe, espèces menacées, accueil | QUE-32 à QUE-34 | v0.11.0 | ⬜ |
 | 8 | **Autour de moi** : demande de position ou choix d'un lieu, rayon 5/25/100 km, carte et liste | QUE-35, QUE-36 | v0.12.0 | ⬜ |
