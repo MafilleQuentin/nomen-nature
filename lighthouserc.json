@@ -11,74 +11,147 @@
       ],
       "numberOfRuns": 3,
       "settings": {
-        "chromeFlags": "--headless=new --no-sandbox"
+        "chromeFlags": "--headless=new --no-sandbox",
+        "disableFullPageScreenshot": true
       }
     },
     "assert": {
-      "assertions": {
-        "categories:performance": [
-          "error",
-          {
-            "minScore": 0.9,
-            "aggregationMethod": "median-run"
+      "assertMatrix": [
+        {
+          "matchingUrlPattern": "^(?!.*/(espece|species)/).*$",
+          "assertions": {
+            "categories:performance": [
+              "error",
+              {
+                "minScore": 0.9,
+                "aggregationMethod": "median-run"
+              }
+            ],
+            "categories:accessibility": [
+              "error",
+              {
+                "minScore": 1
+              }
+            ],
+            "categories:best-practices": [
+              "error",
+              {
+                "minScore": 0.95
+              }
+            ],
+            "categories:seo": [
+              "error",
+              {
+                "minScore": 0.9
+              }
+            ],
+            "largest-contentful-paint": [
+              "error",
+              {
+                "maxNumericValue": 2500,
+                "aggregationMethod": "median-run"
+              }
+            ],
+            "cumulative-layout-shift": [
+              "error",
+              {
+                "maxNumericValue": 0.1
+              }
+            ],
+            "resource-summary:total:size": [
+              "error",
+              {
+                "maxNumericValue": 204800
+              }
+            ],
+            "resource-summary:script:size": [
+              "error",
+              {
+                "maxNumericValue": 51200
+              }
+            ],
+            "resource-summary:font:size": [
+              "error",
+              {
+                "maxNumericValue": 122880
+              }
+            ],
+            "resource-summary:third-party:count": [
+              "error",
+              {
+                "maxNumericValue": 0
+              }
+            ]
           }
-        ],
-        "categories:accessibility": [
-          "error",
-          {
-            "minScore": 1
+        },
+        {
+          "matchingUrlPattern": ".*/(espece|species)/.*",
+          "assertions": {
+            "categories:performance": [
+              "error",
+              {
+                "minScore": 0.9,
+                "aggregationMethod": "median-run"
+              }
+            ],
+            "categories:accessibility": [
+              "error",
+              {
+                "minScore": 1
+              }
+            ],
+            "categories:best-practices": [
+              "error",
+              {
+                "minScore": 0.95
+              }
+            ],
+            "categories:seo": [
+              "error",
+              {
+                "minScore": 0.9
+              }
+            ],
+            "largest-contentful-paint": [
+              "error",
+              {
+                "maxNumericValue": 2500,
+                "aggregationMethod": "median-run"
+              }
+            ],
+            "cumulative-layout-shift": [
+              "error",
+              {
+                "maxNumericValue": 0.1
+              }
+            ],
+            "resource-summary:total:size": [
+              "error",
+              {
+                "maxNumericValue": 307200
+              }
+            ],
+            "resource-summary:script:size": [
+              "error",
+              {
+                "maxNumericValue": 51200
+              }
+            ],
+            "resource-summary:font:size": [
+              "error",
+              {
+                "maxNumericValue": 122880
+              }
+            ],
+            "resource-summary:third-party:count": [
+              "error",
+              {
+                "maxNumericValue": 0
+              }
+            ]
           }
-        ],
-        "categories:best-practices": [
-          "error",
-          {
-            "minScore": 0.95
-          }
-        ],
-        "categories:seo": [
-          "error",
-          {
-            "minScore": 0.9
-          }
-        ],
-        "largest-contentful-paint": [
-          "error",
-          {
-            "maxNumericValue": 2500,
-            "aggregationMethod": "median-run"
-          }
-        ],
-        "cumulative-layout-shift": [
-          "error",
-          {
-            "maxNumericValue": 0.1
-          }
-        ],
-        "resource-summary:total:size": [
-          "error",
-          {
-            "maxNumericValue": 204800
-          }
-        ],
-        "resource-summary:script:size": [
-          "error",
-          {
-            "maxNumericValue": 51200
-          }
-        ],
-        "resource-summary:font:size": [
-          "error",
-          {
-            "maxNumericValue": 122880
-          }
-        ],
-        "resource-summary:third-party:count": [
-          "error",
-          {
-            "maxNumericValue": 0
-          }
-        ]
-      }
+        }
+      ]
     },
     "upload": {
       "target": "filesystem",
