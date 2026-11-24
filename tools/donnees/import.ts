@@ -8,8 +8,9 @@
 // 5. fiches espèces : un fichier par groupe de genres, faits de Wikidata, et les compléments
 //    de l'index (adresse, statut, noms principaux…) (fiches.ts) ;
 // 6. index de la recherche, avec ces compléments (index-recherche.ts) ;
-// 7. listes par pays et par continent (listes.ts) ;
-// 8. sources.json : éditions, DOI, licences et citations, pour la page des crédits.
+// 7. pays et continents de chaque espèce, pour le filtre « Où » de la recherche (zones.ts) ;
+// 8. listes par pays et par continent (listes.ts) ;
+// 9. sources.json : éditions, DOI, licences et citations, pour la page des crédits.
 //
 // Le paquet est le dossier tools/donnees/data/paquet/ : à zipper tel quel (le workflow
 // GitHub le fait), puis à installer dans public/donnees/ avant de construire le site
@@ -25,6 +26,7 @@ import { CITATION_FAITS, construireFiches, FICHIER_COMPLEMENTS } from "./fiches.
 import { construire } from "./index-recherche.ts";
 import { construireListes } from "./listes.ts";
 import { CITATION_WIKIDATA, calculer } from "./score.ts";
+import { construireZones } from "./zones.ts";
 
 const DONNEES = "tools/donnees/data";
 export const PAQUET = join(DONNEES, "paquet");
@@ -59,11 +61,15 @@ etape("6. Index de la recherche");
 const index = await construire(dossierCol, join(DONNEES, "gbif", "especes.tsv"), join(PAQUET, "recherche"), undefined, join(DONNEES, FICHIER_COMPLEMENTS));
 console.log(index);
 
-etape("7. Listes par pays et par continent");
+etape("7. Pays et continents des espèces (filtre « Où »)");
+const zones = await construireZones(DONNEES, join(PAQUET, "zones"));
+console.log(zones);
+
+etape("8. Listes par pays et par continent");
 const listes = await construireListes(dossierCol, DONNEES, join(PAQUET, "listes"));
 console.log(listes);
 
-etape("8. Sources");
+etape("9. Sources");
 const sources = {
   construction: new Date().toISOString(),
   catalogue_of_life: {
@@ -78,7 +84,7 @@ const sources = {
   wcvp: { usage: "formes de vie des plantes (groupe « arbres »)", licence: "CC BY 3.0", citation: CITATION_WCVP },
   wikidata: { usage: "photos et articles Wikipédia (score « bien documentée »)", licence: "CC0", citation: CITATION_WIKIDATA },
   wikidata_faits: { usage: "encadré « Sais-tu ? » des fiches (longévité, taille, masse, envergure)", licence: "CC0", citation: CITATION_FAITS },
-  chiffres: { especes_observees: gbif.especes, index_fichiers: index.fichiers, listes, groupes, documentation, fiches },
+  chiffres: { especes_observees: gbif.especes, index_fichiers: index.fichiers, zones, listes, groupes, documentation, fiches },
 };
 writeFileSync(join(PAQUET, "sources.json"), JSON.stringify(sources, null, 2) + "\n");
 const mois = sources.construction.slice(0, 7);

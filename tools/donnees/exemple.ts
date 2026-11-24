@@ -1,8 +1,8 @@
 // Petit paquet de données d'exemple pour les tests (lots 4 et 5) : quelques fiches tirées du vrai
-// paquet, et un index de recherche réduit à ces espèces et à leurs genres, pour que l'intégration
-// continue teste les fiches et la recherche sans télécharger le paquet complet (221 Mo). Résultat
-// dans tests/fixtures/donnees/, committé ; installé dans le site par
-// `npm run donnees:installer -- --exemple`.
+// paquet, un index de recherche réduit à ces espèces et à leurs genres, et leurs pays et
+// continents (filtre « Où »), pour que l'intégration continue teste les fiches et la recherche
+// sans télécharger le paquet complet (221 Mo). Résultat dans tests/fixtures/donnees/, committé ;
+// installé dans le site par `npm run donnees:installer -- --exemple`.
 //
 // Données : Catalogue of Life (CC BY 4.0), GBIF (comptes d'observations), Wikidata (CC0).
 //
@@ -73,3 +73,15 @@ for (const dico of ["noms", "cles", "courts"]) {
   console.log(`recherche/${dico} : ${gardees.length} lignes`);
 }
 writeFileSync(join(SORTIE_RECHERCHE, "manifeste.json"), JSON.stringify({ extension: manifeste.extension, dictionnaires }, null, 1) + FIN_DE_LIGNE);
+
+// Pays et continents de ces espèces (filtre « Où » de la recherche), même numéro de fichier.
+const SOURCE_ZONES = process.env["SOURCE_ZONES"] ?? "public/donnees/zones";
+const SORTIE_ZONES = "tests/fixtures/donnees/zones";
+rmSync(SORTIE_ZONES, { recursive: true, force: true });
+mkdirSync(SORTIE_ZONES, { recursive: true });
+for (const n of parFichier.keys()) {
+  const toutes = JSON.parse(readFileSync(join(SOURCE_ZONES, `${n}.json`), "utf8")) as Record<string, string>;
+  const gardees = Object.fromEntries(Object.entries(toutes).filter(([id]) => ids.has(id)));
+  writeFileSync(join(SORTIE_ZONES, `${n}.json`), JSON.stringify(gardees, null, 1) + FIN_DE_LIGNE);
+  console.log(`zones/${n}.json : ${Object.keys(gardees).length} espèce(s)`);
+}
