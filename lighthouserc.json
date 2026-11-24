@@ -69,7 +69,7 @@
         "resource-summary:font:size": [
           "error",
           {
-            "maxNumericValue": 102400
+            "maxNumericValue": 122880
           }
         ],
         "resource-summary:third-party:count": [

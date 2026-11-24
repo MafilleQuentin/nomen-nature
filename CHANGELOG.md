@@ -11,6 +11,9 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 - Composants `BadgeStatut` (avec EX et EW, couleurs officielles de l'UICN), `Statistique` et `CarteEspece` (QUE-22).
 - Données d'exemple pour les tests (`npm run donnees:installer -- --exemple`) ; la fiche du chêne pédonculé est contrôlée par Playwright, axe et Lighthouse dans l'intégration continue (QUE-22).
 
+### Modifié
+- Budget de polices par page porté à 120 Ko (les 6 styles du design system sur la fiche espèce) ; poids total toujours limité à 200 Ko.
+
 ## [0.7.0] - 2026-11-23
 
 Lot 3 terminé : les données. Un import mensuel automatique réunit le Catalogue of Life XR, les observations GBIF, la World Checklist of Vascular Plants et Wikidata pour produire l'index de la recherche, les 13 groupes courants, le statut UICN, le score « bien documentée » et les listes de 251 pays et 7 continents. Prochain lot : la fiche espèce.
