@@ -15,6 +15,9 @@
   "observability": {
     "enabled": true
   },
+  // Identifiant du déploiement : il change à chaque mise en ligne et sert de clé au cache des
+  // fiches (src/lib/cache.ts). À répéter dans chaque environnement.
+  "version_metadata": { "binding": "VERSION" },
   // En local (npm run dev, preview, tests) : pas de domaine, pas de clé Sentry.
   "vars": {
     "ENVIRONNEMENT": "local"
@@ -25,6 +28,7 @@
     "test": {
       "name": "nomen-nature-test",
       "routes": [{ "pattern": "test.nomenature.org", "custom_domain": true }],
+      "version_metadata": { "binding": "VERSION" },
       "vars": {
         "ENVIRONNEMENT": "test"
       }
