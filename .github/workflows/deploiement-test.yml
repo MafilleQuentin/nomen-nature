@@ -55,7 +55,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - name: Vérification en ligne
         run: |
-          for chemin in /fr /en /donnees/recherche/manifeste.json /donnees/sources.json; do
+          for chemin in /fr /en /donnees/recherche/manifeste.json /donnees/sources.json /fr/espece/quercus-robur /en/species/quercus-robur; do
             code=$(curl -s -o /dev/null -w "%{http_code}" "https://test.nomenature.org$chemin")
             echo "$chemin : $code"
             test "$code" = 200

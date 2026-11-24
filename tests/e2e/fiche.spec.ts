@@ -104,3 +104,26 @@ test("carte de répartition dessinée par le serveur, sans JavaScript (QUE-25)",
   await expect(page.getByRole("heading", { name: "Où l'a-t-on observé ?" })).toBeVisible();
 });
 
+test("référencement : description, aperçu des partages, fiches courtes non indexées (QUE-26)", async ({ page }) => {
+  await page.goto("/fr/espece/quercus-robur");
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /préoccupation mineure sur la Liste rouge de l'UICN/);
+  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", "Chêne pédonculé — Nomen Nature");
+  await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", "https://nomenature.org/fr/espece/quercus-robur");
+  await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+  await page.goto("/fr/espece/agrilus-obscuricollis");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex");
+  await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
+});
+
+test("cache : les fiches passent par le cache, jamais une page introuvable (QUE-26)", async ({ request }) => {
+  const fiche = await request.get("/fr/espece/quercus-robur");
+  expect(fiche.headers()["x-cache-fiche"]).toMatch(/^(HIT|MISS)$/);
+  expect(fiche.headers()["cache-control"]).toBe("public, max-age=300");
+  expect(fiche.headers()["x-nomen-peut-cacher"]).toBeUndefined();
+  for (let i = 0; i < 2; i++) {
+    const introuvable = await request.get("/fr/espece/quercus-inexistant");
+    expect(introuvable.status()).toBe(404);
+    expect(introuvable.headers()["x-cache-fiche"]).toBe("MISS");
+  }
+});
+
