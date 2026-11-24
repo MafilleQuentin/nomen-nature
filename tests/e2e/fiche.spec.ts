@@ -40,7 +40,7 @@ test("fiche courte : nom latin en titre, ce qui manque, lien vers GBIF (QUE-23)"
   await expect(page.getByRole("link", { name: /Voir l'espèce sur GBIF/ })).toHaveAttribute("href", /^https:\/\/www\.gbif\.org\/species\//);
   await expect(page.getByText("aire connue")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Du même genre ou de la même famille" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Où le trouver ?" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Où l'a-t-on observé ?" })).toBeVisible();
 });
 
 test("fiche courte en anglais : seul le nom anglais manque", async ({ page }) => {
@@ -89,5 +89,18 @@ test("la photo du chêne est servie par notre serveur, avec son crédit (QUE-24)
   const credit = page.locator("figcaption");
   await expect(credit).toContainText("Photo :");
   await expect(credit.getByRole("link", { name: "Wikimedia Commons" })).toHaveAttribute("href", /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
+});
+
+// Les points viennent des tuiles de GBIF (réseau) : s'il ne répond pas, la carte le dit.
+test("carte de répartition dessinée par le serveur, sans JavaScript (QUE-25)", async ({ page }) => {
+  await page.goto("/fr/espece/quercus-robur");
+  await expect(page.getByRole("heading", { name: "Où le trouver ?" })).toBeVisible();
+  const carte = page.getByRole("img", { name: "Carte du monde des observations de Chêne pédonculé enregistrées dans GBIF" });
+  await expect(carte).toBeVisible();
+  const points = await carte.locator("circle").count();
+  if (points === 0) await expect(page.getByText("Carte indisponible pour le moment")).toBeVisible();
+  else await expect(page.getByText("Observation (GBIF)")).toBeVisible();
+  await page.goto("/fr/espece/agrilus-obscuricollis");
+  await expect(page.getByRole("heading", { name: "Où l'a-t-on observé ?" })).toBeVisible();
 });
 

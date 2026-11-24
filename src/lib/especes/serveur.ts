@@ -133,6 +133,25 @@ export async function lienGbif(nom: string, regne: string): Promise<string> {
   return resultat?.usageKey && resultat.matchType === "EXACT" && resultat.rank === "SPECIES" ? `https://www.gbif.org/species/${resultat.usageKey}` : recherche;
 }
 
+/**
+ * Octets d'une ressource (tuile de carte), gardés `duree` secondes dans le cache de Cloudflare
+ * (seulement les réponses réussies). Une réponse « 204 » (aucune donnée) donne un tableau vide.
+ */
+export async function octetsEnCache(adresse: string, duree = 24 * 3600): Promise<Uint8Array | undefined> {
+  const cache = cacheCloudflare();
+  try {
+    const connue = await cache?.match(adresse);
+    if (connue) return new Uint8Array(await connue.arrayBuffer());
+    const reponse = await fetch(adresse, { headers: { "User-Agent": AGENT }, signal: AbortSignal.timeout(2500) });
+    if (!reponse.ok) return undefined;
+    const octets = new Uint8Array(await reponse.arrayBuffer());
+    await cache?.put(adresse, new Response(octets, { headers: { "Content-Type": "application/octet-stream", "Cache-Control": `public, max-age=${duree}` } }));
+    return octets;
+  } catch {
+    return undefined;
+  }
+}
+
 interface ReponseCommons {
   query?: {
     normalized?: { from: string; to: string }[];

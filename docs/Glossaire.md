@@ -32,6 +32,8 @@
 | **API** | Porte d'entrée d'un service pour les programmes (par ex. l'API de GBIF renvoie les données d'une espèce). |
 | **Projection Equal Earth** | Façon d'aplatir la Terre sur une carte qui respecte la surface des continents. |
 | **EPSG:4326** | Code d'une façon simple de placer des points sur la Terre (latitude et longitude). Les tuiles GBIF sont disponibles dans ce format. |
+| **Tuile vectorielle (MVT)** | Morceau de carte envoyé sous forme de données (points, formes) plutôt que d'image. GBIF en fournit pour les observations de chaque espèce ; notre serveur les lit et les redessine en Equal Earth. |
+| **Natural Earth** | Cartes du monde libres (domaine public) : côtes, terres, pays. Le fond de nos cartes en vient (échelle 1:110 m). |
 | **d3** | Bibliothèque JavaScript de dessin de données ; d3-geo dessine les cartes, d3-zoom gère le zoom. |
 | **Recherche phonétique** | Recherche par le son plutôt que l'orthographe : « boulot » retrouve « bouleau ». |
 | **Clé phonétique** | Version simplifiée d'un nom qui ne garde que son « son », selon les règles de sa langue : « boulot » et « bouleau » donnent tous deux `bUlo`. Elle est calculée pour chaque nom à l'import, et pour le texte tapé au moment de la recherche. |

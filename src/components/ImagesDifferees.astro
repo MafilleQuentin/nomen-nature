@@ -1,0 +1,28 @@
+---
+// Chargement différé des images sous l'écran (lot 4, QUE-24 et QUE-25) : une image marquée
+// `data-src` (et `data-srcset`) n'est chargée que quand elle apparaît à l'écran.
+// `loading="lazy"` ne suffit pas : Chrome charge d'avance tout ce qui est à moins de
+// 1 250 px de l'écran, soit presque toute une fiche. Sans JavaScript, chaque image a sa copie
+// dans un <noscript>, chargée normalement. À mettre une fois par page.
+---
+
+<script>
+  const differees = document.querySelectorAll<HTMLImageElement>("img[data-src]");
+  const charger = (image: HTMLImageElement) => {
+    if (image.dataset["srcset"]) image.srcset = image.dataset["srcset"];
+    image.src = image.dataset["src"] ?? image.src;
+    image.removeAttribute("data-src");
+  };
+  if ("IntersectionObserver" in window) {
+    const observateur = new IntersectionObserver((entrees) => {
+      for (const entree of entrees) {
+        if (!entree.isIntersecting) continue;
+        charger(entree.target as HTMLImageElement);
+        observateur.unobserve(entree.target);
+      }
+    });
+    differees.forEach((image) => observateur.observe(image));
+  } else {
+    differees.forEach(charger);
+  }
+</script>
