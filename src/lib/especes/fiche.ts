@@ -95,6 +95,28 @@ export interface FichierFiches {
 const texte = (v: unknown) => (typeof v === "string" ? v : "");
 const nombre = (v: unknown) => (typeof v === "number" ? v : Number(v) || 0);
 
+/** La fiche d'une espèce par son identifiant (recherche), sans ses espèces proches. */
+export function ficheParIdentifiant(fichier: FichierFiches, id: string): Fiche | undefined {
+  const ligne = fichier.lignes.find((l) => l[fichier.colonnes.indexOf("id")] === id);
+  const adresse = ligne?.[fichier.colonnes.indexOf("adresse")];
+  return typeof adresse === "string" ? trouverFiche(fichier, adresse)?.fiche : undefined;
+}
+
+/** Les fiches d'un genre (tout le genre est dans le même fichier), les plus observées d'abord. */
+export function fichesDuGenre(fichier: FichierFiches, genre: string, max = 8): Fiche[] {
+  const iGenre = fichier.colonnes.indexOf("genre");
+  const iObs = fichier.colonnes.indexOf("observations");
+  const iAdresse = fichier.colonnes.indexOf("adresse");
+  return fichier.lignes
+    .filter((l) => l[iGenre] === genre)
+    .sort((a, b) => Number(b[iObs] ?? 0) - Number(a[iObs] ?? 0))
+    .slice(0, max)
+    .flatMap((l) => {
+      const fiche = trouverFiche(fichier, String(l[iAdresse] ?? ""))?.fiche;
+      return fiche ? [fiche] : [];
+    });
+}
+
 /** La fiche d'une adresse et ses espèces proches, ou undefined si elle n'est pas dans le fichier. */
 export function trouverFiche(fichier: FichierFiches, adresse: string): { fiche: Fiche; proches: CarteEspece[] } | undefined {
   const i = (nom: (typeof COLONNES_FICHE)[number]) => fichier.colonnes.indexOf(nom);
