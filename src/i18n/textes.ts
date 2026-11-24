@@ -62,7 +62,6 @@ const fr = {
     descriptionCourant: "{nom} ({latin}) : statut de menace, où l'observer dans le monde, espèces proches.",
     descriptionLatin: "{latin} : statut de menace, où l'observer dans le monde, espèces proches.",
     filAriane: "Classification",
-    photoAVenir: "Photo à venir",
     autreNom: "EN · {nom}",
     saisTu: "Sais-tu ?",
     lireLaSuite: "Lire la suite sur Wikipédia",
@@ -91,6 +90,8 @@ const fr = {
     aireConnue: "aire connue",
     derniereObservation: "dernière observation",
     memeGenre: "Du même genre ou de la même famille",
+    photo: "Photo :",
+    photoCourt: "Photo : {auteur}, {licence}",
   },
   saisTu: {
     debut: "Cette espèce peut",
@@ -222,7 +223,6 @@ const en: Textes = {
     descriptionCourant: "{nom} ({latin}): conservation status, where it is observed around the world, related species.",
     descriptionLatin: "{latin}: conservation status, where it is observed around the world, related species.",
     filAriane: "Classification",
-    photoAVenir: "Photo coming soon",
     autreNom: "FR · {nom}",
     saisTu: "Did you know?",
     lireLaSuite: "Read more on Wikipedia",
@@ -251,6 +251,8 @@ const en: Textes = {
     aireConnue: "known range",
     derniereObservation: "last observation",
     memeGenre: "Same genus or family",
+    photo: "Photo:",
+    photoCourt: "Photo: {auteur}, {licence}",
   },
   saisTu: {
     debut: "This species can",

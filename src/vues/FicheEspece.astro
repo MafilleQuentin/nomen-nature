@@ -9,8 +9,11 @@
 // « Fiche courte » (ce qui manque, lien vers GBIF), les chiffres dans l'en-tête (dont l'année
 // de la dernière observation, demandée à GBIF) et la mention « Pas encore de photo ».
 //
-// À venir dans le lot : photo créditée (QUE-24), carte de répartition (QUE-25), cache et
-// référencement (QUE-26).
+// Photo (QUE-24) : celle de Wikimedia Commons (Wikidata), sinon celle d'iNaturalist, relayée par
+// notre serveur, avec auteur, licence et lien vers sa page ; les espèces proches ont leur photo
+// Commons (un seul appel pour toutes).
+//
+// À venir dans le lot : carte de répartition (QUE-25), cache et référencement (QUE-26).
 import courbesPhotoAbsente from "../assets/motifs/courbes-photo-absente.svg?url";
 import courbesPhoto from "../assets/motifs/courbes-photo.svg?url";
 import BadgeStatut from "../components/BadgeStatut.astro";
@@ -31,7 +34,8 @@ import {
   remplir,
 } from "../lib/especes/affichage";
 import type { CarteEspece as Carte, Fiche } from "../lib/especes/fiche";
-import { derniereObservation, lienGbif, resumeWikipedia } from "../lib/especes/serveur";
+import type { Photo } from "../lib/especes/photos";
+import { derniereObservation, lienGbif, photoInaturalist, photosCommons, resumeWikipedia } from "../lib/especes/serveur";
 import { traductionsEspece } from "../lib/liens";
 import Introuvable from "./Introuvable.astro";
 
@@ -56,13 +60,21 @@ const titres: Record<Langue, string> = { fr: fiche?.wikipediaFr ?? "", en: fiche
 const appelResume = fiche
   ? (async () => (await resumeWikipedia(titres[langue], langue)) ?? (await resumeWikipedia(titres[autreLangue], autreLangue)))()
   : Promise.resolve(undefined);
-// Fiche courte : décidée d'après nos données (un article existe-t-il ?), pas d'après la réponse
-// de Wikipédia, pour qu'une lenteur ne change pas la page. GBIF est alors appelé en même temps.
-const ceQuiManque = fiche ? manques(fiche, langue, Boolean(titres.fr || titres.en)) : [];
-const courte = ceQuiManque.length > 0;
+// Photos : Commons pour la fiche et ses espèces proches (un appel), iNaturalist si la fiche
+// n'a pas de photo Commons.
+const appelCommons = fiche ? photosCommons([fiche.photo, ...proches.map((p) => p.photo)]) : Promise.resolve(new Map<string, Photo>());
+const appelInaturalist = fiche && !fiche.photo ? photoInaturalist(fiche.nom) : Promise.resolve(undefined);
+// Fiche courte : décidée d'après nos données (un article existe-t-il ?) et la photo trouvée, pas
+// d'après la réponse de Wikipédia, pour qu'une lenteur ne change pas la page. GBIF est appelé en
+// même temps quand la fiche risque d'être courte.
+const peutEtreCourte = fiche ? manques(fiche, langue, Boolean(titres.fr || titres.en)).length > 0 : false;
 const appelGbif: Promise<[number | undefined, string]> =
-  fiche && courte ? Promise.all([derniereObservation(fiche.id), lienGbif(fiche.nom, fiche.regne)]) : Promise.resolve([undefined, ""]);
-const [resume, [annee, pageGbif]] = await Promise.all([appelResume, appelGbif]);
+  fiche && peutEtreCourte ? Promise.all([derniereObservation(fiche.id), lienGbif(fiche.nom, fiche.regne)]) : Promise.resolve([undefined, ""]);
+const [resume, [annee, pageGbif], commons, inaturalist] = await Promise.all([appelResume, appelGbif, appelCommons, appelInaturalist]);
+const photo: Photo | undefined = (fiche && commons.get(fiche.photo)) || inaturalist;
+const ceQuiManque = fiche ? manques({ ...fiche, photo: fiche.photo || (photo ? "inaturalist" : "") }, langue, Boolean(titres.fr || titres.en)) : [];
+const courte = ceQuiManque.length > 0;
+const sourcePhoto = photo?.source === "inaturalist" ? "iNaturalist" : "Wikimedia Commons";
 const descriptif = fiche ? descripteur(fiche, langue) : "";
 const saisTu = fiche ? phraseSaisTu(fiche.faits, langue) : "";
 
@@ -75,6 +87,7 @@ const filAriane = fiche
 
 const sources = [resume ? textes.fiche.sourceResume : "", textes.fiche.sourceStatut, textes.fiche.sourceNoms].filter(Boolean);
 const titrePage = remplir(textes.fiche.titrePage, { nom });
+const textePhoto = fiche ? (nomLatinEnTitre ? fiche.nom : `${nom} (${fiche.nom})`) : "";
 const description = fiche
   ? remplir(nomLatinEnTitre ? textes.fiche.descriptionLatin : textes.fiche.descriptionCourant, { nom, latin: fiche.nom })
   : "";
@@ -95,21 +108,43 @@ const description = fiche
         </nav>
 
         <div class="en-tete">
-          <div class:list={["photo", { "photo--courte": courte }]}>
-            {courte ? (
-              <img class="photo__courbes photo__courbes--courte" src={courbesPhotoAbsente} alt="" width="614" height="380" />
-            ) : (
-              <img class="photo__courbes" src={courbesPhoto} alt="" width="725" height="449" />
+          <figure class:list={["photo-et-credit", { "photo-et-credit--courte": courte }]}>
+            <div class:list={["photo", { "photo--courte": courte }]}>
+              {photo ? (
+                <picture>
+                  {photo.srcsetOrdinateur && <source media="(min-width: 900px)" srcset={photo.srcsetOrdinateur} />}
+                  <img
+                    class="photo__image"
+                    src={photo.src}
+                    srcset={photo.srcset}
+                    sizes={courte ? "(min-width: 900px) 44vw, calc(100vw - 40px)" : "(min-width: 900px) 53vw, calc(100vw - 40px)"}
+                    alt={textePhoto}
+                    width={photo.largeur}
+                    height={photo.hauteur}
+                    fetchpriority="high"
+                    decoding="async"
+                  />
+                </picture>
+              ) : courte ? (
+                <img class="photo__courbes photo__courbes--courte" src={courbesPhotoAbsente} alt="" width="614" height="380" />
+              ) : (
+                <img class="photo__courbes" src={courbesPhoto} alt="" width="725" height="449" />
+              )}
+              {!photo && !fiche.photo && (
+                <div class="mention">
+                  <p class="t-libelle-normal">{textes.fiche.pasDePhoto}</p>
+                  <p class="t-texte-petit mention__texte">{textes.fiche.pasDePhotoTexte}</p>
+                </div>
+              )}
+            </div>
+            {photo && (
+              <figcaption class="t-mono-legende credit">
+                {textes.fiche.photo} {photo.auteur} ·{" "}
+                {photo.lienLicence ? <a href={photo.lienLicence} rel="license">{photo.licence}</a> : photo.licence} ·{" "}
+                <a href={photo.page}>{sourcePhoto}</a>
+              </figcaption>
             )}
-            {fiche.photo ? (
-              <p class="visuellement-cache">{textes.fiche.photoAVenir}</p>
-            ) : (
-              <div class="mention">
-                <p class="t-libelle-normal">{textes.fiche.pasDePhoto}</p>
-                <p class="t-texte-petit mention__texte">{textes.fiche.pasDePhotoTexte}</p>
-              </div>
-            )}
-          </div>
+          </figure>
 
           <div class="identite">
             <BadgeStatut uicn={fiche.uicn} langue={langue} />
@@ -188,7 +223,7 @@ const description = fiche
             <ul class="cartes">
               {proches.map((p) => (
                 <li>
-                  <CarteEspece espece={p} langue={langue} />
+                  <CarteEspece espece={p} langue={langue} photo={commons.get(p.photo)} />
                 </li>
               ))}
             </ul>
@@ -257,6 +292,28 @@ const description = fiche
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
+  }
+  .photo-et-credit {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+    min-width: 0;
+  }
+  .photo picture {
+    display: contents;
+  }
+  .photo__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .credit {
+    color: var(--color-text-secondary);
+    overflow-wrap: anywhere;
+  }
+  .credit a {
+    color: inherit;
   }
   .photo {
     position: relative;
@@ -422,10 +479,10 @@ const description = fiche
       gap: var(--space-10);
       align-items: flex-start;
     }
-    .photo {
+    .photo-et-credit {
       flex: 0 0 53%;
     }
-    .photo--courte {
+    .photo-et-credit--courte {
       flex-basis: 43.75%;
     }
     .mention {
