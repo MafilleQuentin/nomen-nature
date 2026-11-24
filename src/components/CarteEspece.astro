@@ -1,37 +1,92 @@
 ---
 // Carte espèce (Figma « Carte espèce », 76:18) : photo (ou courbes de niveau tant qu'elle
 // manque), badge de statut UICN, nom courant, nom latin et groupe. Toute la carte est un lien
-// vers la fiche. La photo et son crédit arrivent avec QUE-24.
+// vers la fiche. Photo Commons relayée par notre serveur (QUE-24), chargée seulement quand la
+// carte apparaît à l'écran : un petit script la met à la place des courbes de niveau
+// (« loading=lazy » ne suffit pas, Chrome charge d'avance tout ce qui est à moins de
+// 1 250 px). Sans JavaScript, la photo est chargée normalement (<noscript>). Son crédit court
+// (auteur, licence) est sous le nom ; le crédit complet avec les liens est sur sa fiche.
 import courbes from "../assets/motifs/courbes-carte.svg?url";
 import type { Langue } from "../i18n/langues";
 import { t } from "../i18n/textes";
-import { nomAffiche } from "../lib/especes/affichage";
+import { nomAffiche, remplir } from "../lib/especes/affichage";
 import type { CarteEspece } from "../lib/especes/fiche";
+import { texteBrut, type Photo } from "../lib/especes/photos";
 import { lienEspece } from "../lib/liens";
 import BadgeStatut from "./BadgeStatut.astro";
 
 interface Props {
   espece: CarteEspece;
   langue: Langue;
+  photo?: Photo | undefined;
 }
 
-const { espece, langue } = Astro.props;
+const { espece, langue, photo } = Astro.props;
 const nom = nomAffiche(espece, langue);
 const groupes = t(langue).groupes as Record<string, string>;
 const groupe = groupes[espece.groupe] ?? "";
+// Crédit court : l'auteur raccourci (certains champs « auteur » de Commons sont de longues phrases).
+const credit = photo ? remplir(t(langue).fiche.photoCourt, { auteur: texteBrut(photo.auteur, 32), licence: photo.licence }) : "";
+const meta = [groupe, credit].filter(Boolean).join(" · ");
 ---
 
 <a class="carte" href={lienEspece(espece.adresse, langue)}>
   <div class="photo">
-    <img class="courbes" src={courbes} alt="" width="302" height="187" loading="lazy" decoding="async" />
+    {
+      photo ? (
+        <>
+          <img
+            class="image"
+            src={courbes}
+            data-src={photo.src}
+            data-srcset={photo.srcsetCarte}
+            sizes="(min-width: 900px) 302px, 80vw"
+            alt=""
+            width={photo.largeur}
+            height={photo.hauteur}
+            decoding="async"
+          />
+          <noscript>
+            <img class="image" src={photo.src} srcset={photo.srcsetCarte} sizes="(min-width: 900px) 302px, 80vw" alt="" loading="lazy" />
+          </noscript>
+        </>
+      ) : (
+        <img class="courbes" src={courbes} alt="" width="302" height="187" loading="lazy" decoding="async" />
+      )
+    }
     <BadgeStatut uicn={espece.uicn} langue={langue} class="carte__badge" />
   </div>
   <div class="texte">
     <p class="t-titre-carte nom">{nom}</p>
     {nom !== espece.nom && <p class="t-texte-latin latin" lang="la">{espece.nom}</p>}
-    {groupe && <p class="t-mono-legende groupe">{groupe}</p>}
+    {meta && <p class="t-mono-legende groupe">{meta}</p>}
   </div>
 </a>
+
+<script>
+  // Photos des cartes : chargées quand la carte apparaît à l'écran.
+  const differees = document.querySelectorAll<HTMLImageElement>("img[data-srcset]");
+  const charger = (image: HTMLImageElement) => {
+    image.srcset = image.dataset["srcset"] ?? "";
+    image.src = image.dataset["src"] ?? image.src;
+    image.removeAttribute("data-srcset");
+  };
+  if ("IntersectionObserver" in window) {
+    const observateur = new IntersectionObserver(
+      (entrees) => {
+        for (const entree of entrees) {
+          if (!entree.isIntersecting) continue;
+          charger(entree.target as HTMLImageElement);
+          observateur.unobserve(entree.target);
+        }
+      },
+      { rootMargin: "0px" },
+    );
+    differees.forEach((image) => observateur.observe(image));
+  } else {
+    differees.forEach(charger);
+  }
+</script>
 
 <style>
   .carte {
@@ -60,6 +115,17 @@ const groupe = groupes[espece.groupe] ?? "";
     height: 100%;
     max-width: none;
     object-fit: cover;
+  }
+  .image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* Le badge NE n'a qu'un contour : sur une photo, il lui faut un fond pour rester lisible. */
+  .photo :global(.badge--ne) {
+    background: var(--color-bg-sunken);
   }
   .photo :global(.carte__badge) {
     position: absolute;
