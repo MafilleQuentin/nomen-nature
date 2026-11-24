@@ -34,9 +34,9 @@ test("fiche courte : nom latin en titre, ce qui manque, lien vers GBIF (QUE-23)"
   await expect(page).toHaveTitle("Agrilus obscuricollis — Nomen Nature");
   await expect(page.getByText("NE · Non évaluée").first()).toBeVisible();
   await expect(page.getByText("Pas encore de nom français")).toBeVisible();
-  await expect(page.getByText("Pas encore de photo", { exact: true })).toBeVisible();
   await expect(page.getByText("Fiche courte")).toBeVisible();
-  await expect(page.getByText("pas de nom français, pas de description ni de photo libre")).toBeVisible();
+  // La photo vient d'iNaturalist quand il en a une (réseau) : seul le début de la phrase est sûr.
+  await expect(page.getByText(/encore peu documentée dans les bases ouvertes : pas de nom français(, pas de description| ni de description)/)).toBeVisible();
   await expect(page.getByRole("link", { name: /Voir l'espèce sur GBIF/ })).toHaveAttribute("href", /^https:\/\/www\.gbif\.org\/species\//);
   await expect(page.getByText("aire connue")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Du même genre ou de la même famille" })).toBeVisible();
@@ -68,3 +68,26 @@ test("une adresse avec des majuscules redirige vers l'adresse en minuscules", as
   expect(reponse.status()).toBe(301);
   expect(reponse.headers()["location"]).toBe("/fr/espece/quercus-robur");
 });
+
+test("le relais de photos refuse ce qui n'est pas une photo connue (QUE-24)", async ({ request }) => {
+  for (const chemin of [
+    "/photos/commons/123/Quercus_robur.jpg",
+    "/photos/commons/500/..%2F..%2Fetc.txt",
+    "/photos/inaturalist/abc/medium.jpeg",
+    "/photos/inaturalist/12/original.jpeg",
+    "/photos/inaturalist/12/medium.exe",
+  ]) {
+    expect((await request.get(chemin)).status(), chemin).toBe(404);
+  }
+});
+
+// Ce test interroge Commons (auteur et licence) : il dépend du réseau.
+test("la photo du chêne est servie par notre serveur, avec son crédit (QUE-24)", async ({ page }) => {
+  await page.goto("/fr/espece/quercus-robur");
+  const photo = page.getByRole("img", { name: "Chêne pédonculé (Quercus robur)" });
+  await expect(photo).toHaveAttribute("src", /^\/photos\/commons\/500\//);
+  const credit = page.locator("figcaption");
+  await expect(credit).toContainText("Photo :");
+  await expect(credit.getByRole("link", { name: "Wikimedia Commons" })).toHaveAttribute("href", /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
+});
+
