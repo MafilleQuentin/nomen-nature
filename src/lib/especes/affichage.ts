@@ -26,7 +26,7 @@ const localeDe = (langue: Langue) => (langue === "fr" ? "fr-FR" : "en-US");
 
 /** Nombre court : 1 234 567 → « 1,2 M » (français), « 1.2M » (anglais) ; exact sous 10 000. */
 export function nombreCourt(n: number, langue: Langue): string {
-  if (n < 10_000) return new Intl.NumberFormat(localeDe(langue)).format(n);
+  if (n < 10_000) return new Intl.NumberFormat(localeDe(langue), { useGrouping: "always" }).format(n);
   return new Intl.NumberFormat(localeDe(langue), { notation: "compact", maximumFractionDigits: 1 }).format(n);
 }
 
@@ -98,4 +98,38 @@ export function couperResume(texte: string, max = 450): string {
   }
   if (resultat.trim()) return resultat.trim();
   return `${propre.slice(0, max).replace(/\s+\S*$/, "")}…`;
+}
+
+export type Manque = "nom" | "description" | "photo";
+
+/**
+ * Ce qui manque à une fiche pour être complète (QUE-23) : nom courant dans la langue de la page,
+ * description (un article Wikipédia, quelle que soit sa langue), photo libre. Une fiche à laquelle il
+ * manque au moins une de ces choses est une « fiche courte ». En français, c'est la règle
+ * « bien documentée » du score (photo, nom français, article).
+ */
+export function manques(fiche: Pick<Fiche, "nomFr" | "nomEn" | "photo">, langue: Langue, avecArticle: boolean): Manque[] {
+  const liste: Manque[] = [];
+  if (!(langue === "fr" ? fiche.nomFr : fiche.nomEn)) liste.push("nom");
+  if (!avecArticle) liste.push("description");
+  if (!fiche.photo) liste.push("photo");
+  return liste;
+}
+
+/** « pas de nom français, pas de description ni de photo libre » ; « no English name, no description or free photo ». */
+export function listeDesManques(liste: Manque[], langue: Langue): string {
+  const textes = t(langue).fiche;
+  const noms = { nom: textes.manqueNom, description: textes.manqueDescription, photo: textes.manquePhoto };
+  const mots = liste.map((m) => noms[m]);
+  if (mots.length <= 1) return mots.map((m) => `${textes.pasDe} ${m}`).join("");
+  const debut = mots.slice(0, -1).map((m) => `${textes.pasDe} ${m}`).join(", ");
+  return `${debut} ${textes.niDe} ${mots.at(-1)}`;
+}
+
+/** « insecte de la famille des Buprestidae » ; sans famille connue, une chaîne vide. */
+export function descripteur(fiche: Pick<Fiche, "groupe" | "famille">, langue: Langue): string {
+  if (!fiche.famille) return "";
+  const singuliers = t(langue).singuliers as Record<string, string>;
+  const groupe = singuliers[fiche.groupe] ?? singuliers["autre"] ?? "";
+  return remplir(t(langue).fiche.deLaFamille, { groupe, famille: fiche.famille });
 }

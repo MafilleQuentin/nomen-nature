@@ -6,6 +6,9 @@
 // - Résumé Wikipédia : API REST de Wikipédia, appelée par notre serveur (le navigateur du
 //   visiteur ne contacte pas Wikipédia). En cas d'échec ou de lenteur, la fiche s'affiche
 //   sans résumé. Le cache des réponses viendra avec QUE-26.
+// - GBIF (fiche courte, QUE-23) : année de la dernière observation (API des cartes, avec notre
+//   identifiant du Catalogue of Life) et page de l'espèce sur gbif.org (recherche du nom).
+//   Même principe : appelés par notre serveur, et la fiche s'affiche sans eux en cas d'échec.
 import { env } from "cloudflare:workers";
 import type { Langue } from "../../i18n/langues.ts";
 import { cheminDuFichier, trouverFiche, type FichierFiches } from "./fiche.ts";
@@ -58,4 +61,35 @@ export async function resumeWikipedia(titre: string, langue: Langue): Promise<Re
   } catch {
     return undefined;
   }
+}
+
+const LISTE_COL_XR = "7ddf754f-d193-4cc9-b351-99906754a03b"; // Catalogue of Life XR sur GBIF
+
+async function jsonGbif<T>(adresse: string): Promise<T | undefined> {
+  try {
+    const reponse = await fetch(adresse, { headers: { "User-Agent": AGENT, Accept: "application/json" }, signal: AbortSignal.timeout(2500) });
+    return reponse.ok ? ((await reponse.json()) as T) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Année de la dernière observation connue de GBIF, ou undefined. */
+export async function derniereObservation(id: string): Promise<number | undefined> {
+  const capacites = await jsonGbif<{ maxYear?: number }>(
+    `https://api.gbif.org/v2/map/occurrence/density/capabilities.json?taxonKey=${encodeURIComponent(id)}&checklistKey=${LISTE_COL_XR}`,
+  );
+  return capacites?.maxYear;
+}
+
+/**
+ * Page de l'espèce sur gbif.org : celle de son nom exact (identifiant de GBIF, différent du
+ * nôtre), sinon la recherche de son nom.
+ */
+export async function lienGbif(nom: string, regne: string): Promise<string> {
+  const recherche = `https://www.gbif.org/species/search?q=${encodeURIComponent(nom)}`;
+  const parametres = new URLSearchParams({ name: nom, strict: "true" });
+  if (regne) parametres.set("kingdom", regne);
+  const resultat = await jsonGbif<{ usageKey?: number; matchType?: string; rank?: string }>(`https://api.gbif.org/v1/species/match?${parametres}`);
+  return resultat?.usageKey && resultat.matchType === "EXACT" && resultat.rank === "SPECIES" ? `https://www.gbif.org/species/${resultat.usageKey}` : recherche;
 }
