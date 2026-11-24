@@ -65,5 +65,7 @@
 | **Fiche espèce** | Page d'une espèce (`/fr/espece/quercus-robur`) : noms, statut, résumé Wikipédia, chiffres, espèces proches. Construite à la demande par notre serveur à partir des **fichiers de fiches** (3 000 fichiers où chaque genre est rangé en entier). |
 | **Fiche courte** | Version d'une fiche espèce quand il manque le nom courant, l'article Wikipédia ou la photo : un encadré dit ce qui manque et renvoie vers GBIF. C'est le cas de presque toutes les espèces (toutes sauf les 30 224 « bien documentées »). |
 | **Relais de photos** | Notre serveur va chercher la photo chez Wikimedia ou iNaturalist et la renvoie au visiteur, dont le navigateur ne contacte que nomenature.org (rien n'est transmis à ces sites). La photo est gardée un an dans le cache de Cloudflare. |
+| **Open Graph** | Balises qui décrivent une page quand on la partage (titre, description, image) : WhatsApp, réseaux sociaux et messageries les lisent pour afficher l'aperçu. |
+| **noindex** | Consigne qui demande aux moteurs de recherche de ne pas proposer une page dans leurs résultats. Les fiches courtes la portent : on peut les visiter et les partager, mais Google ne les montre pas. |
 | **WebP** | Format d'image plus léger que le JPEG, lu par tous les navigateurs récents. Wikimedia Commons le fournit pour ses vignettes. |
 | **Homonyme** | Même nom latin donné à deux espèces de règnes différents (*Morus* est un mûrier et un fou de Bassan). Leurs fiches sont départagées par l'identifiant du Catalogue of Life à la fin de l'adresse. |

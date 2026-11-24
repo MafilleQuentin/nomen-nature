@@ -10,9 +10,9 @@
 | 3 | **Aucun secret dans le code du navigateur** | Les clés (Pl@ntNet, etc.) restent côté serveur : le site passe par notre propre serveur, qui appelle Pl@ntNet. Le `.env` n'est jamais versionné. |
 | 4 | **HTTPS obligatoire** | Redirection automatique (Cloudflare). Indispensable aussi parce que la géolocalisation et l'appareil photo ne fonctionnent qu'en HTTPS. |
 | 6 | **Titres et descriptions de page** | Uniques pour chaque page et chaque espèce, en français et en anglais (balises de langue alternative). |
-| 7 | **Image d'aperçu pour les réseaux sociaux** | Une image générique, et une image par fiche espèce (photo + nom + badge de statut). |
+| 7 | **Image d'aperçu pour les réseaux sociaux** | Une image générique, et une image par fiche espèce : la photo de l'espèce (décision du 24.11.2026 : pas d'image composée photo + nom + badge, trop lourde pour l'offre gratuite de Cloudflare). |
 | 8 | **Favicon** | À partir du vrai logo, une fois créé. |
-| 9 | **Plan du site et robots.txt** | Plan du site en plusieurs fichiers (des milliers d'espèces) ; seulement les fiches bien documentées. |
+| 9 | **Plan du site et robots.txt** | Plan du site en plusieurs fichiers (des milliers d'espèces) ; seulement les fiches bien documentées (les fiches courtes portent « noindex », décision du 24.11.2026). |
 | 10 | **Texte alternatif sur les images** | Pour chaque photo : nom de l'espèce et ce qu'on voit. Engagement WCAG AA. |
 | 11 | **Images compressées** | Photos redimensionnées à la taille d'affichage, formats WebP/AVIF, chargement différé. |
 | 12 | **Vitesse de chargement mesurée** | Critère de réussite : rapide en 4G. Mesure Lighthouse à chaque lot, budget de poids par page. |
