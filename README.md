@@ -18,7 +18,7 @@ Le troisième lot, les **données**, est terminé (v0.7.0) : un import mensuel a
 
 Le deuxième lot, le **socle du site**, est terminé (v0.6.0) : gabarit bilingue (français et anglais) fidèle aux maquettes, page 404, tests automatiques sur GitHub, et un site de test en ligne sur <https://test.nomenature.org> (non indexé).
 
-Le quatrième lot, la **fiche espèce**, est en cours : chaque espèce observée a sa page, en français (`/fr/espece/quercus-robur`) et en anglais (`/en/species/quercus-robur`), avec son statut, ses noms, le résumé Wikipédia, ses chiffres et des espèces proches. Photos, carte de répartition et version « fiche courte » arrivent dans la suite du lot.
+Le quatrième lot, la **fiche espèce**, est en cours : chaque espèce observée a sa page, en français (`/fr/espece/quercus-robur`) et en anglais (`/en/species/quercus-robur`), avec son statut, ses noms, le résumé Wikipédia, ses chiffres et des espèces proches ; les espèces peu documentées ont une « fiche courte » qui dit ce qui manque et renvoie vers GBIF. Photos et carte de répartition arrivent dans la suite du lot.
 
 | Étape | État |
 |---|---|
