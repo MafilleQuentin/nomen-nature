@@ -18,7 +18,7 @@ Le troisième lot, les **données**, est terminé (v0.7.0) : un import mensuel a
 
 Le deuxième lot, le **socle du site**, est terminé (v0.6.0) : gabarit bilingue (français et anglais) fidèle aux maquettes, page 404, tests automatiques sur GitHub, et un site de test en ligne sur <https://test.nomenature.org> (non indexé).
 
-Le quatrième lot, la **fiche espèce**, est en cours : chaque espèce observée a sa page, en français (`/fr/espece/quercus-robur`) et en anglais (`/en/species/quercus-robur`), avec son statut, ses noms, le résumé Wikipédia, ses chiffres et des espèces proches ; les espèces peu documentées ont une « fiche courte » qui dit ce qui manque et renvoie vers GBIF. Photos et carte de répartition arrivent dans la suite du lot.
+Le quatrième lot, la **fiche espèce**, est en cours : chaque espèce observée a sa page, en français (`/fr/espece/quercus-robur`) et en anglais (`/en/species/quercus-robur`), avec son statut, ses noms, le résumé Wikipédia, ses chiffres et des espèces proches ; les espèces peu documentées ont une « fiche courte » qui dit ce qui manque et renvoie vers GBIF. Les photos (Wikimedia Commons, sinon iNaturalist) sont créditées et servies par notre serveur. La carte de répartition arrive dans la suite du lot.
 
 | Étape | État |
 |---|---|
@@ -79,7 +79,7 @@ Avant le premier `npm run test:e2e`, installer le navigateur de test : `npx play
 |---|---|---|
 | Types et tests unitaires | `astro check`, Vitest | une erreur de type ou un test unitaire échoue, ou la construction échoue |
 | Navigateur et accessibilité | Playwright + axe, ordinateur et téléphone | un parcours échoue ou axe trouve une violation WCAG 2.2 AA |
-| Vitesse et qualité | Lighthouse CI ([réglages](lighthouserc.json)) | un score passe sous 90 (100 pour l'accessibilité), ou une page dépasse son budget : 200 Ko en tout, 50 Ko de scripts, 120 Ko de polices, aucune requête vers un tiers |
+| Vitesse et qualité | Lighthouse CI ([réglages](lighthouserc.json)) | un score passe sous 90 (100 pour l'accessibilité), ou une page dépasse son budget : 200 Ko en tout (300 Ko pour une fiche espèce, avec sa photo), 50 Ko de scripts, 120 Ko de polices, aucune requête vers un tiers |
 | Liens cassés | lychee ([réglages](lychee.toml)) | un lien interne du site ou de la documentation est cassé |
 
 `develop` et `main` sont protégées : on y fusionne seulement par pull request, une fois les quatre vérifications réussies.
