@@ -14,10 +14,12 @@ interface Props {
   taille?: "grand" | "compact";
   /** Identifiant du champ, à changer s'il y a deux barres sur la même page. */
   id?: string;
+  /** Texte déjà cherché (page de résultats). */
+  valeur?: string;
   class?: string;
 }
 
-const { langue, taille = "grand", id = "recherche", class: classe } = Astro.props;
+const { langue, taille = "grand", id = "recherche", valeur, class: classe } = Astro.props;
 const textes = t(langue).recherche;
 const textesSuggestions = { ...textes, statutUicn: t(langue).fiche.statutUicn };
 ---
@@ -30,6 +32,7 @@ const textesSuggestions = { ...textes, statutUicn: t(langue).fiche.statutUicn };
     class:list={["barre__champ", taille === "grand" ? "t-texte-grand" : "t-texte-normal"]}
     type="search"
     name="q"
+    value={valeur}
     placeholder={textes.indicatif}
     autocomplete="off"
     enterkeyhint="search"

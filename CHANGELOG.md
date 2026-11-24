@@ -10,7 +10,15 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 - Espèces proposées : « Tu voulais dire… » quand le texte n'a été trouvé que par le son (« boulot » → bouleaux), espèces les plus observées d'abord, espèces du genre visé (« birch » → bouleaux) : **55/55** recherches de test avec une bonne réponse dans les 5 premières, 54 en première (QUE-27).
 - Suggestions pendant la frappe sur la barre de recherche : îlot Svelte (~15 Ko compressés), au clavier (flèches, Entrée, Échap) et au lecteur d'écran (combobox ARIA), en français, anglais et latin ; API `/api/recherche` (8 espèces, gardées en cache) ; sans JavaScript, la barre reste un formulaire vers la page de résultats (QUE-27).
 - Index de la recherche : chaque nom d'espèce porte aussi l'adresse de sa fiche, ses observations, son statut, son groupe et ses noms principaux ; fichiers d'environ 96 Ko (lus par le serveur), 7 274 fichiers. Import : fiches avant l'index (QUE-27).
+- Page de résultats, d'après les maquettes « boulot » (ordinateur et téléphone) et « Aucun résultat », en français (`/fr/recherche?q=…`) et en anglais (`/en/search?q=…`), rendue par le serveur avec le même moteur que les suggestions (30 espèces), **sans JavaScript** et jamais indexée : « Tu voulais dire « … » ? » avec lien vers la recherche corrigée, « N espèces pour « … » », lignes espèce (nom, nom latin, groupe, observations, badge de statut) vers les fiches (QUE-28).
+- Filtres de la page de résultats, en liens : groupes présents dans les résultats (du plus fourni au moins fourni) et « Menacées seulement » (CR, EN, VU) ; sur téléphone, rangées de puces à faire défiler ; filtres sans résultat → « Retirer les filtres » (QUE-28).
+- États de la page : « Aucune espèce trouvée » avec le bouton « Explorer par groupe » (vers l'accueil jusqu'au lot 6), texte trop court, recherche indisponible (code 503) (QUE-28).
+- Composants `PuceFiltre`, `LigneEspece` et `MessageEtat` ; la barre de recherche peut être pré-remplie (QUE-28).
+- Lighthouse mesure aussi la page de résultats (contrôles de référencement un par un : la page est « noindex » par choix) (QUE-28).
 - Outil `evaluer-recherche.ts` : les 40 recherches du lot 1 et 15 recherches imprévues ; l'import mensuel échoue si le score passe sous 38/40 (QUE-27).
+
+### Modifié
+- Fonds de courbes de niveau (page de résultats, page introuvable) allégés : coordonnées arrondies au pixel, 37 Ko au lieu de 45 Ko compressés sur ordinateur, 9 Ko au lieu de 11 Ko sur téléphone, sans différence visible (QUE-28).
 
 ### Corrigé
 - Suggestions lentes en ligne (2 à 12 secondes) : le serveur lisait la fiche de chaque espèce candidate (jusqu'à 35 fichiers, 7,5 Mo pour « fougère »). Il ne lit plus que l'index, et au plus le fichier du genre visé (QUE-27).
