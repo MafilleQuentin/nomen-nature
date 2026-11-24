@@ -138,7 +138,7 @@ Décisions de l'utilisateur ([journal des décisions](../Decisions.md)) : donné
 
 ## Index de la recherche, lot 5 (24.11.2026)
 
-La recherche est lue par notre serveur (décision du 24.11.2026). Pour qu'elle reste rapide, chaque ligne d'espèce de l'index porte depuis le lot 5 son **résumé** : adresse de la fiche, observations, statut UICN, groupe, noms français et anglais principaux (écrits par [`fiches.ts`](../../tools/donnees/fiches.ts) dans `data/complements-recherche.tsv`, l'import construit donc les fiches avant l'index). Sans lui, le serveur lisait la fiche de chaque espèce candidate : jusqu'à 35 fichiers (7,5 Mo) et 12 secondes pour « fougère » en ligne. Avec lui : aucune fiche lue, au plus le fichier du genre visé. Les fichiers de l'index passent à ~96 Ko (le navigateur ne les télécharge plus) : **7 274 fichiers** ; paquet complet ≈ 13 800 fichiers.
+La recherche est lue par notre serveur (décision du 24.11.2026). Pour qu'elle reste rapide, chaque ligne d'espèce de l'index porte depuis le lot 5 son **résumé** : adresse de la fiche, observations, statut UICN, groupe, noms français et anglais principaux (écrits par [`fiches.ts`](../../tools/donnees/fiches.ts) dans `data/complements-recherche.tsv`, l'import construit donc les fiches avant l'index). Sans lui, le serveur lisait la fiche de chaque espèce candidate : jusqu'à 35 fichiers (7,5 Mo) et 12 secondes pour « fougère » en ligne. Avec lui : aucune fiche lue, au plus le fichier du genre visé. Les 4 à 10 fichiers de l'index qu'une recherche demande sont lus en même temps (~0,2 s chacun en ligne). Les fichiers de l'index passent à ~96 Ko (le navigateur ne les télécharge plus) : **7 274 fichiers** ; paquet complet ≈ 13 800 fichiers.
 
 ## Questions ouvertes (lots suivants)
 

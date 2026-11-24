@@ -14,6 +14,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ### Corrigé
 - Suggestions lentes en ligne (2 à 12 secondes) : le serveur lisait la fiche de chaque espèce candidate (jusqu'à 35 fichiers, 7,5 Mo pour « fougère »). Il ne lit plus que l'index, et au plus le fichier du genre visé (QUE-27).
+- Suggestions encore à 1,2-2 secondes pour un mot nouveau : le serveur lisait les 4 à 10 fichiers de l'index d'une recherche l'un après l'autre (~0,2 s chacun en ligne). Il les lit maintenant en même temps (QUE-27).
 
 ## [0.8.0] - 2026-11-24
 
