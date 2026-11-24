@@ -5,6 +5,29 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ## [Non publié]
 
+## [0.8.0] - 2026-11-24
+
+Lot 4 terminé : la fiche espèce. Chaque espèce observée a sa page en français et en anglais : fiche complète (nom, résumé Wikipédia, « Sais-tu ? », photo créditée) ou fiche courte qui dit ce qui manque, carte de répartition des observations GBIF dessinée par notre serveur, espèces proches, cache et référencement. Prochain lot : la recherche.
+
+### Ajouté
+- Fiche espèce complète, d'après la maquette « Chêne pédonculé » (ordinateur et téléphone), en français (`/fr/espece/quercus-robur`) et en anglais (`/en/species/quercus-robur`), rendue à la demande par le serveur : fil d'Ariane, badge de statut UICN, noms courant, latin et dans l'autre langue, encadré « Sais-tu ? » (faits de Wikidata), résumé Wikipédia avec lien, chiffres (pays, observations, aire principale), 4 espèces proches, sources ; page introuvable (404) pour une espèce inconnue (QUE-22).
+- Import : 3 000 fichiers de fiches où chaque genre est rangé en entier (1 648 413 espèces, 4 espèces proches chacune, faits « Sais-tu ? » pour 5 897), branchés dans l'import mensuel (QUE-22).
+- Fiche courte d'une espèce peu documentée, d'après la maquette *Agrilus cyanescens* (ordinateur et téléphone) : quand il manque le nom courant, l'article Wikipédia ou la photo, encadré « Fiche courte » qui dit ce qui manque, lien vers l'espèce sur GBIF, nom latin en titre avec « Pas encore de nom français · insecte de la famille des Buprestidae », mention « Pas encore de photo », chiffres dans l'en-tête dont l'année de la dernière observation (GBIF), section « Du même genre ou de la même famille » (QUE-23).
+- Photos créditées sur les fiches : photo Wikimedia Commons (vignettes WebP de 330, 500 et 960 px), sinon photo par défaut d'iNaturalist sous licence libre (JPEG de 500 px, 1024 px sur ordinateur), avec auteur, licence et liens sous la photo ; photos des espèces proches (crédit court), chargées seulement quand la carte apparaît à l'écran ; texte alternatif ; une photo trouvée sur iNaturalist suffit pour que la fiche ne soit plus « courte » (QUE-24).
+- Chargement différé partagé (`ImagesDifferees`) : photos des espèces proches et fond de la carte chargés quand ils apparaissent à l'écran (QUE-24, QUE-25).
+- Relais des photos par notre serveur (`/photos/commons/…`, `/photos/inaturalist/…`) : le navigateur ne contacte ni Wikimedia ni iNaturalist ; seules des adresses construites par nous sont relayées ; images gardées un an et réponses des API de Commons et d'iNaturalist 30 jours dans le cache de Cloudflare (QUE-24).
+- Carte de répartition sur la fiche, d'après la maquette : terres Natural Earth en Equal Earth et un point ambre par zone d'observations GBIF (hexagones des tuiles vectorielles de GBIF, plus gros là où l'espèce est le plus observée), dessinée par notre serveur en SVG, **sans JavaScript ni bibliothèque** ; « Où le trouver ? » avec les chiffres à côté, « Où l'a-t-on observé ? » sur la fiche courte ; message si GBIF ne répond pas (QUE-25).
+- Lecteur de tuiles vectorielles (format MVT) et projection Equal Earth en TypeScript, sans dépendance ; fond de carte généré par `tools/carte/fond.ts` (15 Ko compressé, commun à toutes les fiches) (QUE-25).
+- Référencement des fiches : description avec le statut UICN, balises de partage (Open Graph et cartes des réseaux) sur toutes les pages, image d'aperçu = photo de l'espèce en JPEG ; **seules les fiches complètes sont indexées**, les fiches courtes portent « noindex » (QUE-26).
+- Cache : fiches complètes gardées un jour chez Cloudflare (clé par déploiement, en-tête `X-Cache-Fiche`), 5 minutes dans le navigateur ; réponses de Wikipédia (7 jours), GBIF (1 jour pour la carte et la dernière observation, 30 jours pour la page de l'espèce), Commons et iNaturalist (30 jours) ; une fiche incomplète (GBIF saturé, par exemple) n'est pas gardée ; message « réessaie dans quelques minutes » sur la carte si GBIF ne répond pas ou reçoit trop de demandes (QUE-26).
+- Le déploiement du site de test vérifie aussi la fiche du chêne en français et en anglais.
+- Composants `BadgeStatut` (avec EX et EW, couleurs officielles de l'UICN), `Statistique` et `CarteEspece` (QUE-22).
+- Données d'exemple pour les tests (`npm run donnees:installer -- --exemple`) ; la fiche du chêne pédonculé est contrôlée par Playwright, axe et Lighthouse dans l'intégration continue (QUE-22).
+
+### Modifié
+- Budget de poids des fiches espèces porté à 300 Ko (photo nette sur les écrans haute densité) ; 200 Ko pour les autres pages. Lighthouse ne fait plus de capture de la page entière, qui chargeait les photos que le visiteur ne voit pas.
+- Budget de polices par page porté à 120 Ko (les 6 styles du design system sur la fiche espèce) ; poids total toujours limité à 200 Ko.
+
 ## [0.7.0] - 2026-11-23
 
 Lot 3 terminé : les données. Un import mensuel automatique réunit le Catalogue of Life XR, les observations GBIF, la World Checklist of Vascular Plants et Wikidata pour produire l'index de la recherche, les 13 groupes courants, le statut UICN, le score « bien documentée » et les listes de 251 pays et 7 continents. Prochain lot : la fiche espèce.
@@ -109,7 +132,8 @@ Fin du cadrage : le projet est défini, aucune ligne de code encore.
 - Coffre Obsidian dans `docs/`.
 - Licence MIT.
 
-[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.7.0...HEAD
+[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.4.0...v0.5.0

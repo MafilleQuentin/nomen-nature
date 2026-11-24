@@ -1,0 +1,136 @@
+{
+ "colonnes": [
+  "id",
+  "adresse",
+  "nom",
+  "auteur",
+  "nom_fr",
+  "nom_en",
+  "uicn",
+  "groupe",
+  "regne",
+  "embranchement",
+  "classe",
+  "ordre",
+  "famille",
+  "genre",
+  "observations",
+  "pays",
+  "continent",
+  "wikidata",
+  "photo",
+  "wikipedia_fr",
+  "wikipedia_en",
+  "faits",
+  "proches"
+ ],
+ "lignes": [
+  [
+   "B4N4",
+   "agrilus-cyanescens",
+   "Agrilus cyanescens",
+   "(Ratzeburg, 1837)",
+   "Agrile bleuâtre",
+   "",
+   "NE",
+   "insectes",
+   "Animalia",
+   "Arthropoda",
+   "Insecta",
+   "Coleoptera",
+   "Buprestidae",
+   "Agrilus",
+   5366,
+   30,
+   "EUROPE",
+   "Q14922412",
+   "Agrilus cyanescens (10.3897-BDJ.12.e117362) Figure 1c.jpg",
+   "Agrilus_cyanescens",
+   "Agrilus_cyanescens",
+   {},
+   [
+    "B478",
+    "B3XW",
+    "B6NR",
+    "B4MB"
+   ]
+  ],
+  [
+   "B658",
+   "agrilus-obscuricollis",
+   "Agrilus obscuricollis",
+   "Kiesenwetter, 1857",
+   "",
+   "",
+   "NE",
+   "insectes",
+   "Animalia",
+   "Arthropoda",
+   "Insecta",
+   "Coleoptera",
+   "Buprestidae",
+   "Agrilus",
+   1364,
+   23,
+   "EUROPE",
+   "Q21239412",
+   "",
+   "",
+   "",
+   {},
+   [
+    "B4N4",
+    "B478",
+    "B3XW",
+    "B6NR"
+   ]
+  ]
+ ],
+ "cartes": {
+  "B478": [
+   "agrilus-biguttatus",
+   "Agrilus biguttatus",
+   "Richard à points blancs",
+   "Oak Jewel-beetle",
+   "NE",
+   "insectes",
+   "Agrilus biguttatus from France.jpg"
+  ],
+  "B3XW": [
+   "agrilus-anxius",
+   "Agrilus anxius",
+   "Agrile du bouleau",
+   "bronze birch borer",
+   "NE",
+   "insectes",
+   "Agrilus anxius.jpg"
+  ],
+  "B6NR": [
+   "agrilus-ruficollis",
+   "Agrilus ruficollis",
+   "Agrile du framboisier",
+   "Red-necked Cane Borer",
+   "NE",
+   "insectes",
+   "Red-necked Cane Borers Mating - Flickr - treegrow (2).jpg"
+  ],
+  "B4MB": [
+   "agrilus-cuprescens",
+   "Agrilus cuprescens",
+   "Agrile du rosier",
+   "Rose Stem Girdler",
+   "NE",
+   "insectes",
+   "Agrilus cuprescens (10.3897-BDJ.12.e117362) Figure 1b.jpg"
+  ],
+  "B4N4": [
+   "agrilus-cyanescens",
+   "Agrilus cyanescens",
+   "Agrile bleuâtre",
+   "",
+   "NE",
+   "insectes",
+   "Agrilus cyanescens (10.3897-BDJ.12.e117362) Figure 1c.jpg"
+  ]
+ }
+}

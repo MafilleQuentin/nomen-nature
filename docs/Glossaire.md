@@ -32,6 +32,8 @@
 | **API** | Porte d'entrée d'un service pour les programmes (par ex. l'API de GBIF renvoie les données d'une espèce). |
 | **Projection Equal Earth** | Façon d'aplatir la Terre sur une carte qui respecte la surface des continents. |
 | **EPSG:4326** | Code d'une façon simple de placer des points sur la Terre (latitude et longitude). Les tuiles GBIF sont disponibles dans ce format. |
+| **Tuile vectorielle (MVT)** | Morceau de carte envoyé sous forme de données (points, formes) plutôt que d'image. GBIF en fournit pour les observations de chaque espèce ; notre serveur les lit et les redessine en Equal Earth. |
+| **Natural Earth** | Cartes du monde libres (domaine public) : côtes, terres, pays. Le fond de nos cartes en vient (échelle 1:110 m). |
 | **d3** | Bibliothèque JavaScript de dessin de données ; d3-geo dessine les cartes, d3-zoom gère le zoom. |
 | **Recherche phonétique** | Recherche par le son plutôt que l'orthographe : « boulot » retrouve « bouleau ». |
 | **Clé phonétique** | Version simplifiée d'un nom qui ne garde que son « son », selon les règles de sa langue : « boulot » et « bouleau » donnent tous deux `bUlo`. Elle est calculée pour chaque nom à l'import, et pour le texte tapé au moment de la recherche. |
@@ -60,3 +62,10 @@
 | **Genre** | Groupe d'espèces très proches, première partie du nom latin (*Quercus* = les chênes). Beaucoup de noms courants désignent un genre plutôt qu'une espèce (« chêne », « bouleau »). |
 | **Synonyme** | Ancien ou autre nom latin d'une espèce (*Quercus pedunculata* est un synonyme de *Quercus robur*). La recherche doit les comprendre et renvoyer vers le nom accepté. |
 | **Essai (spike)** | Petit développement jetable pour vérifier qu'une solution tient la route avant de bâtir dessus. |
+| **Fiche espèce** | Page d'une espèce (`/fr/espece/quercus-robur`) : noms, statut, résumé Wikipédia, chiffres, espèces proches. Construite à la demande par notre serveur à partir des **fichiers de fiches** (3 000 fichiers où chaque genre est rangé en entier). |
+| **Fiche courte** | Version d'une fiche espèce quand il manque le nom courant, l'article Wikipédia ou la photo : un encadré dit ce qui manque et renvoie vers GBIF. C'est le cas de presque toutes les espèces (toutes sauf les 30 224 « bien documentées »). |
+| **Relais de photos** | Notre serveur va chercher la photo chez Wikimedia ou iNaturalist et la renvoie au visiteur, dont le navigateur ne contacte que nomenature.org (rien n'est transmis à ces sites). La photo est gardée un an dans le cache de Cloudflare. |
+| **Open Graph** | Balises qui décrivent une page quand on la partage (titre, description, image) : WhatsApp, réseaux sociaux et messageries les lisent pour afficher l'aperçu. |
+| **noindex** | Consigne qui demande aux moteurs de recherche de ne pas proposer une page dans leurs résultats. Les fiches courtes la portent : on peut les visiter et les partager, mais Google ne les montre pas. |
+| **WebP** | Format d'image plus léger que le JPEG, lu par tous les navigateurs récents. Wikimedia Commons le fournit pour ses vignettes. |
+| **Homonyme** | Même nom latin donné à deux espèces de règnes différents (*Morus* est un mûrier et un fou de Bassan). Leurs fiches sont départagées par l'identifiant du Catalogue of Life à la fin de l'adresse. |

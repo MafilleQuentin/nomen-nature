@@ -2,9 +2,10 @@
 // (copié tel quel par Astro, servi sous /donnees/… ; ignoré par git).
 //
 // Par défaut, le paquet de la dernière release GitHub « donnees-AAAA-MM » (le déploiement le
-// fait ainsi) ; avec --local, le paquet construit sur ce poste par npm run donnees:import.
+// fait ainsi) ; avec --local, le paquet construit sur ce poste par npm run donnees:import ;
+// avec --exemple, le petit paquet des tests (tests/fixtures/donnees, intégration continue).
 //
-// Utilisation : npm run donnees:installer [-- --local]
+// Utilisation : npm run donnees:installer [-- --local | --exemple]
 import { cpSync, createWriteStream, existsSync, mkdirSync, rmSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { Readable } from "node:stream";
@@ -15,6 +16,7 @@ import { AGENT, entrees, ouvrir, sourceLocale } from "./zip.ts";
 const DEPOT = "MafilleQuentin/nomen-nature";
 const DESTINATION = "public/donnees";
 const DONNEES = "tools/donnees/data";
+const EXEMPLE = "tests/fixtures/donnees";
 
 interface Release {
   tag_name: string;
@@ -52,7 +54,10 @@ export async function extraireTout(archive: string, dossier: string): Promise<nu
 
 if (import.meta.main) {
   rmSync(DESTINATION, { recursive: true, force: true });
-  if (process.argv.includes("--local")) {
+  if (process.argv.includes("--exemple")) {
+    cpSync(EXEMPLE, DESTINATION, { recursive: true });
+    console.log(`Paquet d'exemple copié dans ${DESTINATION}`);
+  } else if (process.argv.includes("--local")) {
     const paquet = join(DONNEES, "paquet");
     if (!existsSync(paquet)) throw new Error(`${paquet} absent : lancer d'abord npm run donnees:import.`);
     cpSync(paquet, DESTINATION, { recursive: true });

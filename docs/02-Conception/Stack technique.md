@@ -31,7 +31,7 @@ Un site **Astro** hébergé gratuitement chez **Cloudflare**, qui gère déjà l
 | Remplissage de la base | Script d'import mensuel (GitHub Actions) | Depuis GBIF, Catalogue of Life et Wikidata. |
 | Contenus des fiches | API **GBIF, Wikipédia, Commons, iNaturalist**, appelées à la demande et gardées en cache | On ne recopie pas l'encyclopédie, on la met en cache. |
 | Carte | **d3-geo + d3-zoom**, en SVG | Equal Earth et Natural Earth, comme le générateur des maquettes. Les bibliothèques de cartes classiques (MapLibre, Leaflet) ne gèrent pas cette projection. |
-| Répartition d'une espèce | Tuiles GBIF en EPSG:4326, redessinées dans notre projection | Pas de calcul lourd de notre côté. |
+| Répartition d'une espèce | Tuiles GBIF en EPSG:4326, redessinées dans notre projection *(sur la fiche : dessinées par notre serveur en SVG, sans JavaScript ni d3, décision du 24.11.2026)* | Pas de calcul lourd de notre côté. |
 | Identification | Point d'accès sur notre Worker, qui appelle Pl@ntNet | Clé en secret Cloudflare, limite par visiteur, message « reviens demain » à l'approche du quota. Photo réduite dans le téléphone avant l'envoi. |
 | Style | **CSS simple avec variables** | Les variables Figma portent déjà leur nom CSS (`--color-bg-page`…). |
 | Polices | Space Grotesk et IBM Plex, **hébergées chez nous** | Licence libre (OFL) ; aucun appel à Google Fonts, donc rien n'est transmis à un tiers. |

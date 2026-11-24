@@ -1,0 +1,25 @@
+---
+// Fiche espèce en anglais (/en/species/quercus-robur), rendue à la demande par le Worker.
+// Tout est chargé ici, avant le rendu (fichier de fiches, Wikipédia, photos, GBIF) : le code 404
+// et les en-têtes de cache doivent être fixés avant que la page parte vers le navigateur.
+// Cache : 5 minutes dans le navigateur ; un jour chez Cloudflare si la fiche est complète
+// (src/middleware.ts), jusqu'au prochain déploiement.
+import { estAdresseEspece } from "../../../lib/especes/adresse";
+import { chargerContenu } from "../../../lib/especes/contenu";
+import { lireFiche } from "../../../lib/especes/serveur";
+import { EN_TETE_CACHE } from "../../../lib/cache";
+import FicheEspece from "../../../vues/FicheEspece.astro";
+
+export const prerender = false;
+
+const { adresse = "" } = Astro.params;
+// Adresse écrite avec des majuscules (Quercus-robur) : redirection vers l'adresse officielle.
+if (adresse !== adresse.toLowerCase()) return Astro.redirect(Astro.url.pathname.replace(adresse, adresse.toLowerCase()), 301);
+const trouvee = estAdresseEspece(adresse) ? await lireFiche(adresse, Astro.url) : undefined;
+const contenu = trouvee ? await chargerContenu(trouvee, "en") : undefined;
+if (!contenu) Astro.response.status = 404;
+Astro.response.headers.set("Cache-Control", "public, max-age=300");
+if (contenu?.complet) Astro.response.headers.set(EN_TETE_CACHE, "1");
+---
+
+<FicheEspece langue="en" contenu={contenu} />

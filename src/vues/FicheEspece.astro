@@ -1,0 +1,625 @@
+---
+// Fiche espèce (Figma « Fiche espèce — Chêne pédonculé », 83:307 ordinateur et 83:527
+// téléphone), lot 4, QUE-22. Rendue à la demande par le Worker ; une adresse inconnue donne la
+// page introuvable.
+//
+// Fiche courte (Figma « Fiche peu documentée — Agrilus cyanescens », 94:33 et 94:208, QUE-23) :
+// quand il manque le nom courant, la description ou la photo. Même page, avec l'encadré
+// « Fiche courte » (ce qui manque, lien vers GBIF), les chiffres dans l'en-tête (dont l'année
+// de la dernière observation, demandée à GBIF) et la mention « Pas encore de photo ».
+//
+// Photo (QUE-24) : celle de Wikimedia Commons (Wikidata), sinon celle d'iNaturalist, relayée par
+// notre serveur, avec auteur, licence et lien vers sa page ; les espèces proches ont leur photo
+// Commons (un seul appel pour toutes).
+//
+// Carte de répartition (QUE-25) : dessinée par notre serveur en SVG, sans JavaScript (terres
+// Natural Earth en Equal Earth, un point par hexagone d'observations de GBIF).
+//
+// Référencement et cache (QUE-26) : la page (src/pages/…/[adresse]) charge tout le contenu
+// avant le rendu (src/lib/especes/contenu.ts) et décide du code, de l'indexation et du cache ;
+// cette vue ne fait qu'afficher. Seules les fiches complètes sont indexées ; l'image d'aperçu
+// des partages est la photo de l'espèce.
+import courbesPhotoAbsente from "../assets/motifs/courbes-photo-absente.svg?url";
+import courbesPhoto from "../assets/motifs/courbes-photo.svg?url";
+import terres from "../assets/carte/terres.svg?url";
+import BadgeStatut from "../components/BadgeStatut.astro";
+import CarteEspece from "../components/CarteEspece.astro";
+import ImagesDifferees from "../components/ImagesDifferees.astro";
+import Statistique from "../components/Statistique.astro";
+import type { Langue } from "../i18n/langues";
+import { t } from "../i18n/textes";
+import Base from "../layouts/Base.astro";
+import { HAUTEUR, LARGEUR } from "../lib/carte/projection";
+import {
+  couperResume,
+  descripteur,
+  listeDesManques,
+  majuscule,
+  nomAffiche,
+  nombreCourt,
+  phraseSaisTu,
+  remplir,
+  statutAffiche,
+} from "../lib/especes/affichage";
+import type { ContenuFiche } from "../lib/especes/contenu";
+import { traductionsEspece } from "../lib/liens";
+import Introuvable from "./Introuvable.astro";
+
+interface Props {
+  langue: Langue;
+  /** Le contenu de la fiche, ou undefined pour une adresse inconnue. */
+  contenu: ContenuFiche | undefined;
+}
+
+const { langue, contenu } = Astro.props;
+const textes = t(langue);
+const autreLangue: Langue = langue === "fr" ? "en" : "fr";
+
+const fiche = contenu?.fiche;
+const proches = contenu?.proches ?? [];
+const { resume, photo, photosProches, points, ceQuiManque = [], courte = false, annee, pageGbif } = contenu ?? {};
+const nom = fiche ? nomAffiche(fiche, langue) : "";
+const nomLatinEnTitre = fiche ? nom === fiche.nom : false;
+const autreNom = fiche ? majuscule(langue === "fr" ? fiche.nomEn : fiche.nomFr) : "";
+const sourcePhoto = photo?.source === "inaturalist" ? "iNaturalist" : "Wikimedia Commons";
+const descriptif = fiche ? descripteur(fiche, langue) : "";
+const saisTu = fiche ? phraseSaisTu(fiche.faits, langue) : "";
+
+const regnes = textes.regnes as Record<string, string>;
+const groupes = textes.groupes as Record<string, string>;
+const continents = textes.continents as Record<string, string>;
+const filAriane = fiche
+  ? [regnes[fiche.regne] ?? fiche.regne, groupes[fiche.groupe] ?? "", fiche.famille, fiche.genre].filter(Boolean)
+  : [];
+
+const sources = [resume ? textes.fiche.sourceResume : "", textes.fiche.sourceStatut, textes.fiche.sourceNoms, points?.length ? textes.fiche.sourceCarte : ""].filter(Boolean);
+const titrePage = remplir(textes.fiche.titrePage, { nom });
+// Image vide (SVG d'un octet) en attendant le chargement différé.
+const IMAGE_VIDE = "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'/%3E";
+const textePhoto = fiche ? (nomLatinEnTitre ? fiche.nom : `${nom} (${fiche.nom})`) : "";
+const statut = fiche ? textes.statuts[statutAffiche(fiche.uicn)].toLowerCase() : "";
+const description = fiche
+  ? remplir(nomLatinEnTitre ? textes.fiche.descriptionLatin : textes.fiche.descriptionCourant, { nom, latin: fiche.nom, statut })
+  : "";
+// Image d'aperçu des partages : la photo de l'espèce en JPEG (décision du 24.11.2026).
+const apercu = photo ? { url: photo.apercu, alt: textePhoto, largeur: photo.largeur, hauteur: photo.hauteur } : undefined;
+---
+
+{
+  !fiche ? (
+    <Introuvable langue={langue} />
+  ) : (
+    <Base
+      titre={titrePage}
+      description={description}
+      langue={langue}
+      adresses={traductionsEspece(fiche.adresse)}
+      indexer={!courte}
+      image={apercu}
+      typeOg="article"
+    >
+      <article class="fiche">
+        <nav class="fil t-mono-surtitre" aria-label={textes.fiche.filAriane}>
+          <ol>
+            {filAriane.map((niveau, rang) => (
+              <li class:list={{ "fil__ordi": rang < filAriane.length - 2, "fil__dernier": rang === filAriane.length - 1 }}>{niveau}</li>
+            ))}
+          </ol>
+        </nav>
+
+        <div class="en-tete">
+          <figure class:list={["photo-et-credit", { "photo-et-credit--courte": courte }]}>
+            <div class:list={["photo", { "photo--courte": courte }]}>
+              {photo ? (
+                <picture>
+                  {photo.srcsetOrdinateur && <source media="(min-width: 900px)" srcset={photo.srcsetOrdinateur} />}
+                  <img
+                    class="photo__image"
+                    src={photo.src}
+                    srcset={photo.srcset}
+                    sizes={courte ? "(min-width: 900px) 44vw, calc(100vw - 40px)" : "(min-width: 900px) 53vw, calc(100vw - 40px)"}
+                    alt={textePhoto}
+                    width={photo.largeur}
+                    height={photo.hauteur}
+                    fetchpriority="high"
+                    decoding="async"
+                  />
+                </picture>
+              ) : courte ? (
+                <img class="photo__courbes photo__courbes--courte" src={courbesPhotoAbsente} alt="" width="614" height="380" />
+              ) : (
+                <img class="photo__courbes" src={courbesPhoto} alt="" width="725" height="449" />
+              )}
+              {!photo && !fiche.photo && (
+                <div class="mention">
+                  <p class="t-libelle-normal">{textes.fiche.pasDePhoto}</p>
+                  <p class="t-texte-petit mention__texte">{textes.fiche.pasDePhotoTexte}</p>
+                </div>
+              )}
+            </div>
+            {photo && (
+              <figcaption class="t-mono-legende credit">
+                {textes.fiche.photo} {photo.auteur} ·{" "}
+                {photo.lienLicence ? <a href={photo.lienLicence} rel="license">{photo.licence}</a> : photo.licence} ·{" "}
+                <a href={photo.page}>{sourcePhoto}</a>
+              </figcaption>
+            )}
+          </figure>
+
+          <div class="identite">
+            <BadgeStatut uicn={fiche.uicn} langue={langue} />
+            <h1 class="nom" lang={nomLatinEnTitre ? "la" : undefined}>{nom}</h1>
+            {nomLatinEnTitre ? (
+              <p class="sous-titre">
+                {textes.fiche.pasEncoreDeNom}
+                {descriptif && <span class="ordi-inline"> · {descriptif}</span>}
+              </p>
+            ) : (
+              <p class="latin" lang="la">{fiche.nom}</p>
+            )}
+            {autreNom && (
+              <p class="t-mono-legende autre-nom" lang={autreLangue}>
+                {remplir(textes.fiche.autreNom, { nom: autreNom })}
+              </p>
+            )}
+
+            {courte && (
+              <aside class="fiche-courte">
+                <p class="t-libelle-normal fiche-courte__titre">{textes.fiche.ficheCourte}</p>
+                <p class="t-texte-normal">{remplir(textes.fiche.ficheCourteTexte, { manques: listeDesManques(ceQuiManque, langue) })}</p>
+                {pageGbif && (
+                  <a class="t-libelle-normal lire" href={pageGbif}>
+                    {textes.fiche.voirGbif} <span aria-hidden="true">→</span>
+                  </a>
+                )}
+              </aside>
+            )}
+
+            {saisTu && (
+              <aside class="sais-tu">
+                <p class="t-libelle-normal sais-tu__titre">{textes.fiche.saisTu}</p>
+                <p class="t-texte-normal">{saisTu}</p>
+              </aside>
+            )}
+
+            {resume && (
+              <div class="resume" lang={resume.langue === langue ? undefined : resume.langue}>
+                <p class="t-texte-normal">
+                  {resume.langue !== langue && <span class="resume__langue" lang={langue}>{textes.fiche.resumeAutreLangue} </span>}
+                  {couperResume(resume.texte)}
+                </p>
+                <a class="t-libelle-normal lire" href={resume.lien} hreflang={resume.langue} lang={langue}>
+                  {textes.fiche.lireLaSuite} <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            )}
+
+            {courte && (
+              <div class="chiffres chiffres--en-tete">
+                <Statistique valeur={nombreCourt(fiche.observations, langue)} libelle={textes.fiche.observations} />
+                {fiche.continent && <Statistique valeur={continents[fiche.continent] ?? fiche.continent} libelle={textes.fiche.aireConnue} />}
+                {annee && <Statistique valeur={String(annee)} libelle={textes.fiche.derniereObservation} class="ordi-flex" />}
+              </div>
+            )}
+
+            <p class="t-mono-legende sources">{sources.join(" · ")}</p>
+          </div>
+        </div>
+
+        <section class="repartition" aria-labelledby="titre-repartition">
+          <h2 id="titre-repartition" class="titre-section">{courte ? textes.fiche.ouLAtOnObserve : textes.fiche.ouLeTrouver}</h2>
+          <div class:list={["carte-et-chiffres", { "carte-et-chiffres--courte": courte }]}>
+            <div class="carte">
+              <div class="carte__cadre">
+                {/* Terres : chargées quand la carte apparaît à l'écran (ImagesDifferees). */}
+                <img class="carte__fond" src={IMAGE_VIDE} data-src={terres} alt="" width={LARGEUR} height={HAUTEUR} />
+                <noscript>
+                  <img class="carte__fond" src={terres} alt="" width={LARGEUR} height={HAUTEUR} />
+                </noscript>
+                <svg class="carte__dessin" viewBox={`0 0 ${LARGEUR} ${HAUTEUR}`} role="img" aria-labelledby="titre-carte">
+                  <title id="titre-carte">{remplir(textes.fiche.titreCarte, { nom })}</title>
+                  <g class="carte__points">{points?.map((p) => <circle cx={p.x} cy={p.y} r={p.r} />)}</g>
+                </svg>
+              </div>
+              {!points?.length && <p class="t-texte-petit carte__message">{points ? textes.fiche.carteVide : textes.fiche.carteIndisponible}</p>}
+            </div>
+            <div class="chiffres chiffres--colonne">
+              {!courte && (
+                <>
+                  <Statistique valeur={nombreCourt(fiche.pays, langue)} libelle={textes.fiche.pays} />
+                  <Statistique valeur={nombreCourt(fiche.observations, langue)} libelle={textes.fiche.observations} />
+                  {fiche.continent && <Statistique valeur={continents[fiche.continent] ?? fiche.continent} libelle={textes.fiche.airePrincipale} />}
+                </>
+              )}
+              {points?.length ? (
+                <p class="t-mono-legende legende">
+                  <span class="legende__point" aria-hidden="true" />
+                  {textes.fiche.legendeCarte}
+                </p>
+              ) : null}
+            </div>
+          </div>
+        </section>
+
+        {proches.length > 0 && (
+          <section class="proches" aria-labelledby="titre-proches">
+            <h2 id="titre-proches" class="titre-section">{courte ? textes.fiche.memeGenre : textes.fiche.especesProches}</h2>
+            <ul class="cartes">
+              {proches.map((p) => (
+                <li>
+                  <CarteEspece espece={p} langue={langue} photo={photosProches?.get(p.photo)} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </article>
+      <ImagesDifferees />
+    </Base>
+  )
+}
+
+<style>
+  /* Fond de courbes de niveau sur toute la page, comme la maquette (motif téléphone sous 600 px). */
+  :global(body) {
+    background:
+      url("../assets/motifs/courbes-telephone.svg") top left / max(100%, 390px) auto no-repeat,
+      var(--color-bg-page);
+  }
+  @media (min-width: 600px) {
+    :global(body) {
+      background:
+        url("../assets/motifs/courbes-ordinateur.svg") top left / max(100%, 1440px) auto no-repeat,
+        var(--color-bg-page);
+    }
+  }
+
+  .fiche {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: var(--space-6) var(--space-5) var(--space-10);
+  }
+  .fiche p,
+  .fiche h1,
+  .fiche h2 {
+    margin: 0;
+  }
+
+  /* Fil d'Ariane : sur téléphone, seulement les deux derniers niveaux (maquette). */
+  .fil ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--color-text-highlight);
+  }
+  .fil li + li::before {
+    content: "›";
+    margin-right: var(--space-2);
+    color: var(--color-text-secondary);
+  }
+  .fil .fil__ordi {
+    display: none;
+  }
+  .fil .fil__ordi + li::before {
+    content: none;
+  }
+  .fil__dernier {
+    color: var(--color-text-primary);
+  }
+
+  .en-tete {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .photo-et-credit {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+    min-width: 0;
+  }
+  .photo picture {
+    display: contents;
+  }
+  .photo__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .credit {
+    color: var(--color-text-secondary);
+    overflow-wrap: anywhere;
+  }
+  .credit a {
+    color: inherit;
+  }
+  .photo {
+    position: relative;
+    aspect-ratio: 680 / 460;
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    background: var(--color-bg-surface-raised);
+  }
+  .photo__courbes {
+    position: absolute;
+    top: 1.22%;
+    left: -3.29%;
+    width: 106.59%;
+    height: 97.57%;
+    max-width: none;
+  }
+  .photo--courte {
+    aspect-ratio: 560 / 380;
+  }
+  .photo__courbes--courte {
+    top: 0;
+    left: -4.79%;
+    width: 109.59%;
+    height: 100%;
+  }
+  /* « Pas encore de photo » : posé en bas à gauche de la photo absente. */
+  .mention {
+    position: absolute;
+    left: var(--space-4);
+    right: var(--space-4);
+    bottom: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-sunken);
+  }
+  .mention p {
+    margin: 0;
+  }
+  .mention__texte,
+  .sous-titre {
+    color: var(--color-text-secondary);
+  }
+  .sous-titre {
+    font: 400 16px / 1.5 var(--font-texte);
+  }
+  .ordi-inline {
+    display: none;
+  }
+  .fiche-courte {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-5);
+    border-left: 3px solid var(--color-border-strong);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-surface);
+  }
+  .fiche-courte__titre {
+    color: var(--color-text-highlight);
+  }
+  .chiffres--en-tete :global(.ordi-flex) {
+    display: none;
+  }
+  .identite {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+  .nom {
+    font: 700 34px / 1.08 var(--font-titre);
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+  }
+  .latin {
+    font: italic 400 18px / 1.4 var(--font-texte);
+    color: var(--color-text-secondary);
+  }
+  .autre-nom,
+  .sources {
+    color: var(--color-text-secondary);
+  }
+  .sais-tu {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-5);
+    border-left: 3px solid var(--color-border-accent);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-surface);
+  }
+  .sais-tu__titre {
+    color: var(--color-text-accent);
+  }
+  .resume {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .resume__langue {
+    color: var(--color-text-secondary);
+  }
+  .lire {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    min-height: 24px;
+    text-decoration: none;
+  }
+  .lire:hover {
+    text-decoration: underline;
+  }
+
+  .titre-section {
+    font: 700 22px / 1.25 var(--font-titre);
+    letter-spacing: -0.01em;
+  }
+  .repartition,
+  .proches {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .carte-et-chiffres {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .carte {
+    position: relative;
+    padding: var(--space-3);
+    border-radius: var(--radius-xl);
+    background: var(--color-bg-sunken);
+  }
+  .carte__cadre {
+    position: relative;
+    aspect-ratio: 1000 / 487;
+  }
+  .carte__fond,
+  .carte__dessin {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .carte__points {
+    fill: var(--color-text-accent);
+    fill-opacity: 0.9;
+  }
+  .carte__message {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: max-content;
+    max-width: 80%;
+    margin: 0;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-sunken);
+    color: var(--color-text-secondary);
+    text-align: center;
+    transform: translate(-50%, -50%);
+  }
+  .legende {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-secondary);
+  }
+  .legende__point {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-text-accent);
+  }
+  .chiffres {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--space-3);
+  }
+  /* Sur téléphone, les espèces proches défilent de côté (une carte et le bord de la suivante). */
+  .cartes {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(80%, 302px);
+    gap: var(--space-4);
+    margin: 0 calc(-1 * var(--space-5));
+    padding: 0 var(--space-5) var(--space-2);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 var(--space-5);
+    list-style: none;
+  }
+  .cartes li {
+    scroll-snap-align: start;
+  }
+
+  @media (min-width: 900px) {
+    .fiche {
+      gap: var(--space-10);
+      padding: var(--space-6) var(--space-20) var(--space-20);
+    }
+    .fil .fil__ordi {
+      display: list-item;
+    }
+    .fil .fil__ordi + li::before {
+      content: "›";
+    }
+    .en-tete {
+      flex-direction: row;
+      gap: var(--space-10);
+      align-items: flex-start;
+    }
+    .photo-et-credit {
+      flex: 0 0 53%;
+    }
+    .photo-et-credit--courte {
+      flex-basis: 43.75%;
+    }
+    .mention {
+      right: auto;
+    }
+    .sous-titre {
+      font-size: 19px;
+    }
+    .ordi-inline {
+      display: inline;
+    }
+    .chiffres--en-tete {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-3);
+    }
+    .chiffres--en-tete :global(.ordi-flex) {
+      display: flex;
+    }
+    .identite {
+      flex: 1;
+    }
+    .nom {
+      font-size: 58px;
+      line-height: 1.05;
+    }
+    .latin {
+      font-size: 22px;
+    }
+    .titre-section {
+      font-size: 34px;
+      line-height: 1.2;
+    }
+    .repartition,
+    .proches {
+      gap: var(--space-5);
+    }
+    .carte-et-chiffres {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      gap: var(--space-6);
+      align-items: start;
+    }
+    .carte-et-chiffres--courte {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .carte {
+      padding: var(--space-5) var(--space-6);
+    }
+    .chiffres--colonne {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-3);
+    }
+    .cartes {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-6);
+      margin: 0;
+      padding: 0;
+      overflow: visible;
+    }
+  }
+</style>

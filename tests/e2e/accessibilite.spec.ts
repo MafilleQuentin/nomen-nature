@@ -9,6 +9,10 @@ const pages = [
   { nom: "design system", chemin: "/design-system" },
   { nom: "introuvable (fr)", chemin: "/fr/page-inconnue" },
   { nom: "introuvable (en)", chemin: "/en/unknown-page" },
+  { nom: "fiche espèce (fr)", chemin: "/fr/espece/quercus-robur" },
+  { nom: "fiche espèce (en)", chemin: "/en/species/quercus-robur" },
+  { nom: "fiche courte (fr)", chemin: "/fr/espece/agrilus-obscuricollis" },
+  { nom: "fiche courte (en)", chemin: "/en/species/agrilus-cyanescens" },
 ];
 
 async function auditer(page: Page) {

@@ -16,7 +16,9 @@ Le premier lot de développement, un **essai de la recherche**, est terminé : l
 
 Le troisième lot, les **données**, est terminé (v0.7.0) : un import mensuel automatique prépare l'index de la recherche, les groupes, les statuts UICN, le score « bien documentée » et les listes par pays et par continent ([`tools/donnees/`](tools/donnees/README.md)).
 
-Le deuxième lot, le **socle du site**, est terminé (v0.6.0) : gabarit bilingue (français et anglais) fidèle aux maquettes, page 404, tests automatiques sur GitHub, et un site de test en ligne sur <https://test.nomenature.org> (non indexé, encore sans contenu).
+Le deuxième lot, le **socle du site**, est terminé (v0.6.0) : gabarit bilingue (français et anglais) fidèle aux maquettes, page 404, tests automatiques sur GitHub, et un site de test en ligne sur <https://test.nomenature.org> (non indexé).
+
+Le quatrième lot, la **fiche espèce**, est terminé (v0.8.0) : chaque espèce observée a sa page, en français (`/fr/espece/quercus-robur`) et en anglais (`/en/species/quercus-robur`), avec son statut, ses noms, le résumé Wikipédia, ses chiffres et des espèces proches ; les espèces peu documentées ont une « fiche courte » qui dit ce qui manque et renvoie vers GBIF. Les photos (Wikimedia Commons, sinon iNaturalist) sont créditées et servies par notre serveur, et la carte de répartition (observations GBIF en Equal Earth) est dessinée par notre serveur, sans JavaScript. Les fiches complètes sont gardées en cache et seules elles sont proposées aux moteurs de recherche.
 
 | Étape | État |
 |---|---|
@@ -24,7 +26,7 @@ Le deuxième lot, le **socle du site**, est terminé (v0.6.0) : gabarit bilingue
 | 2. Parcours utilisateurs (FigJam) | ✅ Terminé |
 | 3. Maquettes Figma (mobile et ordinateur) | ✅ Terminé |
 | 4. Choix de la stack technique | ✅ Terminé |
-| 5. Développement de la V1, lot par lot | ⏳ En cours (lot 1 sur 10 terminé) |
+| 5. Développement de la V1, lot par lot | ⏳ En cours (lots 1 à 4 sur 10 terminés) |
 
 Détail : [feuille de route](docs/Feuille%20de%20route.md).
 
@@ -63,8 +65,8 @@ Les textes de l'interface sont dans `src/i18n/textes.ts` (français et anglais) 
 | `npm run test:unit` | Tests unitaires (Vitest), sans navigateur |
 | `npm run test:e2e` | Tests dans un vrai navigateur, dont l'audit d'accessibilité axe, sur le site compilé |
 | `npm test` | Tous les tests (types, unitaires, puis navigateur) |
-| `npm run donnees:import` | Import des données : Catalogue of Life, observations GBIF, index de la recherche (voir [`tools/donnees/`](tools/donnees/README.md)) |
-| `npm run donnees:installer` | Installe le dernier paquet de données publié dans `public/donnees/`, avant la construction |
+| `npm run donnees:import` | Import des données : Catalogue of Life, observations GBIF, index de la recherche, listes, fiches (voir [`tools/donnees/`](tools/donnees/README.md)) |
+| `npm run donnees:installer` | Installe le dernier paquet de données publié dans `public/donnees/`, avant la construction (`-- --exemple` : quelques fiches pour les tests, sans téléchargement) |
 | `npm run deploy:test` | Construit et publie le site de test sur <https://test.nomenature.org> (après `npx wrangler login`) |
 
 Avant le premier `npm run test:e2e`, installer le navigateur de test : `npx playwright install chromium`.
@@ -77,7 +79,7 @@ Avant le premier `npm run test:e2e`, installer le navigateur de test : `npx play
 |---|---|---|
 | Types et tests unitaires | `astro check`, Vitest | une erreur de type ou un test unitaire échoue, ou la construction échoue |
 | Navigateur et accessibilité | Playwright + axe, ordinateur et téléphone | un parcours échoue ou axe trouve une violation WCAG 2.2 AA |
-| Vitesse et qualité | Lighthouse CI ([réglages](lighthouserc.json)) | un score passe sous 90 (100 pour l'accessibilité), ou une page dépasse son budget : 200 Ko en tout, 50 Ko de scripts, 100 Ko de polices, aucune requête vers un tiers |
+| Vitesse et qualité | Lighthouse CI ([réglages](lighthouserc.json)) | un score passe sous 90 (100 pour l'accessibilité), ou une page dépasse son budget : 200 Ko en tout (300 Ko pour une fiche espèce, avec sa photo), 50 Ko de scripts, 120 Ko de polices, aucune requête vers un tiers |
 | Liens cassés | lychee ([réglages](lychee.toml)) | un lien interne du site ou de la documentation est cassé |
 
 `develop` et `main` sont protégées : on y fusionne seulement par pull request, une fois les quatre vérifications réussies.
