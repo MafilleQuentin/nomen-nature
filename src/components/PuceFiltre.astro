@@ -1,0 +1,38 @@
+---
+// Puce de filtre (Figma « Puce de groupe », 75:58) : un lien vers la même page avec un autre
+// filtre. Sélectionné = filtre actif (fond crème, aria-current), Défaut = contour.
+interface Props {
+  href: string;
+  actif?: boolean;
+}
+
+const { href, actif = false } = Astro.props;
+---
+
+<a class:list={["puce", "t-libelle-petit", { "puce--active": actif }]} href={href} aria-current={actif ? "true" : undefined}>
+  <slot />
+</a>
+
+<style>
+  .puce {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    min-height: 36px;
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-full);
+    color: var(--color-text-primary);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .puce:hover {
+    background: var(--color-bg-surface-raised);
+  }
+  .puce--active,
+  .puce--active:hover {
+    border-color: var(--color-bg-inverse);
+    background: var(--color-bg-inverse);
+    color: var(--color-text-on-inverse);
+  }
+</style>

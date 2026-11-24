@@ -4,6 +4,7 @@
 import Bouton from "../components/Bouton.astro";
 import BoutonIcone from "../components/BoutonIcone.astro";
 import Icone, { type NomIcone } from "../components/Icone.astro";
+import PuceFiltre from "../components/PuceFiltre.astro";
 import Base from "../layouts/Base.astro";
 
 const couleurs: Record<string, string[]> = {
@@ -141,6 +142,11 @@ const icones: NomIcone[] = ["recherche", "position", "appareil-photo", "feuille"
         <Bouton variante="secondaire" icone="position">Autour de moi</Bouton>
         <Bouton variante="secondaire" taille="compact" icone="position">Autour de moi</Bouton>
         <BoutonIcone icone="plus" libelle="Zoomer" />
+      </div>
+      <h3 class="t-libelle-petit secondaire">Puces de filtre</h3>
+      <div class="boutons">
+        <PuceFiltre href="#" actif>Arbres</PuceFiltre>
+        <PuceFiltre href="#">Oiseaux</PuceFiltre>
       </div>
     </section>
 

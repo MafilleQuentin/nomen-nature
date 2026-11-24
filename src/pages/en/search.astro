@@ -1,0 +1,14 @@
+---
+// Search results in English (/en/search?q=birch), rendered on demand by the Worker (QUE-28).
+// Même page que /fr/recherche (voir ce fichier).
+import { chargerResultats } from "../../lib/recherche/page";
+import ResultatsRecherche from "../../vues/ResultatsRecherche.astro";
+
+export const prerender = false;
+
+const contenu = await chargerResultats(Astro.url, "en");
+if (contenu.etat === "indisponible") Astro.response.status = 503;
+Astro.response.headers.set("Cache-Control", contenu.etat === "indisponible" ? "no-store" : "public, max-age=300");
+---
+
+<ResultatsRecherche langue="en" contenu={contenu} />
