@@ -18,6 +18,8 @@ Le troisième lot, les **données**, est terminé (v0.7.0) : un import mensuel a
 
 Le deuxième lot, le **socle du site**, est terminé (v0.6.0) : gabarit bilingue (français et anglais) fidèle aux maquettes, page 404, tests automatiques sur GitHub, et un site de test en ligne sur <https://test.nomenature.org> (non indexé).
 
+Le cinquième lot, la **recherche**, est en cours : la barre de recherche propose les espèces pendant la frappe, en français, anglais et latin, même avec des fautes (« boulot » → bouleaux).
+
 Le quatrième lot, la **fiche espèce**, est terminé (v0.8.0) : chaque espèce observée a sa page, en français (`/fr/espece/quercus-robur`) et en anglais (`/en/species/quercus-robur`), avec son statut, ses noms, le résumé Wikipédia, ses chiffres et des espèces proches ; les espèces peu documentées ont une « fiche courte » qui dit ce qui manque et renvoie vers GBIF. Les photos (Wikimedia Commons, sinon iNaturalist) sont créditées et servies par notre serveur, et la carte de répartition (observations GBIF en Equal Earth) est dessinée par notre serveur, sans JavaScript. Les fiches complètes sont gardées en cache et seules elles sont proposées aux moteurs de recherche.
 
 | Étape | État |
