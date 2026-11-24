@@ -26,6 +26,8 @@ export interface Photo {
   srcsetOrdinateur?: string;
   /** Tailles pour une carte d'espèce (302 px au plus). */
   srcsetCarte: string;
+  /** Image d'aperçu des partages (JPEG ou PNG : les réseaux ne lisent pas tous le WebP). */
+  apercu: string;
   largeur: number;
   hauteur: number;
   auteur: string;
@@ -40,12 +42,22 @@ export function nomCommons(fichier: string): string {
   return fichier.trim().replace(/ /g, "_");
 }
 
-/** Vignette WebP d'un fichier Commons chez Wikimedia (chemin calculé par l'empreinte MD5 du nom). */
-export function vignetteCommons(fichier: string, largeur: number): string {
+/**
+ * Vignette d'un fichier Commons chez Wikimedia (chemin calculé par l'empreinte MD5 du nom) : en
+ * WebP, ou dans le format de l'original (JPEG, PNG) pour les images d'aperçu.
+ */
+export function vignetteCommons(fichier: string, largeur: number, format: "webp" | "original" = "webp"): string {
   const nom = nomCommons(fichier);
   const md5 = createHash("md5").update(nom).digest("hex");
   const encode = encodeURIComponent(nom);
-  return `https://upload.wikimedia.org/wikipedia/commons/thumb/${md5[0]}/${md5.slice(0, 2)}/${encode}/${largeur}px-${encode}.webp`;
+  return `https://upload.wikimedia.org/wikipedia/commons/thumb/${md5[0]}/${md5.slice(0, 2)}/${encode}/${largeur}px-${encode}${format === "webp" ? ".webp" : ""}`;
+}
+
+/** Image d'aperçu d'une photo Commons, en JPEG ou PNG, si l'original est dans l'un de ces formats. */
+export function apercuCommons(fichier: string, largeurOriginale: number): string {
+  if (!/\.(jpe?g|png)$/i.test(fichier)) return "";
+  const largeur = largeurOriginale >= 960 ? 960 : 500;
+  return `${relaisCommons(fichier, largeur)}?format=original`;
 }
 
 /** Adresse de la photo Commons chez nous : /photos/commons/500/Paprastasis_azuolas.JPG */

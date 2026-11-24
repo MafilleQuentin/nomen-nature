@@ -5,18 +5,20 @@
 //   mémoire tant que le Worker tourne (lecture et analyse évitées pour les fiches voisines).
 // - Résumé Wikipédia : API REST de Wikipédia, appelée par notre serveur (le navigateur du
 //   visiteur ne contacte pas Wikipédia). En cas d'échec ou de lenteur, la fiche s'affiche
-//   sans résumé. Le cache des réponses viendra avec QUE-26.
+//   sans résumé.
 // - GBIF (fiche courte, QUE-23) : année de la dernière observation (API des cartes, avec notre
 //   identifiant du Catalogue of Life) et page de l'espèce sur gbif.org (recherche du nom).
 //   Même principe : appelés par notre serveur, et la fiche s'affiche sans eux en cas d'échec.
 // - Photos (QUE-24) : auteur et licence demandés à l'API de Commons (un seul appel pour la fiche
-//   et ses espèces proches) ; sinon, photo par défaut du taxon sur iNaturalist. Ces réponses
-//   sont gardées 30 jours dans le cache de Cloudflare : iNaturalist demande de ne pas dépasser
-//   60 requêtes par minute.
+//   et ses espèces proches) ; sinon, photo par défaut du taxon sur iNaturalist.
+// - Cache (QUE-26) : chaque réponse réussie est gardée dans le cache de Cloudflare : Commons,
+//   iNaturalist (qui demande 60 requêtes par minute au plus) et la page GBIF 30 jours, Wikipédia
+//   7 jours, la carte et la dernière observation un jour.
 import { env } from "cloudflare:workers";
 import type { Langue } from "../../i18n/langues.ts";
 import { cheminDuFichier, trouverFiche, type FichierFiches } from "./fiche.ts";
 import {
+  apercuCommons,
   licenceInaturalist,
   nomCommons,
   relaisCommons,
@@ -28,7 +30,9 @@ import {
 } from "./photos.ts";
 
 export const AGENT = "NomenNature/0.8 (+https://nomenature.org)";
-const TRENTE_JOURS = 30 * 24 * 3600;
+const UN_JOUR = 24 * 3600;
+const SEPT_JOURS = 7 * UN_JOUR;
+const TRENTE_JOURS = 30 * UN_JOUR;
 
 /** Cache de Cloudflare (absent hors du Worker : tests, construction). */
 function cacheCloudflare(): Cache | undefined {
@@ -81,42 +85,28 @@ export interface Resume {
   langue: Langue;
 }
 
-/** Résumé de l'article Wikipédia (introduction), ou undefined. */
+/** Résumé de l'article Wikipédia (introduction), ou undefined ; gardé 7 jours dans le cache. */
 export async function resumeWikipedia(titre: string, langue: Langue): Promise<Resume | undefined> {
   if (!titre) return undefined;
-  try {
-    const reponse = await fetch(`https://${langue}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(titre)}`, {
-      headers: { "User-Agent": AGENT, Accept: "application/json" },
-      signal: AbortSignal.timeout(2500),
-    });
-    if (!reponse.ok) return undefined;
-    const donnees = (await reponse.json()) as { type?: string; extract?: string; content_urls?: { desktop?: { page?: string } } };
-    if (donnees.type === "disambiguation" || !donnees.extract) return undefined;
-    return {
-      texte: donnees.extract,
-      lien: donnees.content_urls?.desktop?.page ?? `https://${langue}.wikipedia.org/wiki/${encodeURIComponent(titre)}`,
-      langue,
-    };
-  } catch {
-    return undefined;
-  }
+  const donnees = await jsonEnCache<{ type?: string; extract?: string; content_urls?: { desktop?: { page?: string } } }>(
+    `https://${langue}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(titre)}`,
+    SEPT_JOURS,
+  );
+  if (!donnees || donnees.type === "disambiguation" || !donnees.extract) return undefined;
+  return {
+    texte: donnees.extract,
+    lien: donnees.content_urls?.desktop?.page ?? `https://${langue}.wikipedia.org/wiki/${encodeURIComponent(titre)}`,
+    langue,
+  };
 }
 
 const LISTE_COL_XR = "7ddf754f-d193-4cc9-b351-99906754a03b"; // Catalogue of Life XR sur GBIF
 
-async function jsonGbif<T>(adresse: string): Promise<T | undefined> {
-  try {
-    const reponse = await fetch(adresse, { headers: { "User-Agent": AGENT, Accept: "application/json" }, signal: AbortSignal.timeout(2500) });
-    return reponse.ok ? ((await reponse.json()) as T) : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
-/** Année de la dernière observation connue de GBIF, ou undefined. */
+/** Année de la dernière observation connue de GBIF, ou undefined ; gardée un jour dans le cache. */
 export async function derniereObservation(id: string): Promise<number | undefined> {
-  const capacites = await jsonGbif<{ maxYear?: number }>(
+  const capacites = await jsonEnCache<{ maxYear?: number }>(
     `https://api.gbif.org/v2/map/occurrence/density/capabilities.json?taxonKey=${encodeURIComponent(id)}&checklistKey=${LISTE_COL_XR}`,
+    UN_JOUR,
   );
   return capacites?.maxYear;
 }
@@ -129,7 +119,7 @@ export async function lienGbif(nom: string, regne: string): Promise<string> {
   const recherche = `https://www.gbif.org/species/search?q=${encodeURIComponent(nom)}`;
   const parametres = new URLSearchParams({ name: nom, strict: "true" });
   if (regne) parametres.set("kingdom", regne);
-  const resultat = await jsonGbif<{ usageKey?: number; matchType?: string; rank?: string }>(`https://api.gbif.org/v1/species/match?${parametres}`);
+  const resultat = await jsonEnCache<{ usageKey?: number; matchType?: string; rank?: string }>(`https://api.gbif.org/v1/species/match?${parametres}`);
   return resultat?.usageKey && resultat.matchType === "EXACT" && resultat.rank === "SPECIES" ? `https://www.gbif.org/species/${resultat.usageKey}` : recherche;
 }
 
@@ -137,7 +127,7 @@ export async function lienGbif(nom: string, regne: string): Promise<string> {
  * Octets d'une ressource (tuile de carte), gardés `duree` secondes dans le cache de Cloudflare
  * (seulement les réponses réussies). Une réponse « 204 » (aucune donnée) donne un tableau vide.
  */
-export async function octetsEnCache(adresse: string, duree = 24 * 3600): Promise<Uint8Array | undefined> {
+export async function octetsEnCache(adresse: string, duree = UN_JOUR): Promise<Uint8Array | undefined> {
   const cache = cacheCloudflare();
   try {
     const connue = await cache?.match(adresse);
@@ -199,6 +189,7 @@ export async function photosCommons(fichiers: string[]): Promise<Map<string, Pho
       src: relaisCommons(fichier, moyenne),
       srcset: srcsetCommons(fichier, info.width),
       srcsetCarte: srcsetCommons(fichier, info.width, 500),
+      apercu: apercuCommons(fichier, info.width),
       largeur: info.width,
       hauteur: info.height,
       auteur: texteBrut(meta["Artist"]?.value ?? "") || "Wikimedia Commons",
@@ -242,6 +233,7 @@ export async function photoInaturalist(nomLatin: string): Promise<Photo | undefi
     srcset: `${relaisInaturalist(photo.id, "medium", extension)} ${TAILLES_INATURALIST.medium}w`,
     srcsetOrdinateur: `${relaisInaturalist(photo.id, "large", extension)} ${TAILLES_INATURALIST.large}w`,
     srcsetCarte: `${relaisInaturalist(photo.id, "medium", extension)} ${TAILLES_INATURALIST.medium}w`,
+    apercu: relaisInaturalist(photo.id, "large", extension),
     largeur,
     hauteur,
     auteur: texteBrut(photo.attribution_name ?? "") || texteBrut(photo.attribution),
