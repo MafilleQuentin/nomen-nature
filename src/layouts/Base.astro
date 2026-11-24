@@ -18,9 +18,12 @@ interface Props {
   /** Ou, pour une page hors de la table (fiche espèce), ses adresses dans chaque langue. */
   adresses?: Record<Langue, string>;
   indexer?: boolean;
+  /** Image d'aperçu des partages (adresse sur notre site) ; sans elle, pas d'image pour l'instant (lot 10). */
+  image?: { url: string; alt: string; largeur: number; hauteur: number } | undefined;
+  typeOg?: "website" | "article";
 }
 
-const { titre, description, langue, page, adresses, indexer = true } = Astro.props;
+const { titre, description, langue, page, adresses, indexer = true, image, typeOg = "website" } = Astro.props;
 const textes = t(langue);
 
 // Versions de la page dans chaque langue. Une page sans clé (page de contrôle) renvoie
@@ -43,6 +46,16 @@ const absolue = (chemin: string) => new URL(chemin, Astro.site).href;
     {traduite && langues.map((l) => <link rel="alternate" hreflang={l} href={absolue(versions[l])} />)}
     <!-- x-default : la racine pour les pages de la table (elle envoie vers la langue du navigateur), le français pour une fiche. -->
     {traduite && <link rel="alternate" hreflang="x-default" href={absolue(page ? "/" : versions.fr)} />}
+    <!-- Partages (Open Graph, cartes des réseaux et messageries) -->
+    <meta property="og:site_name" content="Nomen Nature" />
+    <meta property="og:type" content={typeOg} />
+    <meta property="og:title" content={titre} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={absolue(traduite ? versions[langue] : Astro.url.pathname)} />
+    <meta property="og:locale" content={langue === "fr" ? "fr_FR" : "en_GB"} />
+    {image?.url && <meta property="og:image" content={absolue(image.url)} />}
+    {image?.url && <meta property="og:image:alt" content={image.alt} />}
+    <meta name="twitter:card" content={image?.url ? "summary_large_image" : "summary"} />
     <meta name="theme-color" content="#0f2a21" />
     <!-- Préchargement : seulement les polices visibles dès l'arrivée (titres et texte courant). -->
     <Font cssVariable="--font-titre" preload={[{ subset: "latin" }]} />

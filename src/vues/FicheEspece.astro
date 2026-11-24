@@ -1,8 +1,7 @@
 ---
 // Fiche espèce (Figma « Fiche espèce — Chêne pédonculé », 83:307 ordinateur et 83:527
-// téléphone), lot 4, QUE-22. Rendue à la demande par le Worker : la page (src/pages/…/[adresse])
-// lit la fiche dans les fichiers de fiches et fixe le code 404 si elle n'existe pas ; ici, le
-// résumé Wikipédia est appelé par notre serveur, puis la fiche est affichée (ou la page introuvable).
+// téléphone), lot 4, QUE-22. Rendue à la demande par le Worker ; une adresse inconnue donne la
+// page introuvable.
 //
 // Fiche courte (Figma « Fiche peu documentée — Agrilus cyanescens », 94:33 et 94:208, QUE-23) :
 // quand il manque le nom courant, la description ou la photo. Même page, avec l'encadré
@@ -16,7 +15,10 @@
 // Carte de répartition (QUE-25) : dessinée par notre serveur en SVG, sans JavaScript (terres
 // Natural Earth en Equal Earth, un point par hexagone d'observations de GBIF).
 //
-// À venir dans le lot : cache et référencement (QUE-26).
+// Référencement et cache (QUE-26) : la page (src/pages/…/[adresse]) charge tout le contenu
+// avant le rendu (src/lib/especes/contenu.ts) et décide du code, de l'indexation et du cache ;
+// cette vue ne fait qu'afficher. Seules les fiches complètes sont indexées ; l'image d'aperçu
+// des partages est la photo de l'espèce.
 import courbesPhotoAbsente from "../assets/motifs/courbes-photo-absente.svg?url";
 import courbesPhoto from "../assets/motifs/courbes-photo.svg?url";
 import terres from "../assets/carte/terres.svg?url";
@@ -27,61 +29,38 @@ import Statistique from "../components/Statistique.astro";
 import type { Langue } from "../i18n/langues";
 import { t } from "../i18n/textes";
 import Base from "../layouts/Base.astro";
+import { HAUTEUR, LARGEUR } from "../lib/carte/projection";
 import {
   couperResume,
   descripteur,
   listeDesManques,
   majuscule,
-  manques,
   nomAffiche,
   nombreCourt,
   phraseSaisTu,
   remplir,
+  statutAffiche,
 } from "../lib/especes/affichage";
-import type { CarteEspece as Carte, Fiche } from "../lib/especes/fiche";
-import { HAUTEUR, LARGEUR } from "../lib/carte/projection";
-import { pointsDeRepartition, type PointCarte } from "../lib/carte/repartition";
-import type { Photo } from "../lib/especes/photos";
-import { derniereObservation, lienGbif, octetsEnCache, photoInaturalist, photosCommons, resumeWikipedia } from "../lib/especes/serveur";
+import type { ContenuFiche } from "../lib/especes/contenu";
 import { traductionsEspece } from "../lib/liens";
 import Introuvable from "./Introuvable.astro";
 
 interface Props {
   langue: Langue;
-  /** La fiche et ses espèces proches, ou undefined pour une adresse inconnue. */
-  trouvee: { fiche: Fiche; proches: Carte[] } | undefined;
+  /** Le contenu de la fiche, ou undefined pour une adresse inconnue. */
+  contenu: ContenuFiche | undefined;
 }
 
-const { langue, trouvee } = Astro.props;
+const { langue, contenu } = Astro.props;
 const textes = t(langue);
 const autreLangue: Langue = langue === "fr" ? "en" : "fr";
 
-const fiche = trouvee?.fiche;
-const proches = trouvee?.proches ?? [];
+const fiche = contenu?.fiche;
+const proches = contenu?.proches ?? [];
+const { resume, photo, photosProches, points, ceQuiManque = [], courte = false, annee, pageGbif } = contenu ?? {};
 const nom = fiche ? nomAffiche(fiche, langue) : "";
 const nomLatinEnTitre = fiche ? nom === fiche.nom : false;
 const autreNom = fiche ? majuscule(langue === "fr" ? fiche.nomEn : fiche.nomFr) : "";
-
-// Résumé : l'article dans la langue de la page, sinon dans l'autre langue.
-const titres: Record<Langue, string> = { fr: fiche?.wikipediaFr ?? "", en: fiche?.wikipediaEn ?? "" };
-const appelResume = fiche
-  ? (async () => (await resumeWikipedia(titres[langue], langue)) ?? (await resumeWikipedia(titres[autreLangue], autreLangue)))()
-  : Promise.resolve(undefined);
-// Photos : Commons pour la fiche et ses espèces proches (un appel), iNaturalist si la fiche
-// n'a pas de photo Commons.
-const appelCommons = fiche ? photosCommons([fiche.photo, ...proches.map((p) => p.photo)]) : Promise.resolve(new Map<string, Photo>());
-const appelInaturalist = fiche && !fiche.photo ? photoInaturalist(fiche.nom) : Promise.resolve(undefined);
-// Fiche courte : décidée d'après nos données (un article existe-t-il ?) et la photo trouvée, pas
-// d'après la réponse de Wikipédia, pour qu'une lenteur ne change pas la page. GBIF est appelé en
-// même temps quand la fiche risque d'être courte.
-const peutEtreCourte = fiche ? manques(fiche, langue, Boolean(titres.fr || titres.en)).length > 0 : false;
-const appelGbif: Promise<[number | undefined, string]> =
-  fiche && peutEtreCourte ? Promise.all([derniereObservation(fiche.id), lienGbif(fiche.nom, fiche.regne)]) : Promise.resolve([undefined, ""]);
-const appelCarte: Promise<PointCarte[] | undefined> = fiche ? pointsDeRepartition(fiche.id, (adresse) => octetsEnCache(adresse)) : Promise.resolve(undefined);
-const [resume, [annee, pageGbif], commons, inaturalist, points] = await Promise.all([appelResume, appelGbif, appelCommons, appelInaturalist, appelCarte]);
-const photo: Photo | undefined = (fiche && commons.get(fiche.photo)) || inaturalist;
-const ceQuiManque = fiche ? manques({ ...fiche, photo: fiche.photo || (photo ? "inaturalist" : "") }, langue, Boolean(titres.fr || titres.en)) : [];
-const courte = ceQuiManque.length > 0;
 const sourcePhoto = photo?.source === "inaturalist" ? "iNaturalist" : "Wikimedia Commons";
 const descriptif = fiche ? descripteur(fiche, langue) : "";
 const saisTu = fiche ? phraseSaisTu(fiche.faits, langue) : "";
@@ -98,16 +77,27 @@ const titrePage = remplir(textes.fiche.titrePage, { nom });
 // Image vide (SVG d'un octet) en attendant le chargement différé.
 const IMAGE_VIDE = "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'/%3E";
 const textePhoto = fiche ? (nomLatinEnTitre ? fiche.nom : `${nom} (${fiche.nom})`) : "";
+const statut = fiche ? textes.statuts[statutAffiche(fiche.uicn)].toLowerCase() : "";
 const description = fiche
-  ? remplir(nomLatinEnTitre ? textes.fiche.descriptionLatin : textes.fiche.descriptionCourant, { nom, latin: fiche.nom })
+  ? remplir(nomLatinEnTitre ? textes.fiche.descriptionLatin : textes.fiche.descriptionCourant, { nom, latin: fiche.nom, statut })
   : "";
+// Image d'aperçu des partages : la photo de l'espèce en JPEG (décision du 24.11.2026).
+const apercu = photo ? { url: photo.apercu, alt: textePhoto, largeur: photo.largeur, hauteur: photo.hauteur } : undefined;
 ---
 
 {
   !fiche ? (
     <Introuvable langue={langue} />
   ) : (
-    <Base titre={titrePage} description={description} langue={langue} adresses={traductionsEspece(fiche.adresse)}>
+    <Base
+      titre={titrePage}
+      description={description}
+      langue={langue}
+      adresses={traductionsEspece(fiche.adresse)}
+      indexer={!courte}
+      image={apercu}
+      typeOg="article"
+    >
       <article class="fiche">
         <nav class="fil t-mono-surtitre" aria-label={textes.fiche.filAriane}>
           <ol>
@@ -257,7 +247,7 @@ const description = fiche
             <ul class="cartes">
               {proches.map((p) => (
                 <li>
-                  <CarteEspece espece={p} langue={langue} photo={commons.get(p.photo)} />
+                  <CarteEspece espece={p} langue={langue} photo={photosProches?.get(p.photo)} />
                 </li>
               ))}
             </ul>
