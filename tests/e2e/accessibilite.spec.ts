@@ -11,7 +11,8 @@ const pages = [
   { nom: "introuvable (en)", chemin: "/en/unknown-page" },
   { nom: "fiche espèce (fr)", chemin: "/fr/espece/quercus-robur" },
   { nom: "fiche espèce (en)", chemin: "/en/species/quercus-robur" },
-  { nom: "fiche espèce sans nom courant", chemin: "/fr/espece/agrilus-obscuricollis" },
+  { nom: "fiche courte (fr)", chemin: "/fr/espece/agrilus-obscuricollis" },
+  { nom: "fiche courte (en)", chemin: "/en/species/agrilus-cyanescens" },
 ];
 
 async function auditer(page: Page) {
