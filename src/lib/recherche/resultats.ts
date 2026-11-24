@@ -7,6 +7,7 @@ import { t } from "../../i18n/textes.ts";
 import { nomAffiche, remplir, statutAffiche, type Statut } from "../especes/affichage.ts";
 import { lienEspece } from "../liens.ts";
 import type { EspeceTrouvee } from "./especes.ts";
+import { estObserveeA, lireLieu, memeLieu, MONDE, valeurLieu, type Lieu, type Zones } from "./lieux.ts";
 
 /** Nombre d'espèces cherchées pour la page (les filtres trient ensuite parmi elles). */
 export const MAX_RESULTATS = 30;
@@ -18,6 +19,8 @@ export interface Filtres {
   /** Clé du groupe (« arbres »), ou vide pour tous. */
   groupe: string;
   menacees: boolean;
+  /** Lieu du filtre « Où » (Monde par défaut). */
+  lieu: Lieu;
 }
 
 export interface Puce {
@@ -37,28 +40,67 @@ export interface LigneResultat {
 
 const groupesDe = (langue: Langue) => t(langue).groupes as Record<string, string>;
 
-/** Filtres de l'adresse (?groupe=arbres&statut=menacees) ; un groupe inconnu est ignoré. */
+/** Filtres de l'adresse (?groupe=arbres&statut=menacees&lieu=CH) ; un groupe inconnu est ignoré. */
 export function lireFiltres(parametres: URLSearchParams): Filtres {
   const groupe = parametres.get("groupe") ?? "";
   return {
     groupe: Object.hasOwn(groupesDe("fr"), groupe) ? groupe : "",
     menacees: parametres.get("statut") === "menacees",
+    lieu: lireLieu(parametres.get("lieu")),
   };
 }
+
+export const avecFiltres = (filtres: Filtres) => Boolean(filtres.groupe || filtres.menacees || filtres.lieu.type !== "monde");
 
 /** Adresse de la page de résultats pour un texte et des filtres (les filtres vides sont omis). */
 export function adresseRecherche(base: string, texte: string, filtres: Partial<Filtres> = {}): string {
   const parametres = new URLSearchParams({ q: texte });
   if (filtres.groupe) parametres.set("groupe", filtres.groupe);
   if (filtres.menacees) parametres.set("statut", "menacees");
+  if (filtres.lieu && filtres.lieu.type !== "monde") parametres.set("lieu", valeurLieu(filtres.lieu));
   return `${base}?${parametres}`;
 }
 
 export const estMenacee = (uicn: string) => MENACEES.includes(statutAffiche(uicn));
 
-/** Espèces qui passent les filtres, dans le même ordre. */
-export function filtrer(especes: EspeceTrouvee[], filtres: Filtres): EspeceTrouvee[] {
-  return especes.filter(({ fiche }) => (!filtres.groupe || fiche.groupe === filtres.groupe) && (!filtres.menacees || estMenacee(fiche.uicn)));
+/**
+ * Espèces qui passent les filtres, dans le même ordre. Pour le lieu, `zones` donne les pays et
+ * continents de chaque espèce (une espèce absente des zones n'a été observée nulle part 5 fois).
+ */
+export function filtrer(especes: EspeceTrouvee[], filtres: Filtres, zones?: Map<string, Zones>): EspeceTrouvee[] {
+  const aucune: Zones = { pays: new Set(), continents: new Set() };
+  return especes.filter(
+    ({ fiche }) =>
+      (!filtres.groupe || fiche.groupe === filtres.groupe) &&
+      (!filtres.menacees || estMenacee(fiche.uicn)) &&
+      (filtres.lieu.type === "monde" || estObserveeA(zones?.get(fiche.id) ?? aucune, filtres.lieu)),
+  );
+}
+
+/** Nom d'un lieu dans la langue du site : « Suisse », « Europe », « Monde ». */
+export function nomDuLieu(lieu: Lieu, langue: Langue): string {
+  const textes = t(langue).resultats;
+  if (lieu.type === "monde") return textes.monde;
+  if (lieu.type === "continent") return t(langue).continents[lieu.code];
+  try {
+    return new Intl.DisplayNames([langue], { type: "region" }).of(lieu.code) ?? lieu.code;
+  } catch {
+    return lieu.code;
+  }
+}
+
+/**
+ * Puces du lieu : « Monde », le pays et le continent du visiteur (Cloudflare), plus le lieu choisi
+ * s'il n'en fait pas partie (lien partagé par quelqu'un d'ailleurs). Choisir garde le groupe et le statut.
+ */
+export function pucesLieu(filtres: Filtres, visiteur: Lieu[], base: string, texte: string, langue: Langue): Puce[] {
+  const lieux = [MONDE, ...visiteur];
+  if (!lieux.some((l) => memeLieu(l, filtres.lieu))) lieux.push(filtres.lieu);
+  return lieux.map((lieu) => ({
+    libelle: nomDuLieu(lieu, langue),
+    lien: adresseRecherche(base, texte, { ...filtres, lieu }),
+    actif: memeLieu(lieu, filtres.lieu),
+  }));
 }
 
 /**
