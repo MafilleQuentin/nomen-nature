@@ -41,6 +41,12 @@ const fr = {
   recherche: {
     libelle: "Chercher une espèce",
     indicatif: "Cherche une espèce…",
+    suggestions: "Suggestions",
+    nbSuggestions: "{n} suggestions : flèches haut et bas pour choisir, Entrée pour ouvrir la fiche.",
+    uneSuggestion: "1 suggestion : flèche bas pour la choisir, Entrée pour ouvrir la fiche.",
+    aucuneSuggestion: "Aucune suggestion pour le moment.",
+    tuVoulaisDire: "Tu voulais dire « {nom} » ?",
+    voirTout: "Tous les résultats pour « {q} »",
   },
   introuvable: {
     titrePage: "Page introuvable — Nomen Nature",
@@ -208,6 +214,12 @@ const en: Textes = {
   recherche: {
     libelle: "Search for a species",
     indicatif: "Search for a species…",
+    suggestions: "Suggestions",
+    nbSuggestions: "{n} suggestions: up and down arrows to choose, Enter to open the species page.",
+    uneSuggestion: "1 suggestion: down arrow to choose it, Enter to open the species page.",
+    aucuneSuggestion: "No suggestions for now.",
+    tuVoulaisDire: "Did you mean “{nom}”?",
+    voirTout: "All results for “{q}”",
   },
   introuvable: {
     titrePage: "Page not found — Nomen Nature",
