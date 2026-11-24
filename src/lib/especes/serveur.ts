@@ -9,11 +9,50 @@
 // - GBIF (fiche courte, QUE-23) : année de la dernière observation (API des cartes, avec notre
 //   identifiant du Catalogue of Life) et page de l'espèce sur gbif.org (recherche du nom).
 //   Même principe : appelés par notre serveur, et la fiche s'affiche sans eux en cas d'échec.
+// - Photos (QUE-24) : auteur et licence demandés à l'API de Commons (un seul appel pour la fiche
+//   et ses espèces proches) ; sinon, photo par défaut du taxon sur iNaturalist. Ces réponses
+//   sont gardées 30 jours dans le cache de Cloudflare : iNaturalist demande de ne pas dépasser
+//   60 requêtes par minute.
 import { env } from "cloudflare:workers";
 import type { Langue } from "../../i18n/langues.ts";
 import { cheminDuFichier, trouverFiche, type FichierFiches } from "./fiche.ts";
+import {
+  licenceInaturalist,
+  nomCommons,
+  relaisCommons,
+  relaisInaturalist,
+  srcsetCommons,
+  TAILLES_INATURALIST,
+  texteBrut,
+  type Photo,
+} from "./photos.ts";
 
-const AGENT = "NomenNature/0.8 (+https://nomenature.org)";
+export const AGENT = "NomenNature/0.8 (+https://nomenature.org)";
+const TRENTE_JOURS = 30 * 24 * 3600;
+
+/** Cache de Cloudflare (absent hors du Worker : tests, construction). */
+function cacheCloudflare(): Cache | undefined {
+  return typeof caches !== "undefined" && "default" in caches ? (caches as unknown as { default: Cache }).default : undefined;
+}
+
+/**
+ * Réponse JSON d'une API, gardée `duree` secondes dans le cache de Cloudflare (seulement les
+ * réponses réussies). Délai de 2,5 s ; undefined en cas d'échec.
+ */
+export async function jsonEnCache<T>(adresse: string, duree = TRENTE_JOURS): Promise<T | undefined> {
+  const cache = cacheCloudflare();
+  try {
+    const connue = await cache?.match(adresse);
+    if (connue) return (await connue.json()) as T;
+    const reponse = await fetch(adresse, { headers: { "User-Agent": AGENT, Accept: "application/json" }, signal: AbortSignal.timeout(2500) });
+    if (!reponse.ok) return undefined;
+    const texte = await reponse.text();
+    await cache?.put(adresse, new Response(texte, { headers: { "Content-Type": "application/json", "Cache-Control": `public, max-age=${duree}` } }));
+    return JSON.parse(texte) as T;
+  } catch {
+    return undefined;
+  }
+}
 const MAX_EN_MEMOIRE = 16;
 const memoire = new Map<string, FichierFiches>();
 
@@ -92,4 +131,103 @@ export async function lienGbif(nom: string, regne: string): Promise<string> {
   if (regne) parametres.set("kingdom", regne);
   const resultat = await jsonGbif<{ usageKey?: number; matchType?: string; rank?: string }>(`https://api.gbif.org/v1/species/match?${parametres}`);
   return resultat?.usageKey && resultat.matchType === "EXACT" && resultat.rank === "SPECIES" ? `https://www.gbif.org/species/${resultat.usageKey}` : recherche;
+}
+
+interface ReponseCommons {
+  query?: {
+    normalized?: { from: string; to: string }[];
+    pages?: {
+      title: string;
+      missing?: boolean;
+      imageinfo?: {
+        width: number;
+        height: number;
+        descriptionurl: string;
+        extmetadata?: Record<string, { value: string } | undefined>;
+      }[];
+    }[];
+  };
+}
+
+/**
+ * Photos Commons (auteur, licence, taille) de plusieurs fichiers en un seul appel, rangées par
+ * nom de fichier tel que donné. Un fichier introuvable n'a pas d'entrée.
+ */
+export async function photosCommons(fichiers: string[]): Promise<Map<string, Photo>> {
+  const photos = new Map<string, Photo>();
+  const uniques = [...new Set(fichiers.filter(Boolean))].slice(0, 50);
+  if (!uniques.length) return photos;
+  const parametres = new URLSearchParams({
+    action: "query",
+    format: "json",
+    formatversion: "2",
+    prop: "imageinfo",
+    iiprop: "size|extmetadata|url",
+    iiextmetadatafilter: "Artist|LicenseShortName|LicenseUrl",
+    titles: uniques.map((f) => `File:${f}`).join("|"),
+  });
+  const reponse = await jsonEnCache<ReponseCommons>(`https://commons.wikimedia.org/w/api.php?${parametres}`);
+  const pages = new Map((reponse?.query?.pages ?? []).map((p) => [p.title, p]));
+  const normalises = new Map((reponse?.query?.normalized ?? []).map((n) => [n.from, n.to]));
+  for (const fichier of uniques) {
+    const titre = `File:${fichier}`;
+    const info = pages.get(normalises.get(titre) ?? titre)?.imageinfo?.[0];
+    if (!info) continue;
+    const meta = info.extmetadata ?? {};
+    const moyenne = info.width >= 500 ? 500 : 330;
+    photos.set(fichier, {
+      source: "commons",
+      src: relaisCommons(fichier, moyenne),
+      srcset: srcsetCommons(fichier, info.width),
+      srcsetCarte: srcsetCommons(fichier, info.width, 500),
+      largeur: info.width,
+      hauteur: info.height,
+      auteur: texteBrut(meta["Artist"]?.value ?? "") || "Wikimedia Commons",
+      licence: texteBrut(meta["LicenseShortName"]?.value ?? "", 40),
+      lienLicence: meta["LicenseUrl"]?.value ?? "",
+      page: info.descriptionurl || `https://commons.wikimedia.org/wiki/File:${encodeURIComponent(nomCommons(fichier))}`,
+    });
+  }
+  return photos;
+}
+
+interface ReponseInaturalist {
+  results?: {
+    name: string;
+    default_photo?: {
+      id: number;
+      license_code: string | null;
+      attribution: string;
+      attribution_name?: string | null;
+      medium_url?: string;
+      original_dimensions?: { width: number; height: number };
+    } | null;
+  }[];
+}
+
+/** Photo par défaut d'une espèce sur iNaturalist (nom exact, licence libre), ou undefined. */
+export async function photoInaturalist(nomLatin: string): Promise<Photo | undefined> {
+  const parametres = new URLSearchParams({ q: nomLatin, rank: "species", is_active: "true", per_page: "1" });
+  const reponse = await jsonEnCache<ReponseInaturalist>(`https://api.inaturalist.org/v1/taxa?${parametres}`);
+  const taxon = reponse?.results?.[0];
+  const photo = taxon?.default_photo;
+  const licence = licenceInaturalist(photo?.license_code);
+  const extension = /\.(jpe?g|png)(?:\?|$)/i.exec(photo?.medium_url ?? "")?.[1]?.toLowerCase();
+  if (!taxon || taxon.name !== nomLatin || !photo || !licence || !extension) return undefined;
+  const largeur = photo.original_dimensions?.width ?? TAILLES_INATURALIST.medium;
+  const hauteur = photo.original_dimensions?.height ?? Math.round((largeur * 3) / 4);
+  return {
+    source: "inaturalist",
+    src: relaisInaturalist(photo.id, "medium", extension),
+    // 1024 px (~300 Ko) seulement sur ordinateur : sur téléphone, 500 px.
+    srcset: `${relaisInaturalist(photo.id, "medium", extension)} ${TAILLES_INATURALIST.medium}w`,
+    srcsetOrdinateur: `${relaisInaturalist(photo.id, "large", extension)} ${TAILLES_INATURALIST.large}w`,
+    srcsetCarte: `${relaisInaturalist(photo.id, "medium", extension)} ${TAILLES_INATURALIST.medium}w`,
+    largeur,
+    hauteur,
+    auteur: texteBrut(photo.attribution_name ?? "") || texteBrut(photo.attribution),
+    licence: licence.nom,
+    lienLicence: licence.lien,
+    page: `https://www.inaturalist.org/photos/${photo.id}`,
+  };
 }
