@@ -96,40 +96,39 @@ export function fichiersPour(premiers: string[], prefixe: string): number[] {
   return numeros;
 }
 
+// Les fichiers sont lus en même temps (Promise.all garde l'ordre) : en ligne, chaque lecture
+// coûte ~0,2 s et une recherche en demande 4 à 10.
 async function entrees(source: Source, dico: "noms" | "cles", prefixe: string): Promise<string[][]> {
-  const trouvees: string[][] = [];
-  for (const numero of fichiersPour(source.manifeste.dictionnaires[dico].premiers, prefixe)) {
-    for (const ligne of await source.lire(dico, numero)) if ((ligne[0] ?? "").startsWith(prefixe)) trouvees.push(ligne);
-  }
-  return trouvees;
+  const numeros = fichiersPour(source.manifeste.dictionnaires[dico].premiers, prefixe);
+  const fichiers = await Promise.all(numeros.map((numero) => source.lire(dico, numero)));
+  return fichiers.flat().filter((ligne) => (ligne[0] ?? "").startsWith(prefixe));
 }
 
 async function entreesCourtes(source: Source, groupe: string, debut: string): Promise<string[][]> {
-  const trouvees: string[][] = [];
-  for (const numero of fichiersPour(source.manifeste.dictionnaires.courts.premiers, groupe)) {
-    for (const ligne of await source.lire("courts", numero)) {
-      if (ligne[0] === groupe && (ligne[1] ?? "").startsWith(debut)) trouvees.push(ligne.slice(1));
-    }
-  }
-  return trouvees;
+  const numeros = fichiersPour(source.manifeste.dictionnaires.courts.premiers, groupe);
+  const fichiers = await Promise.all(numeros.map((numero) => source.lire("courts", numero)));
+  return fichiers
+    .flat()
+    .filter((ligne) => ligne[0] === groupe && (ligne[1] ?? "").startsWith(debut))
+    .map((ligne) => ligne.slice(1));
 }
 
 /** Lignes candidates : (tri, nom, langue, type, taxon, rang, scientifique, genre, famille, notoriété). */
 export async function candidats(source: Source, texte: string): Promise<string[][]> {
-  const lignes: string[][] = [];
+  const groupes: Promise<string[][]>[] = [];
   const q = normaliser(texte);
   if (q.length >= 3) {
-    lignes.push(...(await entrees(source, "noms", q)).slice(0, MAX_CANDIDATS));
-    if (q.length <= LONGUEUR_COURTE) lignes.push(...(await entreesCourtes(source, `n${q.slice(0, 3)}`, q)));
+    groupes.push(entrees(source, "noms", q).then((l) => l.slice(0, MAX_CANDIDATS)));
+    if (q.length <= LONGUEUR_COURTE) groupes.push(entreesCourtes(source, `n${q.slice(0, 3)}`, q));
   }
   for (const langue of LANGUES) {
     const k = cle(texte, langue);
     if (k.replace(/ /g, "").length < 3) continue;
     const tri = `${langue}|${k}`;
-    lignes.push(...(await entrees(source, "cles", tri)).slice(0, MAX_CANDIDATS));
-    if (k.length <= LONGUEUR_COURTE) lignes.push(...(await entreesCourtes(source, `c${tri.slice(0, 6)}`, tri)));
+    groupes.push(entrees(source, "cles", tri).then((l) => l.slice(0, MAX_CANDIDATS)));
+    if (k.length <= LONGUEUR_COURTE) groupes.push(entreesCourtes(source, `c${tri.slice(0, 6)}`, tri));
   }
-  return lignes;
+  return (await Promise.all(groupes)).flat();
 }
 
 /** Résumé d'une espèce lu dans les colonnes 10 à 15 d'une ligne de l'index, s'il y est. */

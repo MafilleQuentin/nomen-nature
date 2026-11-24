@@ -1,9 +1,10 @@
 // Recherche lue par notre serveur (lot 5, QUE-27, décision du 24.11.2026) : le serveur lit la
 // table et les fichiers de l'index (/donnees/recherche/, binding ASSETS), lance le moteur, puis
-// complète chaque espèce trouvée avec sa fiche (adresse, nom principal, statut, groupe, photo)
-// et la classe (especes.ts). Le navigateur ne reçoit que les résultats.
+// classe les espèces trouvées avec le résumé que l'index porte pour chacune (adresse, nom
+// principal, statut, groupe) (especes.ts). Le navigateur ne reçoit que les résultats.
 //
 // La table de l'index et les derniers fichiers lus restent en mémoire tant que le Worker tourne.
+// Les fichiers d'une recherche sont lus en même temps (moteur.ts).
 import { adresseEspece } from "../especes/adresse.ts";
 import { cheminDuFichier, ficheParIdentifiant, fichesDuGenre } from "../especes/fiche.ts";
 import { lireFichier, lireFichierDuSite } from "../especes/serveur.ts";
@@ -13,7 +14,13 @@ import type { Manifeste, Resultat, Source } from "./moteur.ts";
 const DOSSIER = "/donnees/recherche";
 const MAX_EN_MEMOIRE = 48;
 let manifeste: Manifeste | undefined;
-const fichiers = new Map<string, string[][]>();
+// Les lectures en cours y sont aussi : deux demandes simultanées du même fichier n'en font qu'une.
+const fichiers = new Map<string, Promise<string[][]>>();
+
+async function lireLignes(chemin: string, origine: URL): Promise<string[][]> {
+  const reponse = await lireFichierDuSite(chemin, origine);
+  return reponse.ok ? (await reponse.text()).split("\n").filter(Boolean).map((l) => l.split("\t")) : [];
+}
 
 async function sourceDuSite(origine: URL): Promise<Source | undefined> {
   if (!manifeste) {
@@ -24,15 +31,16 @@ async function sourceDuSite(origine: URL): Promise<Source | undefined> {
   const table = manifeste;
   return {
     manifeste: table,
-    async lire(dico, numero) {
+    lire(dico, numero) {
       const chemin = `${DOSSIER}/${dico}/${String(numero).padStart(4, "0")}${table.extension}`;
       const connu = fichiers.get(chemin);
       if (connu) return connu;
-      const reponse = await lireFichierDuSite(chemin, origine);
-      const lignes = reponse.ok ? (await reponse.text()).split("\n").filter(Boolean).map((l) => l.split("\t")) : [];
-      fichiers.set(chemin, lignes);
+      const lecture = lireLignes(chemin, origine);
+      fichiers.set(chemin, lecture);
+      // Une lecture ratée (réseau) n'est pas gardée : la prochaine recherche réessaiera.
+      lecture.catch(() => fichiers.delete(chemin));
       if (fichiers.size > MAX_EN_MEMOIRE) fichiers.delete(fichiers.keys().next().value ?? "");
-      return lignes;
+      return lecture;
     },
   };
 }
