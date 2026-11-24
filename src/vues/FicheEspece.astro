@@ -13,11 +13,16 @@
 // notre serveur, avec auteur, licence et lien vers sa page ; les espèces proches ont leur photo
 // Commons (un seul appel pour toutes).
 //
-// À venir dans le lot : carte de répartition (QUE-25), cache et référencement (QUE-26).
+// Carte de répartition (QUE-25) : dessinée par notre serveur en SVG, sans JavaScript (terres
+// Natural Earth en Equal Earth, un point par hexagone d'observations de GBIF).
+//
+// À venir dans le lot : cache et référencement (QUE-26).
 import courbesPhotoAbsente from "../assets/motifs/courbes-photo-absente.svg?url";
 import courbesPhoto from "../assets/motifs/courbes-photo.svg?url";
+import terres from "../assets/carte/terres.svg?url";
 import BadgeStatut from "../components/BadgeStatut.astro";
 import CarteEspece from "../components/CarteEspece.astro";
+import ImagesDifferees from "../components/ImagesDifferees.astro";
 import Statistique from "../components/Statistique.astro";
 import type { Langue } from "../i18n/langues";
 import { t } from "../i18n/textes";
@@ -34,8 +39,10 @@ import {
   remplir,
 } from "../lib/especes/affichage";
 import type { CarteEspece as Carte, Fiche } from "../lib/especes/fiche";
+import { HAUTEUR, LARGEUR } from "../lib/carte/projection";
+import { pointsDeRepartition, type PointCarte } from "../lib/carte/repartition";
 import type { Photo } from "../lib/especes/photos";
-import { derniereObservation, lienGbif, photoInaturalist, photosCommons, resumeWikipedia } from "../lib/especes/serveur";
+import { derniereObservation, lienGbif, octetsEnCache, photoInaturalist, photosCommons, resumeWikipedia } from "../lib/especes/serveur";
 import { traductionsEspece } from "../lib/liens";
 import Introuvable from "./Introuvable.astro";
 
@@ -70,7 +77,8 @@ const appelInaturalist = fiche && !fiche.photo ? photoInaturalist(fiche.nom) : P
 const peutEtreCourte = fiche ? manques(fiche, langue, Boolean(titres.fr || titres.en)).length > 0 : false;
 const appelGbif: Promise<[number | undefined, string]> =
   fiche && peutEtreCourte ? Promise.all([derniereObservation(fiche.id), lienGbif(fiche.nom, fiche.regne)]) : Promise.resolve([undefined, ""]);
-const [resume, [annee, pageGbif], commons, inaturalist] = await Promise.all([appelResume, appelGbif, appelCommons, appelInaturalist]);
+const appelCarte: Promise<PointCarte[] | undefined> = fiche ? pointsDeRepartition(fiche.id, (adresse) => octetsEnCache(adresse)) : Promise.resolve(undefined);
+const [resume, [annee, pageGbif], commons, inaturalist, points] = await Promise.all([appelResume, appelGbif, appelCommons, appelInaturalist, appelCarte]);
 const photo: Photo | undefined = (fiche && commons.get(fiche.photo)) || inaturalist;
 const ceQuiManque = fiche ? manques({ ...fiche, photo: fiche.photo || (photo ? "inaturalist" : "") }, langue, Boolean(titres.fr || titres.en)) : [];
 const courte = ceQuiManque.length > 0;
@@ -85,8 +93,10 @@ const filAriane = fiche
   ? [regnes[fiche.regne] ?? fiche.regne, groupes[fiche.groupe] ?? "", fiche.famille, fiche.genre].filter(Boolean)
   : [];
 
-const sources = [resume ? textes.fiche.sourceResume : "", textes.fiche.sourceStatut, textes.fiche.sourceNoms].filter(Boolean);
+const sources = [resume ? textes.fiche.sourceResume : "", textes.fiche.sourceStatut, textes.fiche.sourceNoms, points?.length ? textes.fiche.sourceCarte : ""].filter(Boolean);
 const titrePage = remplir(textes.fiche.titrePage, { nom });
+// Image vide (SVG d'un octet) en attendant le chargement différé.
+const IMAGE_VIDE = "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'/%3E";
 const textePhoto = fiche ? (nomLatinEnTitre ? fiche.nom : `${nom} (${fiche.nom})`) : "";
 const description = fiche
   ? remplir(nomLatinEnTitre ? textes.fiche.descriptionLatin : textes.fiche.descriptionCourant, { nom, latin: fiche.nom })
@@ -206,16 +216,40 @@ const description = fiche
           </div>
         </div>
 
-        {!courte && (
-          <section class="repartition" aria-labelledby="titre-repartition">
-            <h2 id="titre-repartition" class="titre-section">{textes.fiche.ouLeTrouver}</h2>
-            <div class="chiffres">
-              <Statistique valeur={nombreCourt(fiche.pays, langue)} libelle={textes.fiche.pays} />
-              <Statistique valeur={nombreCourt(fiche.observations, langue)} libelle={textes.fiche.observations} />
-              {fiche.continent && <Statistique valeur={continents[fiche.continent] ?? fiche.continent} libelle={textes.fiche.airePrincipale} />}
+        <section class="repartition" aria-labelledby="titre-repartition">
+          <h2 id="titre-repartition" class="titre-section">{courte ? textes.fiche.ouLAtOnObserve : textes.fiche.ouLeTrouver}</h2>
+          <div class:list={["carte-et-chiffres", { "carte-et-chiffres--courte": courte }]}>
+            <div class="carte">
+              <div class="carte__cadre">
+                {/* Terres : chargées quand la carte apparaît à l'écran (ImagesDifferees). */}
+                <img class="carte__fond" src={IMAGE_VIDE} data-src={terres} alt="" width={LARGEUR} height={HAUTEUR} />
+                <noscript>
+                  <img class="carte__fond" src={terres} alt="" width={LARGEUR} height={HAUTEUR} />
+                </noscript>
+                <svg class="carte__dessin" viewBox={`0 0 ${LARGEUR} ${HAUTEUR}`} role="img" aria-labelledby="titre-carte">
+                  <title id="titre-carte">{remplir(textes.fiche.titreCarte, { nom })}</title>
+                  <g class="carte__points">{points?.map((p) => <circle cx={p.x} cy={p.y} r={p.r} />)}</g>
+                </svg>
+              </div>
+              {!points?.length && <p class="t-texte-petit carte__message">{points ? textes.fiche.carteVide : textes.fiche.carteIndisponible}</p>}
             </div>
-          </section>
-        )}
+            <div class="chiffres chiffres--colonne">
+              {!courte && (
+                <>
+                  <Statistique valeur={nombreCourt(fiche.pays, langue)} libelle={textes.fiche.pays} />
+                  <Statistique valeur={nombreCourt(fiche.observations, langue)} libelle={textes.fiche.observations} />
+                  {fiche.continent && <Statistique valeur={continents[fiche.continent] ?? fiche.continent} libelle={textes.fiche.airePrincipale} />}
+                </>
+              )}
+              {points?.length ? (
+                <p class="t-mono-legende legende">
+                  <span class="legende__point" aria-hidden="true" />
+                  {textes.fiche.legendeCarte}
+                </p>
+              ) : null}
+            </div>
+          </div>
+        </section>
 
         {proches.length > 0 && (
           <section class="proches" aria-labelledby="titre-proches">
@@ -230,6 +264,7 @@ const description = fiche
           </section>
         )}
       </article>
+      <ImagesDifferees />
     </Base>
   )
 }
@@ -441,6 +476,59 @@ const description = fiche
     flex-direction: column;
     gap: var(--space-4);
   }
+  .carte-et-chiffres {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .carte {
+    position: relative;
+    padding: var(--space-3);
+    border-radius: var(--radius-xl);
+    background: var(--color-bg-sunken);
+  }
+  .carte__cadre {
+    position: relative;
+    aspect-ratio: 1000 / 487;
+  }
+  .carte__fond,
+  .carte__dessin {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .carte__points {
+    fill: var(--color-text-accent);
+    fill-opacity: 0.9;
+  }
+  .carte__message {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: max-content;
+    max-width: 80%;
+    margin: 0;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-sunken);
+    color: var(--color-text-secondary);
+    text-align: center;
+    transform: translate(-50%, -50%);
+  }
+  .legende {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-secondary);
+  }
+  .legende__point {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-text-accent);
+  }
   .chiffres {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -519,9 +607,21 @@ const description = fiche
     .proches {
       gap: var(--space-5);
     }
-    .chiffres {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+    .carte-et-chiffres {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 310px;
       gap: var(--space-6);
+      align-items: start;
+    }
+    .carte-et-chiffres--courte {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .carte {
+      padding: var(--space-5) var(--space-6);
+    }
+    .chiffres--colonne {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-3);
     }
     .cartes {
       grid-auto-flow: row;

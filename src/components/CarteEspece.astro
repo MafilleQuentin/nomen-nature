@@ -2,9 +2,8 @@
 // Carte espèce (Figma « Carte espèce », 76:18) : photo (ou courbes de niveau tant qu'elle
 // manque), badge de statut UICN, nom courant, nom latin et groupe. Toute la carte est un lien
 // vers la fiche. Photo Commons relayée par notre serveur (QUE-24), chargée seulement quand la
-// carte apparaît à l'écran : un petit script la met à la place des courbes de niveau
-// (« loading=lazy » ne suffit pas, Chrome charge d'avance tout ce qui est à moins de
-// 1 250 px). Sans JavaScript, la photo est chargée normalement (<noscript>). Son crédit court
+// carte apparaît à l'écran (composant ImagesDifferees, à mettre dans la page) ; d'ici là, les
+// courbes de niveau. Sans JavaScript, la photo est chargée normalement (<noscript>). Son crédit court
 // (auteur, licence) est sous le nom ; le crédit complet avec les liens est sur sa fiche.
 import courbes from "../assets/motifs/courbes-carte.svg?url";
 import type { Langue } from "../i18n/langues";
@@ -62,31 +61,6 @@ const meta = [groupe, credit].filter(Boolean).join(" · ");
     {meta && <p class="t-mono-legende groupe">{meta}</p>}
   </div>
 </a>
-
-<script>
-  // Photos des cartes : chargées quand la carte apparaît à l'écran.
-  const differees = document.querySelectorAll<HTMLImageElement>("img[data-srcset]");
-  const charger = (image: HTMLImageElement) => {
-    image.srcset = image.dataset["srcset"] ?? "";
-    image.src = image.dataset["src"] ?? image.src;
-    image.removeAttribute("data-srcset");
-  };
-  if ("IntersectionObserver" in window) {
-    const observateur = new IntersectionObserver(
-      (entrees) => {
-        for (const entree of entrees) {
-          if (!entree.isIntersecting) continue;
-          charger(entree.target as HTMLImageElement);
-          observateur.unobserve(entree.target);
-        }
-      },
-      { rootMargin: "0px" },
-    );
-    differees.forEach((image) => observateur.observe(image));
-  } else {
-    differees.forEach(charger);
-  }
-</script>
 
 <style>
   .carte {
