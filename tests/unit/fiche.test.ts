@@ -9,7 +9,17 @@ import {
   fichierDeLAdresse,
   NOMBRE_FICHIERS,
 } from "../../src/lib/especes/adresse.ts";
-import { couperResume, majuscule, nomAffiche, nombreCourt, phraseSaisTu, statutAffiche } from "../../src/lib/especes/affichage.ts";
+import {
+  couperResume,
+  descripteur,
+  listeDesManques,
+  majuscule,
+  manques,
+  nomAffiche,
+  nombreCourt,
+  phraseSaisTu,
+  statutAffiche,
+} from "../../src/lib/especes/affichage.ts";
 import { cheminDuFichier, trouverFiche, type FichierFiches } from "../../src/lib/especes/fiche.ts";
 import { lienEspece, traductionsEspece } from "../../src/lib/liens.ts";
 import { arrondir, attribuerAdresses, nombreQlever, proches } from "../../tools/donnees/fiches.ts";
@@ -139,5 +149,29 @@ describe("mise en forme", () => {
     expect(couperResume(texte, 40)).toBe("Première phrase.");
     expect(couperResume(texte, 500)).toBe(texte);
     expect(couperResume("Un mot puis encore des mots sans point final", 20)).toBe("Un mot puis encore…");
+  });
+});
+
+describe("fiche courte (QUE-23)", () => {
+  const complete = { nomFr: "chêne pédonculé", nomEn: "English oak", photo: "Chene.jpg" };
+
+  it("relève ce qui manque : nom courant de la langue, article, photo", () => {
+    expect(manques(complete, "fr", true)).toEqual([]);
+    expect(manques({ ...complete, nomEn: "" }, "fr", true)).toEqual([]);
+    expect(manques({ ...complete, nomEn: "" }, "en", true)).toEqual(["nom"]);
+    expect(manques({ nomFr: "", nomEn: "", photo: "" }, "fr", false)).toEqual(["nom", "description", "photo"]);
+  });
+
+  it("le dit en une phrase, comme la maquette", () => {
+    expect(listeDesManques(["nom", "description", "photo"], "fr")).toBe("pas de nom français, pas de description ni de photo libre");
+    expect(listeDesManques(["description", "photo"], "fr")).toBe("pas de description ni de photo libre");
+    expect(listeDesManques(["photo"], "fr")).toBe("pas de photo libre");
+    expect(listeDesManques(["nom", "photo"], "en")).toBe("no English name or free photo");
+  });
+
+  it("décrit l'espèce par son groupe et sa famille", () => {
+    expect(descripteur({ groupe: "insectes", famille: "Buprestidae" }, "fr")).toBe("insecte de la famille des Buprestidae");
+    expect(descripteur({ groupe: "", famille: "Lumbricidae" }, "en")).toBe("species of the family Lumbricidae");
+    expect(descripteur({ groupe: "insectes", famille: "" }, "fr")).toBe("");
   });
 });

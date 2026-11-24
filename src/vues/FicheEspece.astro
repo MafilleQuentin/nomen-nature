@@ -4,8 +4,14 @@
 // lit la fiche dans les fichiers de fiches et fixe le code 404 si elle n'existe pas ; ici, le
 // résumé Wikipédia est appelé par notre serveur, puis la fiche est affichée (ou la page introuvable).
 //
-// À venir dans le lot : photo créditée (QUE-24), carte de répartition (QUE-25), version
-// « fiche courte » des espèces peu documentées (QUE-23), cache et référencement (QUE-26).
+// Fiche courte (Figma « Fiche peu documentée — Agrilus cyanescens », 94:33 et 94:208, QUE-23) :
+// quand il manque le nom courant, la description ou la photo. Même page, avec l'encadré
+// « Fiche courte » (ce qui manque, lien vers GBIF), les chiffres dans l'en-tête (dont l'année
+// de la dernière observation, demandée à GBIF) et la mention « Pas encore de photo ».
+//
+// À venir dans le lot : photo créditée (QUE-24), carte de répartition (QUE-25), cache et
+// référencement (QUE-26).
+import courbesPhotoAbsente from "../assets/motifs/courbes-photo-absente.svg?url";
 import courbesPhoto from "../assets/motifs/courbes-photo.svg?url";
 import BadgeStatut from "../components/BadgeStatut.astro";
 import CarteEspece from "../components/CarteEspece.astro";
@@ -13,9 +19,19 @@ import Statistique from "../components/Statistique.astro";
 import type { Langue } from "../i18n/langues";
 import { t } from "../i18n/textes";
 import Base from "../layouts/Base.astro";
-import { couperResume, majuscule, nomAffiche, nombreCourt, phraseSaisTu, remplir } from "../lib/especes/affichage";
+import {
+  couperResume,
+  descripteur,
+  listeDesManques,
+  majuscule,
+  manques,
+  nomAffiche,
+  nombreCourt,
+  phraseSaisTu,
+  remplir,
+} from "../lib/especes/affichage";
 import type { CarteEspece as Carte, Fiche } from "../lib/especes/fiche";
-import { resumeWikipedia } from "../lib/especes/serveur";
+import { derniereObservation, lienGbif, resumeWikipedia } from "../lib/especes/serveur";
 import { traductionsEspece } from "../lib/liens";
 import Introuvable from "./Introuvable.astro";
 
@@ -37,7 +53,17 @@ const autreNom = fiche ? majuscule(langue === "fr" ? fiche.nomEn : fiche.nomFr) 
 
 // Résumé : l'article dans la langue de la page, sinon dans l'autre langue.
 const titres: Record<Langue, string> = { fr: fiche?.wikipediaFr ?? "", en: fiche?.wikipediaEn ?? "" };
-const resume = fiche ? ((await resumeWikipedia(titres[langue], langue)) ?? (await resumeWikipedia(titres[autreLangue], autreLangue))) : undefined;
+const appelResume = fiche
+  ? (async () => (await resumeWikipedia(titres[langue], langue)) ?? (await resumeWikipedia(titres[autreLangue], autreLangue)))()
+  : Promise.resolve(undefined);
+// Fiche courte : décidée d'après nos données (un article existe-t-il ?), pas d'après la réponse
+// de Wikipédia, pour qu'une lenteur ne change pas la page. GBIF est alors appelé en même temps.
+const ceQuiManque = fiche ? manques(fiche, langue, Boolean(titres.fr || titres.en)) : [];
+const courte = ceQuiManque.length > 0;
+const appelGbif: Promise<[number | undefined, string]> =
+  fiche && courte ? Promise.all([derniereObservation(fiche.id), lienGbif(fiche.nom, fiche.regne)]) : Promise.resolve([undefined, ""]);
+const [resume, [annee, pageGbif]] = await Promise.all([appelResume, appelGbif]);
+const descriptif = fiche ? descripteur(fiche, langue) : "";
 const saisTu = fiche ? phraseSaisTu(fiche.faits, langue) : "";
 
 const regnes = textes.regnes as Record<string, string>;
@@ -69,19 +95,49 @@ const description = fiche
         </nav>
 
         <div class="en-tete">
-          <div class="photo">
-            <img class="photo__courbes" src={courbesPhoto} alt="" width="725" height="449" />
-            <p class="visuellement-cache">{textes.fiche.photoAVenir}</p>
+          <div class:list={["photo", { "photo--courte": courte }]}>
+            {courte ? (
+              <img class="photo__courbes photo__courbes--courte" src={courbesPhotoAbsente} alt="" width="614" height="380" />
+            ) : (
+              <img class="photo__courbes" src={courbesPhoto} alt="" width="725" height="449" />
+            )}
+            {fiche.photo ? (
+              <p class="visuellement-cache">{textes.fiche.photoAVenir}</p>
+            ) : (
+              <div class="mention">
+                <p class="t-libelle-normal">{textes.fiche.pasDePhoto}</p>
+                <p class="t-texte-petit mention__texte">{textes.fiche.pasDePhotoTexte}</p>
+              </div>
+            )}
           </div>
 
           <div class="identite">
             <BadgeStatut uicn={fiche.uicn} langue={langue} />
             <h1 class="nom" lang={nomLatinEnTitre ? "la" : undefined}>{nom}</h1>
-            {!nomLatinEnTitre && <p class="latin" lang="la">{fiche.nom}</p>}
+            {nomLatinEnTitre ? (
+              <p class="sous-titre">
+                {textes.fiche.pasEncoreDeNom}
+                {descriptif && <span class="ordi-inline"> · {descriptif}</span>}
+              </p>
+            ) : (
+              <p class="latin" lang="la">{fiche.nom}</p>
+            )}
             {autreNom && (
               <p class="t-mono-legende autre-nom" lang={autreLangue}>
                 {remplir(textes.fiche.autreNom, { nom: autreNom })}
               </p>
+            )}
+
+            {courte && (
+              <aside class="fiche-courte">
+                <p class="t-libelle-normal fiche-courte__titre">{textes.fiche.ficheCourte}</p>
+                <p class="t-texte-normal">{remplir(textes.fiche.ficheCourteTexte, { manques: listeDesManques(ceQuiManque, langue) })}</p>
+                {pageGbif && (
+                  <a class="t-libelle-normal lire" href={pageGbif}>
+                    {textes.fiche.voirGbif} <span aria-hidden="true">→</span>
+                  </a>
+                )}
+              </aside>
             )}
 
             {saisTu && (
@@ -103,22 +159,32 @@ const description = fiche
               </div>
             )}
 
+            {courte && (
+              <div class="chiffres chiffres--en-tete">
+                <Statistique valeur={nombreCourt(fiche.observations, langue)} libelle={textes.fiche.observations} />
+                {fiche.continent && <Statistique valeur={continents[fiche.continent] ?? fiche.continent} libelle={textes.fiche.aireConnue} />}
+                {annee && <Statistique valeur={String(annee)} libelle={textes.fiche.derniereObservation} class="ordi-flex" />}
+              </div>
+            )}
+
             <p class="t-mono-legende sources">{sources.join(" · ")}</p>
           </div>
         </div>
 
-        <section class="repartition" aria-labelledby="titre-repartition">
-          <h2 id="titre-repartition" class="titre-section">{textes.fiche.ouLeTrouver}</h2>
-          <div class="chiffres">
-            <Statistique valeur={nombreCourt(fiche.pays, langue)} libelle={textes.fiche.pays} />
-            <Statistique valeur={nombreCourt(fiche.observations, langue)} libelle={textes.fiche.observations} />
-            {fiche.continent && <Statistique valeur={continents[fiche.continent] ?? fiche.continent} libelle={textes.fiche.airePrincipale} />}
-          </div>
-        </section>
+        {!courte && (
+          <section class="repartition" aria-labelledby="titre-repartition">
+            <h2 id="titre-repartition" class="titre-section">{textes.fiche.ouLeTrouver}</h2>
+            <div class="chiffres">
+              <Statistique valeur={nombreCourt(fiche.pays, langue)} libelle={textes.fiche.pays} />
+              <Statistique valeur={nombreCourt(fiche.observations, langue)} libelle={textes.fiche.observations} />
+              {fiche.continent && <Statistique valeur={continents[fiche.continent] ?? fiche.continent} libelle={textes.fiche.airePrincipale} />}
+            </div>
+          </section>
+        )}
 
         {proches.length > 0 && (
           <section class="proches" aria-labelledby="titre-proches">
-            <h2 id="titre-proches" class="titre-section">{textes.fiche.especesProches}</h2>
+            <h2 id="titre-proches" class="titre-section">{courte ? textes.fiche.memeGenre : textes.fiche.especesProches}</h2>
             <ul class="cartes">
               {proches.map((p) => (
                 <li>
@@ -206,6 +272,56 @@ const description = fiche
     width: 106.59%;
     height: 97.57%;
     max-width: none;
+  }
+  .photo--courte {
+    aspect-ratio: 560 / 380;
+  }
+  .photo__courbes--courte {
+    top: 0;
+    left: -4.79%;
+    width: 109.59%;
+    height: 100%;
+  }
+  /* « Pas encore de photo » : posé en bas à gauche de la photo absente. */
+  .mention {
+    position: absolute;
+    left: var(--space-4);
+    right: var(--space-4);
+    bottom: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-sunken);
+  }
+  .mention p {
+    margin: 0;
+  }
+  .mention__texte,
+  .sous-titre {
+    color: var(--color-text-secondary);
+  }
+  .sous-titre {
+    font: 400 16px / 1.5 var(--font-texte);
+  }
+  .ordi-inline {
+    display: none;
+  }
+  .fiche-courte {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-5);
+    border-left: 3px solid var(--color-border-strong);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-surface);
+  }
+  .fiche-courte__titre {
+    color: var(--color-text-highlight);
+  }
+  .chiffres--en-tete :global(.ordi-flex) {
+    display: none;
   }
   .identite {
     display: flex;
@@ -308,6 +424,25 @@ const description = fiche
     }
     .photo {
       flex: 0 0 53%;
+    }
+    .photo--courte {
+      flex-basis: 43.75%;
+    }
+    .mention {
+      right: auto;
+    }
+    .sous-titre {
+      font-size: 19px;
+    }
+    .ordi-inline {
+      display: inline;
+    }
+    .chiffres--en-tete {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-3);
+    }
+    .chiffres--en-tete :global(.ordi-flex) {
+      display: flex;
     }
     .identite {
       flex: 1;

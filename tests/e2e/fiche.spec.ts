@@ -28,11 +28,32 @@ test("fiche du chêne pédonculé en anglais, avec les liens vers l'autre langue
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://nomenature.org/en/species/quercus-robur");
 });
 
-test("une espèce sans nom courant a son nom latin en titre", async ({ page }) => {
+test("fiche courte : nom latin en titre, ce qui manque, lien vers GBIF (QUE-23)", async ({ page }) => {
   await page.goto("/fr/espece/agrilus-obscuricollis");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Agrilus obscuricollis");
-  await expect(page.getByText("NE · Non évaluée").first()).toBeVisible();
   await expect(page).toHaveTitle("Agrilus obscuricollis — Nomen Nature");
+  await expect(page.getByText("NE · Non évaluée").first()).toBeVisible();
+  await expect(page.getByText("Pas encore de nom français")).toBeVisible();
+  await expect(page.getByText("Pas encore de photo", { exact: true })).toBeVisible();
+  await expect(page.getByText("Fiche courte")).toBeVisible();
+  await expect(page.getByText("pas de nom français, pas de description ni de photo libre")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Voir l'espèce sur GBIF/ })).toHaveAttribute("href", /^https:\/\/www\.gbif\.org\/species\//);
+  await expect(page.getByText("aire connue")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Du même genre ou de la même famille" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Où le trouver ?" })).toHaveCount(0);
+});
+
+test("fiche courte en anglais : seul le nom anglais manque", async ({ page }) => {
+  await page.goto("/en/species/agrilus-cyanescens");
+  await expect(page.getByText("No English name yet")).toBeVisible();
+  await expect(page.getByText("FR · Agrile bleuâtre")).toBeVisible();
+  await expect(page.getByText("This species is still poorly documented in open databases: no English name.")).toBeVisible();
+});
+
+test("une fiche complète n'a pas l'encadré « Fiche courte »", async ({ page }) => {
+  await page.goto("/fr/espece/quercus-robur");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Chêne pédonculé");
+  await expect(page.getByText("Fiche courte")).toHaveCount(0);
 });
 
 test("une espèce inconnue donne la page introuvable, code 404", async ({ request, page }) => {
