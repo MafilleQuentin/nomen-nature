@@ -5,6 +5,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ## [Non publié]
 
+## [0.8.0] - 2026-11-24
+
+Lot 4 terminé : la fiche espèce. Chaque espèce observée a sa page en français et en anglais : fiche complète (nom, résumé Wikipédia, « Sais-tu ? », photo créditée) ou fiche courte qui dit ce qui manque, carte de répartition des observations GBIF dessinée par notre serveur, espèces proches, cache et référencement. Prochain lot : la recherche.
+
 ### Ajouté
 - Fiche espèce complète, d'après la maquette « Chêne pédonculé » (ordinateur et téléphone), en français (`/fr/espece/quercus-robur`) et en anglais (`/en/species/quercus-robur`), rendue à la demande par le serveur : fil d'Ariane, badge de statut UICN, noms courant, latin et dans l'autre langue, encadré « Sais-tu ? » (faits de Wikidata), résumé Wikipédia avec lien, chiffres (pays, observations, aire principale), 4 espèces proches, sources ; page introuvable (404) pour une espèce inconnue (QUE-22).
 - Import : 3 000 fichiers de fiches où chaque genre est rangé en entier (1 648 413 espèces, 4 espèces proches chacune, faits « Sais-tu ? » pour 5 897), branchés dans l'import mensuel (QUE-22).
@@ -128,7 +132,8 @@ Fin du cadrage : le projet est défini, aucune ligne de code encore.
 - Coffre Obsidian dans `docs/`.
 - Licence MIT.
 
-[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.7.0...HEAD
+[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.4.0...v0.5.0
