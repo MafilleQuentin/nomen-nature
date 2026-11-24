@@ -38,6 +38,24 @@ describe("moteur (traduit du lot 1)", () => {
     expect(scoreNom("chene", "chêne pédonculé", "fr", "synonyme", bonus).points).toBeCloseTo(60 + 6 - 10 - 5);
   });
 
+  it("lit les fichiers de l'index en même temps, sans changer les résultats", async () => {
+    let enCours = 0;
+    let auPlus = 0;
+    const lente = {
+      manifeste: source.manifeste,
+      lire: async (dico: "noms" | "cles" | "courts", numero: number) => {
+        enCours++;
+        auPlus = Math.max(auPlus, enCours);
+        await new Promise((ok) => setTimeout(ok, 5));
+        enCours--;
+        return source.lire(dico, numero);
+      },
+    };
+    const attendus = await rechercher(source, "chene", "fr");
+    expect(await rechercher(lente, "chene", "fr")).toEqual(attendus);
+    expect(auPlus).toBeGreaterThan(1);
+  });
+
   it("donne la priorité à la langue du site", () => {
     expect(bonusLangue("fr")).toEqual({ fr: 6, la: 4, en: 3 });
     expect(bonusLangue("en")).toEqual({ en: 6, la: 4, fr: 3 });
