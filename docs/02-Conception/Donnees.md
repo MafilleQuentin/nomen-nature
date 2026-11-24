@@ -136,6 +136,10 @@ Décisions de l'utilisateur ([journal des décisions](../Decisions.md)) : donné
 - **Cache et référencement** (QUE-26, décisions du 24.11.2026) : la page charge tout avant le rendu ([`contenu.ts`](../../src/lib/especes/contenu.ts)) et sait si la fiche est **complète** (résumé, photos et carte bien arrivés) : seule une fiche complète est gardée **un jour** dans le cache de Cloudflare, avec une clé qui change à chaque déploiement ([`cache.ts`](../../src/lib/cache.ts), [`middleware.ts`](../../src/middleware.ts)). Réponses des API : Wikipédia 7 jours, carte et dernière observation GBIF 1 jour, page GBIF, Commons et iNaturalist 30 jours. Mesure en local : une fiche déjà vue répond en ~10 ms au lieu de ~400. Seules les fiches complètes sont indexées ; image d'aperçu des partages = photo de l'espèce (JPEG).
 - La famille et le genre restent en latin dans le fil d'Ariane (« Fagaceae › Quercus ») : leurs noms français (« Fagacées », « Chênes ») ne sont dans aucune de nos sources.
 
+## Index de la recherche, lot 5 (24.11.2026)
+
+La recherche est lue par notre serveur (décision du 24.11.2026). Pour qu'elle reste rapide, chaque ligne d'espèce de l'index porte depuis le lot 5 son **résumé** : adresse de la fiche, observations, statut UICN, groupe, noms français et anglais principaux (écrits par [`fiches.ts`](../../tools/donnees/fiches.ts) dans `data/complements-recherche.tsv`, l'import construit donc les fiches avant l'index). Sans lui, le serveur lisait la fiche de chaque espèce candidate : jusqu'à 35 fichiers (7,5 Mo) et 12 secondes pour « fougère » en ligne. Avec lui : aucune fiche lue, au plus le fichier du genre visé. Les fichiers de l'index passent à ~96 Ko (le navigateur ne les télécharge plus) : **7 274 fichiers** ; paquet complet ≈ 13 800 fichiers.
+
 ## Questions ouvertes (lots suivants)
 
 - **Noms français** : seulement 3,2 % des espèces observées en ont un dans le Catalogue of Life, et Wikidata n'en ajoute que 249. Le titre de l'article Wikipédia français est souvent le nom français (« Chêne pédonculé ») : à étudier pour la recherche et les fiches (76 111 espèces ont un article).

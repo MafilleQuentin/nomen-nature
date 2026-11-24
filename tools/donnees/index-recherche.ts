@@ -12,14 +12,16 @@
 // - manifeste.json : la première clé de chaque fichier (pour trouver le bon par dichotomie),
 //   et sa taille compressée (gzip et brotli).
 // Une ligne : tri, nom affiché, langue, type, taxon, rang, nom scientifique, genre, famille,
-// notoriété. Les infos du taxon sont recopiées sur chaque ligne : une recherche n'a besoin que
+// notoriété ; pour une espèce (lot 5), aussi adresse de sa fiche, observations, statut UICN,
+// groupe, nom français et nom anglais principaux, pour proposer l'espèce sans lire sa fiche
+// (data/complements-recherche.tsv, écrit par fiches.ts). Les infos du taxon sont recopiées sur chaque ligne : une recherche n'a besoin que
 // d'un fichier, et la compression efface l'essentiel des répétitions.
 //
 // Notoriété : pour l'instant, comme au lot 1, le nombre de noms courants du taxon. Le score
 // « bien documentée » (QUE-20) la remplacera.
 //
 // Utilisation : node tools/donnees/index-recherche.ts <dossier COL> [taille cible en octets]
-import { createReadStream, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { createReadStream, existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { constants, brotliCompressSync, gzipSync } from "node:zlib";
 import { cle, normaliser, type LangueNom } from "../../src/lib/recherche/phonetique.ts";
@@ -27,7 +29,9 @@ import { lignesTsv } from "./col.ts";
 
 export const PREFIXE_COURT = 3;
 export const PAR_PREFIXE_COURT = 30;
-const TAILLE_CIBLE = 64 * 1024;
+// Fichiers d'environ 96 Ko : lus par notre serveur depuis le lot 5 (plus par le navigateur), ils
+// peuvent être plus gros ; cela garde l'index sous ~7 500 fichiers malgré les résumés d'espèces.
+const TAILLE_CIBLE = 96 * 1024;
 
 interface Entree {
   tri: string;
@@ -106,8 +110,14 @@ export function ecrireDictionnaire(entrees: Entree[], dossier: string, tailleCib
   return d;
 }
 
-export async function construire(dossierCol: string, fichierEspeces: string, sortie: string, tailleCible = TAILLE_CIBLE) {
+export async function construire(dossierCol: string, fichierEspeces: string, sortie: string, tailleCible = TAILLE_CIBLE, fichierComplements?: string) {
   const debut = Date.now();
+  const complements = new Map<string, string>();
+  if (fichierComplements && existsSync(fichierComplements)) {
+    for await (const c of lignesTsv(createReadStream(fichierComplements))) {
+      complements.set(c["id"] ?? "", [c["adresse"], c["observations"], c["uicn"], c["groupe"], c["nom_fr"], c["nom_en"]].map((v) => v ?? "").join("\t"));
+    }
+  }
   // 1. Espèces observées (GBIF), puis les genres et familles qui en contiennent au moins une.
   const observees = new Set<string>();
   for await (const e of lignesTsv(createReadStream(fichierEspeces))) observees.add(e["id"] ?? "");
@@ -164,7 +174,8 @@ export async function construire(dossierCol: string, fichierEspeces: string, sor
       continue;
     }
     const n = notoriete.get(taxon) ?? 0;
-    const reste = [nom, langue, type, taxon, t.rang, t.nom, t.genre, t.famille, String(n)].join("\t");
+    const complement = complements.get(taxon);
+    const reste = [nom, langue, type, taxon, t.rang, t.nom, t.genre, t.famille, String(n), ...(complement ? [complement] : [])].join("\t");
     parNom.push({ tri: nomNormalise, ligne: `${nomNormalise}\t${reste}`, notoriete: n });
     const k = cle(nom, langue);
     if (k) {
@@ -208,5 +219,7 @@ if (import.meta.main) {
     console.error("Utilisation : node tools/donnees/index-recherche.ts <dossier COL> [taille cible en octets]");
     process.exit(1);
   }
-  console.log(await construire(dossierCol, "tools/donnees/data/gbif/especes.tsv", "tools/donnees/data/index", taille ? Number(taille) : undefined));
+  console.log(
+    await construire(dossierCol, "tools/donnees/data/gbif/especes.tsv", "tools/donnees/data/index", taille ? Number(taille) : undefined, "tools/donnees/data/complements-recherche.tsv"),
+  );
 }

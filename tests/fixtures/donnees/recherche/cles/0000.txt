@@ -1,17 +1,17 @@
 en|ak tra	Oak Tree	en	courant	8W2YL	genus	Quercus		Fagaceae	5
 en|akarn	Acorn	en	courant	8W2YL	genus	Quercus		Fagaceae	5
 en|aks	oaks	en	courant	8W2YL	genus	Quercus		Fagaceae	5
-en|anglaX ak	English oak	en	courant	4R5YN	species	Quercus robur	Quercus	Fagaceae	5
-en|arapan ak	European oak	en	courant	4R5YN	species	Quercus robur	Quercus	Fagaceae	5
-en|kaman ak	Common Oak	en	courant	4R5YN	species	Quercus robur	Quercus	Fagaceae	5
-en|padankalat ak	pedunculate oak	en	courant	4R5YN	species	Quercus robur	Quercus	Fagaceae	5
+en|anglaX ak	English oak	en	courant	4R5YN	species	Quercus robur	Quercus	Fagaceae	5	quercus-robur	1606550	LC	arbres	chêne pédonculé	English oak
+en|arapan ak	European oak	en	courant	4R5YN	species	Quercus robur	Quercus	Fagaceae	5	quercus-robur	1606550	LC	arbres	chêne pédonculé	English oak
+en|kaman ak	Common Oak	en	courant	4R5YN	species	Quercus robur	Quercus	Fagaceae	5	quercus-robur	1606550	LC	arbres	chêne pédonculé	English oak
+en|padankalat ak	pedunculate oak	en	courant	4R5YN	species	Quercus robur	Quercus	Fagaceae	5	quercus-robur	1606550	LC	arbres	chêne pédonculé	English oak
 fr|Xen	Chêne	fr	courant	8W2YL	genus	Quercus		Fagaceae	5
 fr|Xen	chênes	fr	courant	8W2YL	genus	Quercus		Fagaceae	5
-fr|Xen pedOkul	chêne pédonculé	fr	courant	4R5YN	species	Quercus robur	Quercus	Fagaceae	5
+fr|Xen pedOkul	chêne pédonculé	fr	courant	4R5YN	species	Quercus robur	Quercus	Fagaceae	5	quercus-robur	1606550	LC	arbres	chêne pédonculé	English oak
 fr|agril	Agrile	fr	courant	QXR	genus	Agrilus		Buprestidae	1
-fr|agril blEatr	Agrile bleuâtre	fr	courant	B4N4	species	Agrilus cyanescens	Agrilus	Buprestidae	1
+fr|agril blEatr	Agrile bleuâtre	fr	courant	B4N4	species	Agrilus cyanescens	Agrilus	Buprestidae	1	agrilus-cyanescens	5366	NE	insectes	Agrile bleuâtre	
 la|agrilus	Agrilus	la	accepte	QXR	genus	Agrilus		Buprestidae	1
-la|agrilus kianeskens	Agrilus cyanescens	la	accepte	B4N4	species	Agrilus cyanescens	Agrilus	Buprestidae	1
-la|agrilus obskurikolis	Agrilus obscuricollis	la	accepte	B658	species	Agrilus obscuricollis	Agrilus	Buprestidae	0
+la|agrilus kianeskens	Agrilus cyanescens	la	accepte	B4N4	species	Agrilus cyanescens	Agrilus	Buprestidae	1	agrilus-cyanescens	5366	NE	insectes	Agrile bleuâtre	
+la|agrilus obskurikolis	Agrilus obscuricollis	la	accepte	B658	species	Agrilus obscuricollis	Agrilus	Buprestidae	0	agrilus-obscuricollis	1364	NE	insectes		
 la|kuerkus	Quercus	la	accepte	8W2YL	genus	Quercus		Fagaceae	5
-la|kuerkus robur	Quercus robur	la	accepte	4R5YN	species	Quercus robur	Quercus	Fagaceae	5
+la|kuerkus robur	Quercus robur	la	accepte	4R5YN	species	Quercus robur	Quercus	Fagaceae	5	quercus-robur	1606550	LC	arbres	chêne pédonculé	English oak

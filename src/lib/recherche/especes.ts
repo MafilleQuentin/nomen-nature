@@ -13,9 +13,10 @@
 //    bien plus observé, qu'on cherchait.
 //
 // Fonctions pures : le serveur leur donne l'index et les fiches (serveur.ts), l'outil
-// d'évaluation les lit sur le disque.
-import type { Fiche } from "../especes/fiche.ts";
-import { rechercher, type Resultat, type Source } from "./moteur.ts";
+// d'évaluation les lit sur le disque. Depuis l'import de décembre 2026, chaque ligne d'espèce
+// de l'index porte son résumé (adresse, observations, statut…) : plus besoin de lire les fiches,
+// sauf celles du genre visé (un seul fichier).
+import { rechercher, type ResumeEspece, type Resultat, type Source } from "./moteur.ts";
 import { normaliser } from "./phonetique.ts";
 
 const PLAFOND = 60;
@@ -26,7 +27,8 @@ const CORRESPONDANCES_ECRITES = new Set(["identique", "début", "début de mot"]
 
 export interface EspeceTrouvee {
   resultat: Resultat;
-  fiche: Fiche;
+  /** L'espèce : résumé de l'index, ou sa fiche si l'index n'a pas de résumé. */
+  fiche: ResumeEspece;
   rang: number;
 }
 
@@ -60,10 +62,10 @@ export async function chercherEspeces(
   source: Source,
   texte: string,
   langueSite: "fr" | "en",
-  ficheDe: (resultat: Resultat) => Promise<Fiche | undefined>,
+  ficheDe: (resultat: Resultat) => Promise<ResumeEspece | undefined>,
   limite = 8,
   candidates = 60,
-  especesDuGenre?: (genre: Resultat) => Promise<Fiche[]>,
+  especesDuGenre?: (genre: Resultat) => Promise<ResumeEspece[]>,
 ): Promise<Trouvailles> {
   const tapes = await rechercher(source, texte, langueSite, candidates);
   const corrige = correction(texte, tapes);
@@ -83,7 +85,7 @@ export async function chercherEspeces(
     }
   }
   const especes: (EspeceTrouvee & { corrigee: boolean })[] = [];
-  const fiches = new Map<string, Fiche>();
+  const fiches = new Map<string, ResumeEspece>();
   // Les espèces les plus observées du genre visé, même si leur nom n'a pas été trouvé.
   if (genreVise && meilleur && especesDuGenre) {
     for (const fiche of await especesDuGenre(meilleur)) {
@@ -104,7 +106,8 @@ export async function chercherEspeces(
     }
   }
   for (const { resultat, corrigee } of parTaxon.values()) {
-    const fiche = fiches.get(resultat.taxon) ?? (await ficheDe(resultat));
+    // Le résumé de l'index d'abord : lire une fiche coûte un fichier de 150 Ko à 1 Mo.
+    const fiche = fiches.get(resultat.taxon) ?? resultat.espece ?? (await ficheDe(resultat));
     if (!fiche) continue;
     const rang = noteEspece(resultat, fiche.observations) + (genreVise && resultat.genre === genreVise ? BONUS_GENRE_VISE : 0);
     especes.push({ resultat, fiche, rang, corrigee });

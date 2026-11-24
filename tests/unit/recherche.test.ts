@@ -3,7 +3,7 @@
 // la qualité sur le vrai index est mesurée par tools/donnees/evaluer-recherche.ts.
 import { describe, expect, it } from "vitest";
 import { correction, chercherEspeces, noteEspece } from "../../src/lib/recherche/especes.ts";
-import { bonusLangue, fichiersPour, rechercher, scoreNom, type Resultat } from "../../src/lib/recherche/moteur.ts";
+import { bonusLangue, fichiersPour, rechercher, resumeDeLigne, scoreNom, type Resultat } from "../../src/lib/recherche/moteur.ts";
 import { suggestion, texteValide } from "../../src/lib/recherche/suggestions.ts";
 import { bonneReponse, CAS_LOT_1, fichesDisque, sourceDisque } from "../../tools/donnees/evaluer-recherche.ts";
 
@@ -106,3 +106,42 @@ describe("espèces proposées", () => {
     expect(texteValide("a".repeat(81))).toBe(false);
   });
 });
+
+describe("résumé des espèces dans l'index (sans lire les fiches)", () => {
+  const ligne = ["chene pedoncule", "chêne pédonculé", "fr", "courant", "4R5YN", "species", "Quercus robur", "Quercus", "Fagaceae", "12", "quercus-robur", "1606550", "LC", "arbres", "chêne pédonculé", "English oak"];
+
+  it("lit l'adresse, les observations, le statut et les noms principaux", () => {
+    expect(resumeDeLigne(ligne)).toEqual({
+      id: "4R5YN",
+      adresse: "quercus-robur",
+      nom: "Quercus robur",
+      nomFr: "chêne pédonculé",
+      nomEn: "English oak",
+      uicn: "LC",
+      groupe: "arbres",
+      observations: 1606550,
+      genre: "Quercus",
+      famille: "Fagaceae",
+    });
+  });
+
+  it("n'en trouve pas dans une ligne ancienne ou une ligne de genre", () => {
+    expect(resumeDeLigne(ligne.slice(0, 10))).toBeUndefined();
+    expect(resumeDeLigne(["quercus", "Quercus", "la", "accepte", "Q1", "genus", "Quercus", "", "Fagaceae", "3"])).toBeUndefined();
+  });
+
+  it("propose l'espèce sans demander sa fiche quand l'index la résume", async () => {
+    const source = {
+      manifeste: { extension: ".txt", dictionnaires: { noms: { premiers: [""] }, cles: { premiers: [""] }, courts: { premiers: [""] } } },
+      lire: async (dico: string) => (dico === "noms" ? [ligne] : []),
+    };
+    let fichesLues = 0;
+    const { especes } = await chercherEspeces(source, "chene pedoncule", "fr", async () => {
+      fichesLues++;
+      return undefined;
+    });
+    expect(fichesLues).toBe(0);
+    expect(especes[0]?.fiche.adresse).toBe("quercus-robur");
+  });
+});
+

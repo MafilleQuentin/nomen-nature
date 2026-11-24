@@ -41,7 +41,26 @@ export interface Source {
   lire(dictionnaire: "noms" | "cles" | "courts", numero: number): Promise<string[][]>;
 }
 
+/**
+ * Ce qu'il faut pour proposer une espèce (lot 5) : écrit dans les lignes de l'index par l'import
+ * (colonnes après la notoriété), pour ne pas avoir à lire sa fiche. Absent d'un index plus ancien.
+ */
+export interface ResumeEspece {
+  id: string;
+  adresse: string;
+  nom: string;
+  nomFr: string;
+  nomEn: string;
+  uicn: string;
+  groupe: string;
+  observations: number;
+  genre: string;
+  famille: string;
+}
+
 export interface Resultat {
+  /** Résumé de l'espèce, si l'index le contient. */
+  espece?: ResumeEspece;
   taxon: string;
   scientifique: string;
   rang: string;
@@ -113,6 +132,13 @@ export async function candidats(source: Source, texte: string): Promise<string[]
   return lignes;
 }
 
+/** Résumé d'une espèce lu dans les colonnes 10 à 15 d'une ligne de l'index, s'il y est. */
+export function resumeDeLigne(ligne: string[]): ResumeEspece | undefined {
+  const [, , , , taxon = "", rang = "", scientifique = "", genre = "", famille = "", , adresse = "", observations = "0", uicn = "", groupe = "", nomFr = "", nomEn = ""] = ligne;
+  if (rang !== "species" || !adresse) return undefined;
+  return { id: taxon, adresse, nom: scientifique, nomFr, nomEn, uicn: uicn || "NE", groupe, observations: Number(observations) || 0, genre, famille };
+}
+
 /** Score d'un nom pour un texte (même règle que le lot 1). */
 export function scoreNom(texte: string, nom: string, langue: LangueNom, typeNom: string, bonus: Record<LangueNom, number>): { points: number; raisons: string[] } {
   const q = normaliser(texte);
@@ -142,14 +168,16 @@ export async function rechercher(source: Source, texte: string, langueSite: "fr"
   const meilleurs = new Map<string, Resultat>();
 
   const noter = async (recherche: string, facteur: number, raison?: string) => {
-    for (const [, nom = "", langue = "fr", typeNom = "", taxon = "", rang = "", scientifique = "", genre = "", famille = "", notoriete = "0"] of await candidats(source, recherche)) {
+    for (const ligne of await candidats(source, recherche)) {
+      const [, nom = "", langue = "fr", typeNom = "", taxon = "", rang = "", scientifique = "", genre = "", famille = "", notoriete = "0"] = ligne;
       const langueNom = (LANGUES as readonly string[]).includes(langue) ? (langue as LangueNom) : "fr";
       const { points: base, raisons } = scoreNom(recherche, nom, langueNom, typeNom, bonus);
       const points = base * facteur + 2 * Math.min(Number.parseInt(notoriete, 10) || 0, 15);
       const avecRaison = raison ? [...raisons, raison] : raisons;
       const connu = meilleurs.get(taxon);
       if (!connu || points > connu.score) {
-        meilleurs.set(taxon, { taxon, scientifique, rang, genre, famille, nomTrouve: nom, langue: langueNom, score: points, raisons: avecRaison });
+        const espece = resumeDeLigne(ligne);
+        meilleurs.set(taxon, { ...(espece ? { espece } : {}), taxon, scientifique, rang, genre, famille, nomTrouve: nom, langue: langueNom, score: points, raisons: avecRaison });
       }
     }
   };

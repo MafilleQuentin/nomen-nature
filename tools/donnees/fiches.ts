@@ -14,7 +14,7 @@
 // longueur (P2043), masse (P2067), envergure (P2050).
 //
 // Utilisation seule : node tools/donnees/fiches.ts <dossier COL> <dossier de sortie>
-import { createReadStream, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { createReadStream, createWriteStream, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { adresseAvecIdentifiant, adresseEspece, fichierDeLAdresse, NOMBRE_FICHIERS } from "../../src/lib/especes/adresse.ts";
 import { COLONNES_FICHE, type Faits, type FichierFiches } from "../../src/lib/especes/fiche.ts";
@@ -23,6 +23,10 @@ import { nomPrincipal } from "./score.ts";
 import { AGENT } from "./zip.ts";
 
 export const MAX_PROCHES = 4;
+
+/** Compléments de l'index de la recherche, écrits ici et lus par index-recherche.ts. */
+export const FICHIER_COMPLEMENTS = "complements-recherche.tsv";
+export const COLONNES_COMPLEMENTS = ["id", "adresse", "observations", "uicn", "groupe", "nom_fr", "nom_en"];
 
 const QLEVER = "https://qlever.dev/api/wikidata";
 const REQUETE_FAITS = `PREFIX wdt: <http://www.wikidata.org/prop/direct/>
@@ -256,6 +260,16 @@ export async function construireFiches(dossierCol: string, donnees: string, sort
     if (e.famille) ajouter(parFamille, `${e.regne}|${e.famille}`, e);
   }
   for (const liste of [...parGenre.values(), ...parFamille.values()]) liste.sort(ordre);
+
+  // Compléments pour l'index de la recherche (lot 5) : ce qu'il faut pour proposer une espèce
+  // sans lire sa fiche (adresse, observations, statut, groupe, noms principaux).
+  const complements = createWriteStream(join(donnees, FICHIER_COMPLEMENTS));
+  complements.write(COLONNES_COMPLEMENTS.join("\t") + "\n");
+  for (const e of especes.values()) {
+    const ligne = [e.id, e.adresse, e.observations, e.uicn, e.groupe, e.nomFr, e.nomEn].map((v) => String(v).replace(/[\t\n]/g, " "));
+    if (!complements.write(ligne.join("\t") + "\n")) await new Promise<void>((ok) => complements.once("drain", () => ok()));
+  }
+  await new Promise<void>((ok) => complements.end(() => ok()));
 
   // 7. Écriture : un fichier par numéro.
   const parFichier = new Map<number, Espece[]>();

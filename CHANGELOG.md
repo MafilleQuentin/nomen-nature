@@ -9,7 +9,11 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 - Moteur de recherche en TypeScript, traduit de l'essai du lot 1 (même score, même tri) : **39/40** sur le jeu de test du lot 1, comme en Python ; lu par notre serveur (index et fiches), le navigateur ne reçoit que les résultats (QUE-27).
 - Espèces proposées : « Tu voulais dire… » quand le texte n'a été trouvé que par le son (« boulot » → bouleaux), espèces les plus observées d'abord, espèces du genre visé (« birch » → bouleaux) : **55/55** recherches de test avec une bonne réponse dans les 5 premières, 54 en première (QUE-27).
 - Suggestions pendant la frappe sur la barre de recherche : îlot Svelte (~15 Ko compressés), au clavier (flèches, Entrée, Échap) et au lecteur d'écran (combobox ARIA), en français, anglais et latin ; API `/api/recherche` (8 espèces, gardées en cache) ; sans JavaScript, la barre reste un formulaire vers la page de résultats (QUE-27).
+- Index de la recherche : chaque nom d'espèce porte aussi l'adresse de sa fiche, ses observations, son statut, son groupe et ses noms principaux ; fichiers d'environ 96 Ko (lus par le serveur), 7 274 fichiers. Import : fiches avant l'index (QUE-27).
 - Outil `evaluer-recherche.ts` : les 40 recherches du lot 1 et 15 recherches imprévues ; l'import mensuel échoue si le score passe sous 38/40 (QUE-27).
+
+### Corrigé
+- Suggestions lentes en ligne (2 à 12 secondes) : le serveur lisait la fiche de chaque espèce candidate (jusqu'à 35 fichiers, 7,5 Mo pour « fougère »). Il ne lit plus que l'index, et au plus le fichier du genre visé (QUE-27).
 
 ## [0.8.0] - 2026-11-24
 
