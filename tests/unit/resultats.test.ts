@@ -1,6 +1,7 @@
 // Page de résultats (lot 5, QUE-28) : filtres lus dans l'adresse, puces, lignes et titre.
 import { describe, expect, it } from "vitest";
 import type { EspeceTrouvee } from "../../src/lib/recherche/especes.ts";
+import { MONDE } from "../../src/lib/recherche/lieux.ts";
 import type { ResumeEspece } from "../../src/lib/recherche/moteur.ts";
 import {
   adresseRecherche,
@@ -67,23 +68,23 @@ const BASE = "/fr/recherche";
 
 describe("filtres de la page de résultats", () => {
   it("lit le groupe et le statut dans l'adresse, et ignore un groupe inconnu", () => {
-    expect(lireFiltres(new URLSearchParams("q=x&groupe=arbres&statut=menacees"))).toEqual({ groupe: "arbres", menacees: true });
-    expect(lireFiltres(new URLSearchParams("groupe=toString&statut=oui"))).toEqual({ groupe: "", menacees: false });
+    expect(lireFiltres(new URLSearchParams("q=x&groupe=arbres&statut=menacees"))).toEqual({ groupe: "arbres", menacees: true, lieu: MONDE });
+    expect(lireFiltres(new URLSearchParams("groupe=toString&statut=oui"))).toEqual({ groupe: "", menacees: false, lieu: MONDE });
   });
 
   it("écrit l'adresse sans les filtres vides", () => {
     expect(adresseRecherche(BASE, "chêne bleu")).toBe("/fr/recherche?q=ch%C3%AAne+bleu");
-    expect(adresseRecherche(BASE, "boulot", { groupe: "arbres", menacees: true })).toBe("/fr/recherche?q=boulot&groupe=arbres&statut=menacees");
+    expect(adresseRecherche(BASE, "boulot", { groupe: "arbres", menacees: true, lieu: MONDE })).toBe("/fr/recherche?q=boulot&groupe=arbres&statut=menacees");
   });
 
   it("garde les espèces du groupe choisi et les menacées (CR, EN, VU)", () => {
-    expect(filtrer(especes, { groupe: "arbres", menacees: false }).map((e) => e.fiche.id)).toEqual(["A", "C"]);
-    expect(filtrer(especes, { groupe: "", menacees: true }).map((e) => e.fiche.id)).toEqual(["C"]);
-    expect(filtrer(especes, { groupe: "oiseaux", menacees: true })).toEqual([]);
+    expect(filtrer(especes, { groupe: "arbres", menacees: false, lieu: MONDE }).map((e) => e.fiche.id)).toEqual(["A", "C"]);
+    expect(filtrer(especes, { groupe: "", menacees: true, lieu: MONDE }).map((e) => e.fiche.id)).toEqual(["C"]);
+    expect(filtrer(especes, { groupe: "oiseaux", menacees: true, lieu: MONDE })).toEqual([]);
   });
 
   it("propose « Tous » et les groupes présents, du plus fourni au moins fourni, en gardant le statut", () => {
-    const puces = pucesGroupes(especes, { groupe: "arbres", menacees: true }, BASE, "boulot", "fr");
+    const puces = pucesGroupes(especes, { groupe: "arbres", menacees: true, lieu: MONDE }, BASE, "boulot", "fr");
     expect(puces.map((p) => [p.libelle, p.actif])).toEqual([
       ["Tous", false],
       ["Arbres", true],
@@ -94,12 +95,12 @@ describe("filtres de la page de résultats", () => {
   });
 
   it("garde le groupe choisi même s'il n'a plus d'espèce", () => {
-    const puces = pucesGroupes([pic], { groupe: "arbres", menacees: false }, BASE, "x", "fr");
+    const puces = pucesGroupes([pic], { groupe: "arbres", menacees: false, lieu: MONDE }, BASE, "x", "fr");
     expect(puces.map((p) => p.libelle)).toEqual(["Tous", "Oiseaux", "Arbres"]);
   });
 
   it("propose « Toutes » et « Menacées seulement », en gardant le groupe", () => {
-    const [toutes, menacees] = pucesStatut({ groupe: "arbres", menacees: false }, "/en/search", "birch", "en");
+    const [toutes, menacees] = pucesStatut({ groupe: "arbres", menacees: false, lieu: MONDE }, "/en/search", "birch", "en");
     expect(toutes).toEqual({
       libelle: "All",
       lien: "/en/search?q=birch&groupe=arbres",

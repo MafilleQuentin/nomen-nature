@@ -1,14 +1,17 @@
 ---
 // Search results in English (/en/search?q=birch), rendered on demand by the Worker (QUE-28).
 // Même page que /fr/recherche (voir ce fichier).
+import { lieuxDuVisiteur } from "../../lib/recherche/lieux";
 import { chargerResultats } from "../../lib/recherche/page";
 import ResultatsRecherche from "../../vues/ResultatsRecherche.astro";
 
 export const prerender = false;
 
-const contenu = await chargerResultats(Astro.url, "en");
+// Pays et continent du visiteur (Cloudflare) : pour proposer le filtre « Où », jamais enregistrés.
+const cf = (Astro.request as Request & { cf?: { country?: unknown; continent?: unknown } }).cf;
+const contenu = await chargerResultats(Astro.url, "en", lieuxDuVisiteur(cf));
 if (contenu.etat === "indisponible") Astro.response.status = 503;
-Astro.response.headers.set("Cache-Control", contenu.etat === "indisponible" ? "no-store" : "public, max-age=300");
+Astro.response.headers.set("Cache-Control", contenu.etat === "indisponible" ? "no-store" : "private, max-age=300");
 ---
 
 <ResultatsRecherche langue="en" contenu={contenu} />

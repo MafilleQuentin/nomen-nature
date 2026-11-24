@@ -140,6 +140,10 @@ Décisions de l'utilisateur ([journal des décisions](../Decisions.md)) : donné
 
 La recherche est lue par notre serveur (décision du 24.11.2026). Pour qu'elle reste rapide, chaque ligne d'espèce de l'index porte depuis le lot 5 son **résumé** : adresse de la fiche, observations, statut UICN, groupe, noms français et anglais principaux (écrits par [`fiches.ts`](../../tools/donnees/fiches.ts) dans `data/complements-recherche.tsv`, l'import construit donc les fiches avant l'index). Sans lui, le serveur lisait la fiche de chaque espèce candidate : jusqu'à 35 fichiers (7,5 Mo) et 12 secondes pour « fougère » en ligne. Avec lui : aucune fiche lue, au plus le fichier du genre visé. Les 4 à 10 fichiers de l'index qu'une recherche demande sont lus en même temps (~0,2 s chacun en ligne). Les fichiers de l'index passent à ~96 Ko (le navigateur ne les télécharge plus) : **7 274 fichiers** ; paquet complet ≈ 13 800 fichiers.
 
+## Pays des espèces pour le filtre « Où » (QUE-28, 24.11.2026)
+
+Le filtre « Où » de la page de résultats (Monde, pays du visiteur, son continent) doit savoir où chaque espèce trouvée a été observée. Comme la recherche ne lit plus les fiches, l'import écrit les pays et continents de chaque espèce (à partir de 5 observations, comme les listes ; pays « ZZ » ignoré) dans des fichiers à part, regroupés par genre avec le même numéro que les fiches ([`zones.ts`](../../tools/donnees/zones.ts), décision du 24.11.2026) : `{ "4R5YN": "AT BE CH …|EUROPE ASIA" }`. Mesuré sur l'import de novembre : **948 659 espèces, 4 018 078 couples** (pays et continents), 3 000 fichiers, 29 Mo, 10 Ko en moyenne et 78 Ko au plus. Le serveur ne les lit que si un lieu est choisi, tous en même temps (au plus une trentaine de fichiers) : ~0,23 s pour une page en local. Paquet complet ≈ 16 800 fichiers.
+
 ## Questions ouvertes (lots suivants)
 
 - **Noms français** : seulement 3,2 % des espèces observées en ont un dans le Catalogue of Life, et Wikidata n'en ajoute que 249. Le titre de l'article Wikipédia français est souvent le nom français (« Chêne pédonculé ») : à étudier pour la recherche et les fiches (76 111 espèces ont un article).

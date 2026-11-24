@@ -48,6 +48,20 @@ test.describe("sans JavaScript", () => {
     await expect(filtres.getByRole("link", { name: "Menacées seulement" })).toHaveAttribute("href", "/fr/recherche?q=agrilus&groupe=insectes&statut=menacees");
   });
 
+  test("filtre « Où » : un pays, un continent, puis Monde", async ({ page }) => {
+    // L'agrile bleuâtre a été observé aux États-Unis, l'autre agrile non (données d'exemple).
+    await page.goto("/fr/recherche?q=agrilus&lieu=US");
+    const filtres = page.getByRole("navigation", { name: "Filtres" });
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("1 espèce pour « agrilus »");
+    await expect(filtres.getByRole("link", { name: "États-Unis" })).toHaveAttribute("aria-current", "true");
+    await expect(page.getByRole("list", { name: "Espèces trouvées" }).getByRole("link")).toContainText("Agrile bleuâtre");
+    await page.goto("/fr/recherche?q=agrilus&lieu=NORTH_AMERICA&groupe=insectes");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("1 espèce pour « agrilus »");
+    await filtres.getByRole("link", { name: "Monde" }).click();
+    await expect(page).toHaveURL(/\/fr\/recherche\?q=agrilus&groupe=insectes$/);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("2 espèces pour « agrilus »");
+  });
+
   test("aucune espèce : message et bouton « Explorer par groupe »", async ({ page }) => {
     await page.goto("/fr/recherche?q=xqzwvk");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Aucune espèce trouvée");
@@ -69,10 +83,11 @@ test.describe("sans JavaScript", () => {
   });
 });
 
-test("la page n'est jamais indexée et reste 5 minutes dans le navigateur", async ({ page }) => {
+test("la page n'est jamais indexée et reste 5 minutes dans le navigateur seulement", async ({ page }) => {
   const reponse = await page.goto("/fr/recherche?q=chene");
   expect(reponse?.status()).toBe(200);
-  expect(reponse?.headers()["cache-control"]).toBe("public, max-age=300");
+  // « private » : les puces du filtre « Où » dépendent du pays du visiteur.
+  expect(reponse?.headers()["cache-control"]).toBe("private, max-age=300");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex");
 });
 

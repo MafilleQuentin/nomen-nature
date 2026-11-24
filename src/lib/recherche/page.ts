@@ -2,19 +2,22 @@
 // de réponse (503 si l'index manque) doit être fixé avant que la page parte vers le navigateur.
 import type { Langue } from "../../i18n/langues.ts";
 import { lien } from "../liens.ts";
+import type { Lieu } from "./lieux.ts";
 import {
   adresseRecherche,
+  avecFiltres,
   filtrer,
   ligneResultat,
   lireFiltres,
   MAX_RESULTATS,
   pucesGroupes,
+  pucesLieu,
   pucesStatut,
   titreResultats,
   type LigneResultat,
   type Puce,
 } from "./resultats.ts";
-import { chercherSurLeSite } from "./serveur.ts";
+import { chercherSurLeSite, zonesDesEspeces } from "./serveur.ts";
 import { texteValide } from "./suggestions.ts";
 
 export type ContenuResultats =
@@ -31,11 +34,16 @@ export type ContenuResultats =
       lignes: LigneResultat[];
       groupes: Puce[];
       statut: Puce[];
+      lieux: Puce[];
       /** Lien sans filtres, si des filtres sont choisis. */
       lienSansFiltres: string;
     };
 
-export async function chargerResultats(url: URL, langue: Langue): Promise<ContenuResultats> {
+/**
+ * Contenu de la page pour l'adresse demandée. `visiteur` : pays et continent du visiteur d'après
+ * Cloudflare (lieux.ts), utilisés pour les puces du filtre « Où » et jamais enregistrés.
+ */
+export async function chargerResultats(url: URL, langue: Langue, visiteur: Lieu[] = []): Promise<ContenuResultats> {
   const texte = (url.searchParams.get("q") ?? "").trim().slice(0, 80);
   if (!texteValide(texte)) return { etat: "vide", texte };
   const trouvees = await chercherSurLeSite(texte, langue, url, MAX_RESULTATS);
@@ -44,7 +52,9 @@ export async function chargerResultats(url: URL, langue: Langue): Promise<Conten
 
   const base = lien("recherche", langue);
   const filtres = lireFiltres(url.searchParams);
-  const gardees = filtrer(trouvees.especes, filtres);
+  // Les pays des espèces ne sont lus que si un lieu est choisi.
+  const zones = filtres.lieu.type === "monde" ? undefined : await zonesDesEspeces(trouvees.especes, url);
+  const gardees = filtrer(trouvees.especes, filtres, zones);
   return {
     etat: "resultats",
     texte,
@@ -54,6 +64,7 @@ export async function chargerResultats(url: URL, langue: Langue): Promise<Conten
     lignes: gardees.map((e) => ligneResultat(e, langue)),
     groupes: pucesGroupes(trouvees.especes, filtres, base, texte, langue),
     statut: pucesStatut(filtres, base, texte, langue),
-    lienSansFiltres: filtres.groupe || filtres.menacees ? adresseRecherche(base, texte) : "",
+    lieux: pucesLieu(filtres, visiteur, base, texte, langue),
+    lienSansFiltres: avecFiltres(filtres) ? adresseRecherche(base, texte) : "",
   };
 }

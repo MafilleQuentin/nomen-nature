@@ -62,19 +62,36 @@ const adresses = {
                 ))}
               </ul>
             </div>
-            <div class="famille">
-              <p class="t-mono-surtitre intitule" id="filtre-statut">
-                {textes.statut}
-              </p>
-              <ul class="puces" aria-labelledby="filtre-statut">
-                {contenu.statut.map((puce) => (
-                  <li>
-                    <PuceFiltre href={puce.lien} actif={puce.actif}>
-                      {puce.libelle}
-                    </PuceFiltre>
-                  </li>
-                ))}
-              </ul>
+            {/* Téléphone : statut et lieu dans une seule rangée à faire défiler (décision du 24.11.2026). */}
+            <div class="rangee">
+              <div class="famille">
+                <p class="t-mono-surtitre intitule" id="filtre-statut">
+                  {textes.statut}
+                </p>
+                <ul class="puces" aria-labelledby="filtre-statut">
+                  {contenu.statut.map((puce) => (
+                    <li>
+                      <PuceFiltre href={puce.lien} actif={puce.actif}>
+                        {puce.libelle}
+                      </PuceFiltre>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div class="famille">
+                <p class="t-mono-surtitre intitule" id="filtre-lieu">
+                  {textes.ou}
+                </p>
+                <ul class="puces" aria-labelledby="filtre-lieu">
+                  {contenu.lieux.map((puce) => (
+                    <li>
+                      <PuceFiltre href={puce.lien} actif={puce.actif}>
+                        {puce.libelle}
+                      </PuceFiltre>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </nav>
           <h1 class="titre t-titre-section-compact">{contenu.titre}</h1>
@@ -105,6 +122,18 @@ const adresses = {
     }
   </div>
 </Base>
+
+<script>
+  // Téléphone : chaque rangée de puces défile jusqu'à sa puce active (« Europe » serait sinon
+  // cachée à droite). Sans JavaScript, la rangée reste au début et la page marche pareil.
+  for (const rangee of document.querySelectorAll<HTMLElement>(".filtres .puces, .filtres .rangee")) {
+    if (rangee.scrollWidth <= rangee.clientWidth) continue;
+    const actives = [...rangee.querySelectorAll<HTMLElement>('[aria-current="true"]')];
+    const derniere = actives.at(-1);
+    const depasse = derniere ? derniere.getBoundingClientRect().right - rangee.getBoundingClientRect().right : 0;
+    if (depasse > 0) rangee.scrollLeft += depasse + 16;
+  }
+</script>
 
 <style>
   /* Fond de courbes de niveau sur toute la page, comme la page introuvable (maquette). */
@@ -183,6 +212,20 @@ const adresses = {
     list-style: none;
     scrollbar-width: none;
   }
+  .rangee {
+    display: flex;
+    gap: var(--space-5);
+    overflow-x: auto;
+    padding-bottom: var(--space-1);
+    scrollbar-width: none;
+  }
+  .rangee .puces {
+    overflow: visible;
+    padding: 0;
+  }
+  .rangee .famille {
+    flex: none;
+  }
   .titre {
     grid-area: titre;
     margin: var(--space-2) 0 0;
@@ -239,6 +282,9 @@ const adresses = {
       display: flex;
       flex-direction: column;
       gap: var(--space-4);
+    }
+    .rangee {
+      display: contents;
     }
     .intitule {
       position: static;
