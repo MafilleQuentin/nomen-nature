@@ -71,3 +71,4 @@
 | **noindex** | Consigne qui demande aux moteurs de recherche de ne pas proposer une page dans leurs résultats. Les fiches courtes la portent : on peut les visiter et les partager, mais Google ne les montre pas. |
 | **WebP** | Format d'image plus léger que le JPEG, lu par tous les navigateurs récents. Wikimedia Commons le fournit pour ses vignettes. |
 | **Homonyme** | Même nom latin donné à deux espèces de règnes différents (*Morus* est un mûrier et un fou de Bassan). Leurs fiches sont départagées par l'identifiant du Catalogue of Life à la fin de l'adresse. |
+| **Zones d'une espèce** | Pays et continents où une espèce a été observée au moins 5 fois (GBIF) ; servent au filtre « Où » de la page de résultats. |
