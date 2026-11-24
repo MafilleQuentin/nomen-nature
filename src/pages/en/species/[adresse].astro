@@ -1,0 +1,18 @@
+---
+// Fiche espèce en anglais (/en/species/quercus-robur), rendue à la demande par le Worker.
+// La fiche est cherchée ici, avant le rendu : le code 404 doit être fixé avant que la page
+// commence à partir vers le navigateur.
+import { estAdresseEspece } from "../../../lib/especes/adresse";
+import { lireFiche } from "../../../lib/especes/serveur";
+import FicheEspece from "../../../vues/FicheEspece.astro";
+
+export const prerender = false;
+
+const { adresse = "" } = Astro.params;
+// Adresse écrite avec des majuscules (Quercus-robur) : redirection vers l'adresse officielle.
+if (adresse !== adresse.toLowerCase()) return Astro.redirect(Astro.url.pathname.replace(adresse, adresse.toLowerCase()), 301);
+const trouvee = estAdresseEspece(adresse) ? await lireFiche(adresse, Astro.url) : undefined;
+if (!trouvee) Astro.response.status = 404;
+---
+
+<FicheEspece langue="en" trouvee={trouvee} />

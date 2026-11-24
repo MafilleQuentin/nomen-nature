@@ -1,0 +1,99 @@
+{
+ "colonnes": [
+  "id",
+  "adresse",
+  "nom",
+  "auteur",
+  "nom_fr",
+  "nom_en",
+  "uicn",
+  "groupe",
+  "regne",
+  "embranchement",
+  "classe",
+  "ordre",
+  "famille",
+  "genre",
+  "observations",
+  "pays",
+  "continent",
+  "wikidata",
+  "photo",
+  "wikipedia_fr",
+  "wikipedia_en",
+  "faits",
+  "proches"
+ ],
+ "lignes": [
+  [
+   "4R5YN",
+   "quercus-robur",
+   "Quercus robur",
+   "L.",
+   "chêne pédonculé",
+   "English oak",
+   "LC",
+   "arbres",
+   "Plantae",
+   "Tracheophyta",
+   "Magnoliopsida",
+   "Fagales",
+   "Fagaceae",
+   "Quercus",
+   1606550,
+   97,
+   "EUROPE",
+   "Q165145",
+   "Paprastasis azuolas.JPG",
+   "Chêne_pédonculé",
+   "Quercus_robur",
+   {
+    "longevite": 929
+   },
+   [
+    "4R678",
+    "4R5SK",
+    "4R5VW",
+    "4R5Z8"
+   ]
+  ]
+ ],
+ "cartes": {
+  "4R678": [
+   "quercus-suber",
+   "Quercus suber",
+   "chêne liège",
+   "Cork Oak",
+   "LC",
+   "arbres",
+   "Surera de Tossa.jpg"
+  ],
+  "4R5SK": [
+   "quercus-petraea",
+   "Quercus petraea",
+   "Chêne rouvre",
+   "Durmast Oak",
+   "LC",
+   "arbres",
+   "Quercus petraea 02.jpg"
+  ],
+  "4R5VW": [
+   "quercus-pubescens",
+   "Quercus pubescens",
+   "Chêne pubescent",
+   "Pubescent Oak",
+   "LC",
+   "arbres",
+   "Quercus pubescens flowers illustration.jpg"
+  ],
+  "4R5Z8": [
+   "quercus-rubra",
+   "Quercus rubra",
+   "Chêne rouge d'Amérique",
+   "northern red oak",
+   "LC",
+   "arbres",
+   "Twin Sisters Trail (14) (14092717698).jpg"
+  ]
+ }
+}

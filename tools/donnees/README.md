@@ -1,4 +1,4 @@
-# Import des données (lot 3)
+# Import des données (lots 3 et 4)
 
 Outils de l'import mensuel de Nomen Nature, en TypeScript (Node 22.18 ou plus les exécute directement). Architecture et volumes : note [Données](../../docs/02-Conception/Donnees.md).
 
@@ -14,15 +14,17 @@ Les fichiers téléchargés et produits vont dans `tools/donnees/data/`, ignoré
 | [`groupes.ts`](groupes.ts) | Range chaque espèce observée dans l'un des 13 groupes courants (classification du Catalogue of Life ; « arbres » d'après la forme de vie de WCVP, Kew, CC BY 3.0, téléchargé chaque mois s'il a plus de 30 jours) ; écrit `data/groupes.tsv` |
 | [`score.ts`](score.ts) | Statut UICN et score « bien documentée » : photo et articles Wikipédia lus dans Wikidata (par QLever), nom français du Catalogue of Life ; écrit `data/especes.tsv` (groupe, statut, observations, score, nom français, Wikidata, photo, articles) |
 | [`listes.ts`](listes.ts) | Listes par pays et par continent : par groupe, les 500 espèces les mieux classées plus toutes les menacées (5 observations au moins), et un résumé par région ; dans `data/paquet/listes/` |
+| [`fiches.ts`](fiches.ts) | Données des fiches espèces (lot 4) : une ligne par espèce observée (noms, statut, groupe, classification, observations, pays, continent principal, Wikidata, photo, articles, faits « Sais-tu ? », 4 espèces proches), regroupées par genre dans 3 000 fichiers `fiches/<n>.json` ; format dans [`src/lib/especes/fiche.ts`](../../src/lib/especes/fiche.ts) |
+| [`exemple.ts`](exemple.ts) | Extrait quelques fiches du paquet pour les tests (`tests/fixtures/donnees/`, installé par `npm run donnees:installer -- --exemple`) |
 | [`index-recherche.ts`](index-recherche.ts) | Construit l'index de la recherche (dictionnaires `noms`, `cles`, `courts` et `manifeste.json`) à partir du Catalogue of Life et des espèces observées, en fichiers `.txt` d'environ 64 Ko, dans `data/index/` |
-| [`import.ts`](import.ts) | `npm run donnees:import` : enchaîne Catalogue of Life, GBIF et index, écrit `sources.json` (éditions, DOI, licences, citations) ; le paquet est le dossier `data/paquet/` |
-| [`installer.ts`](installer.ts) | `npm run donnees:installer` : installe le paquet de la dernière release GitHub « donnees-AAAA-MM » dans `public/donnees/` avant la construction du site (`--local` : le paquet construit sur ce poste) |
+| [`import.ts`](import.ts) | `npm run donnees:import` : enchaîne Catalogue of Life, GBIF, groupes, score, index, listes et fiches, écrit `sources.json` (éditions, DOI, licences, citations) ; le paquet est le dossier `data/paquet/` |
+| [`installer.ts`](installer.ts) | `npm run donnees:installer` : installe le paquet de la dernière release GitHub « donnees-AAAA-MM » dans `public/donnees/` avant la construction du site (`--local` : le paquet construit sur ce poste ; `--exemple` : le petit paquet des tests) |
 | [`notes-release.ts`](notes-release.ts) | Texte de la release de données |
 | [`requetes/`](requetes/) | Les requêtes SQL envoyées à GBIF : espèces observées, espèces par pays, diagnostic des colonnes |
 | [`mesurer.ts`](mesurer.ts) | Mesures du 23.11.2026 (volumes, statuts UICN, lien avec le COL XR) |
 | [`zip.ts`](zip.ts) | Lit un seul fichier dans un zip, local ou distant (requêtes partielles), sans dépendance |
 
-La clé phonétique de la recherche est dans [`src/lib/recherche/phonetique.ts`](../../src/lib/recherche/phonetique.ts), partagée avec le navigateur.
+La clé phonétique de la recherche est dans [`src/lib/recherche/phonetique.ts`](../../src/lib/recherche/phonetique.ts), partagée avec le navigateur ; l'adresse d'une fiche et le numéro de son fichier, dans [`src/lib/especes/adresse.ts`](../../src/lib/especes/adresse.ts), partagés avec le serveur.
 
 ## Chaque mois, sur GitHub
 
@@ -52,5 +54,7 @@ node --max-old-space-size=6144 tools/donnees/index-recherche.ts tools/donnees/da
 **Score** (23.11.2026, 25 secondes) : 30 224 espèces « bien documentées » (photo, nom français, article) ; 2 704 à 10/10, 1 302 675 à 0. Détail : note [Données](../../docs/02-Conception/Donnees.md).
 
 **Listes** (23.11.2026, 28 secondes) : 251 pays et 7 continents, 3 498 fichiers. Import complet : **4 minutes** (téléchargements GBIF réutilisés), paquet de 11 464 fichiers.
+
+**Fiches** (23.11.2026, 1 min 20 s) : 1 648 413 espèces dans **3 000 fichiers** (148 Ko en médiane, 1 Mo au plus pour le genre *Hieracium* et ses 3 599 espèces, lu en 3 ms ; 502 Mo en tout) ; 381 homonymes départagés par leur identifiant ; 5 897 espèces avec un fait « Sais-tu ? » (surtout des masses et des envergures d'oiseaux : Wikidata en a peu) ; 1 642 293 avec au moins une espèce proche. Paquet : 14 464 fichiers, sous la limite de 20 000.
 
 Sources : Catalogue of Life (CC BY 4.0, citer l'édition et son DOI, dans `version.json`) ; GBIF (**CC BY-NC 4.0** pour nos téléchargements, car certaines sources interdisent l'usage commercial : compatible avec un site non commercial ; citer le DOI de chaque téléchargement, dans `gbif.json`) ; Wikidata (CC0) ; WCVP (CC BY 3.0, Govaerts R (ed.), Royal Botanic Gardens, Kew, https://doi.org/10.34885/egs6-cp24).

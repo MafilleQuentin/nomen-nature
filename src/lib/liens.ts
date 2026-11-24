@@ -26,3 +26,16 @@ export function lien(page: Page | "carte", langue: Langue): string {
 export function traductions(page: Page): Record<Langue, string> {
   return Object.fromEntries(langues.map((l) => [l, lien(page, l)])) as Record<Langue, string>;
 }
+
+/** Début de l'adresse des fiches espèces dans chaque langue (/fr/espece/quercus-robur). */
+const prefixesEspece: Record<Langue, string> = { fr: "/fr/espece", en: "/en/species" };
+
+/** Adresse de la fiche d'une espèce (adresse calculée par src/lib/especes/adresse.ts). */
+export function lienEspece(adresse: string, langue: Langue): string {
+  return `${prefixesEspece[langue]}/${adresse}`;
+}
+
+/** Adresses d'une même fiche dans toutes les langues. */
+export function traductionsEspece(adresse: string): Record<Langue, string> {
+  return Object.fromEntries(langues.map((l) => [l, lienEspece(adresse, l)])) as Record<Langue, string>;
+}

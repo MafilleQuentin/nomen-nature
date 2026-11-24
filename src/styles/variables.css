@@ -45,7 +45,14 @@
   --color-status-vu: #f9e814;
   --color-status-nt: #cce226;
   --color-status-lc: #60c659;
+  --color-status-dd: #b9c7bc;
+  /* Éteintes (EX, EW) : absentes des maquettes, couleurs officielles de l'UICN (lot 4). */
+  --color-status-ex: #000000;
+  --color-status-ew: #542344;
   --color-status-on-cr: #ffffff;
+  --color-status-on-dd: #1a1a1a;
+  --color-status-on-ex: #ffffff;
+  --color-status-on-ew: #ffffff;
   --color-status-on-en: #1a1a1a;
   --color-status-on-vu: #1a1a1a;
   --color-status-on-nt: #1a1a1a;

@@ -1,0 +1,69 @@
+---
+// Badge de statut UICN (Figma « Badge de statut », 75:53) : toujours le code et le libellé,
+// jamais la couleur seule. Couleurs officielles de la Liste rouge ; NE en simple contour.
+// EX et EW (éteintes) ne sont pas dans la maquette : couleurs officielles de l'UICN.
+import type { Langue } from "../i18n/langues";
+import { t } from "../i18n/textes";
+import { statutAffiche } from "../lib/especes/affichage";
+
+interface Props {
+  uicn: string;
+  langue: Langue;
+  class?: string;
+}
+
+const { uicn, langue, class: classe } = Astro.props;
+const statut = statutAffiche(uicn);
+const libelle = t(langue).statuts[statut];
+---
+
+<span class:list={["badge", `badge--${statut.toLowerCase()}`, "t-mono-badge", classe]}>
+  <span class="visuellement-cache">{t(langue).fiche.statutUicn} </span>{statut} · {libelle}
+</span>
+
+<style>
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+  }
+  .badge--cr {
+    background: var(--color-status-cr);
+    color: var(--color-status-on-cr);
+  }
+  .badge--en {
+    background: var(--color-status-en);
+    color: var(--color-status-on-en);
+  }
+  .badge--vu {
+    background: var(--color-status-vu);
+    color: var(--color-status-on-vu);
+  }
+  .badge--nt {
+    background: var(--color-status-nt);
+    color: var(--color-status-on-nt);
+  }
+  .badge--lc {
+    background: var(--color-status-lc);
+    color: var(--color-status-on-lc);
+  }
+  .badge--dd {
+    background: var(--color-status-dd);
+    color: var(--color-status-on-dd);
+  }
+  .badge--ex {
+    background: var(--color-status-ex);
+    color: var(--color-status-on-ex);
+  }
+  .badge--ew {
+    background: var(--color-status-ew);
+    color: var(--color-status-on-ew);
+  }
+  .badge--ne {
+    border: 1px solid var(--color-border-strong);
+    color: var(--color-text-secondary);
+  }
+</style>
