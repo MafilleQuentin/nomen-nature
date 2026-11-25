@@ -38,6 +38,18 @@
   --color-map-contour-index: #7fc8a0;
   --color-map-coast: #c9dcc9;
   --color-map-background-line: #2f5c4a;
+  /* Continents de la carte du monde (lot 6) : des nuances du vert des terres, distinctes sans
+     sortir de la palette (pas dans la maquette « Courbes de niveau », qui peint toutes les terres
+     pareil ; demandé par le brief). Pays voisins d'un continent : --color-map-neighbor. */
+  --color-continent-europe: #1f4f45;
+  --color-continent-africa: #2b4c30;
+  --color-continent-asia: #1c4536;
+  --color-continent-north-america: #26493d;
+  --color-continent-south-america: #2a5339;
+  --color-continent-oceania: #21463f;
+  --color-continent-antarctica: #2e4a47;
+  --color-map-neighbor: #123228;
+  --color-map-hover: #2b6650;
 
   /* Couleurs : statuts UICN (couleurs officielles) et texte posé dessus */
   --color-status-cr: #d81e05;

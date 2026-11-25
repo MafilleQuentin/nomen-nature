@@ -30,6 +30,8 @@ __pycache__/
 
 # Données téléchargées (Natural Earth) et sorties générées
 tools/maquettes/data/
+# Natural Earth 1:50 m, téléchargé pour l'outil de la carte (tools/carte/README.md)
+tools/carte/data/
 tools/maquettes/carte_monde_points.json
 
 # Essai de la recherche (lot 1) : export du Catalogue of Life, bases et sorties générées

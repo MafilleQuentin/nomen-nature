@@ -25,12 +25,16 @@
     "@astrojs/svelte": "9.1.2",
     "@sentry/cloudflare": "11.10.0",
     "astro": "7.4.7",
+    "d3-selection": "3.0.0",
+    "d3-zoom": "3.0.0",
     "svelte": "5.57.3"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",
     "@axe-core/playwright": "4.14.0",
     "@playwright/test": "1.64.1",
+    "@types/d3-selection": "3.0.11",
+    "@types/d3-zoom": "3.0.8",
     "@types/node": "22.20.5",
     "playwright-core": "1.64.1",
     "typescript": "6.0.3",
@@ -41,5 +45,15 @@
     "esbuild@0.28.2": true,
     "workerd@1.20261116.1": true,
     "workerd@1.20261103.1": true
+  },
+  "overrides": {
+    "d3-color": "3.1.0",
+    "d3-dispatch": "3.0.1",
+    "d3-drag": "3.0.0",
+    "d3-ease": "3.0.1",
+    "d3-interpolate": "3.0.1",
+    "d3-selection": "3.0.0",
+    "d3-timer": "3.0.1",
+    "d3-transition": "3.0.1"
   }
 }

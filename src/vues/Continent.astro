@@ -1,0 +1,135 @@
+---
+// Page d'un continent (lot 6, QUE-29 ; Figma « Continent — Europe », 81:3 ordinateur et 81:168
+// téléphone) : fil d'Ariane « Monde › Europe », carte du continent à gauche, panneau à droite
+// (sur téléphone : la carte, puis le panneau avec sa poignée). Le panneau reçoit les chiffres,
+// les pays et les espèces avec QUE-30 ; il montre déjà le surtitre et le nom.
+import CarteContinent from "../components/CarteContinent.astro";
+import type { Langue } from "../i18n/langues";
+import { langues } from "../i18n/langues";
+import { t } from "../i18n/textes";
+import Base from "../layouts/Base.astro";
+import { CONTINENTS, coordonnees, type CodeContinent } from "../lib/carte/continents";
+import { remplir } from "../lib/especes/affichage";
+import { lien, lienContinent } from "../lib/liens";
+
+interface Props {
+  langue: Langue;
+  code: CodeContinent;
+}
+
+const { langue, code } = Astro.props;
+const textes = t(langue);
+const continent = CONTINENTS[code];
+const nom = textes.continents[code];
+const adresses = Object.fromEntries(langues.map((l) => [l, lienContinent(continent.adresse, l)])) as Record<Langue, string>;
+---
+
+<Base
+  titre={remplir(textes.carte.titreContinent, { nom })}
+  description={remplir(textes.carte.descriptionContinent, { nom })}
+  langue={langue}
+  adresses={adresses}
+>
+  <div class="page">
+    <nav class="fil t-mono-surtitre" aria-label={textes.carte.filAriane}>
+      <ol>
+        <li><a href={lien("carte", langue)}>{textes.carte.monde}</a></li>
+        <li aria-current="page">{nom}</li>
+      </ol>
+    </nav>
+    <div class="colonnes">
+      <CarteContinent langue={langue} code={code} />
+      <section class="panneau" aria-labelledby="nom-continent">
+        <span class="poignee" aria-hidden="true"></span>
+        <p class="t-mono-surtitre surtitre">{textes.carte.continent} · {coordonnees(continent.centre)}</p>
+        <h1 class="t-display-compact" id="nom-continent">{nom}</h1>
+      </section>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .page {
+    padding: 0 0 var(--space-14);
+  }
+  .fil {
+    display: none;
+    padding: var(--space-6) var(--space-20) var(--space-4);
+  }
+  .fil ol {
+    display: flex;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fil li + li::before {
+    content: "›";
+    margin-right: var(--space-2);
+    color: var(--color-text-secondary);
+  }
+  .fil a {
+    color: var(--color-text-highlight);
+    text-decoration: none;
+  }
+  .fil a:hover {
+    text-decoration: underline;
+  }
+  .fil [aria-current] {
+    color: var(--color-text-primary);
+  }
+  /* Téléphone : carte pleine largeur, puis le panneau aux coins arrondis et sa poignée (maquette). */
+  .colonnes :global(.carte) {
+    border: 0;
+    border-radius: 0;
+  }
+  .panneau {
+    position: relative;
+    padding: var(--space-6) var(--space-5);
+    border-top: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    background: var(--color-bg-surface);
+  }
+  .poignee {
+    position: absolute;
+    top: var(--space-2);
+    left: var(--space-5);
+    width: 40px;
+    height: 4px;
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
+  }
+  .surtitre {
+    margin: 0 0 var(--space-3);
+    color: var(--color-text-highlight);
+  }
+  h1 {
+    margin: 0;
+  }
+
+  @media (min-width: 900px) {
+    .fil {
+      display: block;
+    }
+    .colonnes {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 434px;
+      align-items: start;
+      gap: var(--space-6);
+      padding: 0 var(--space-20);
+    }
+    .colonnes :global(.carte) {
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-xl);
+    }
+    .panneau {
+      margin: 0;
+      padding: var(--space-6);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-xl);
+    }
+    .poignee {
+      display: none;
+    }
+  }
+</style>
