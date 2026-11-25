@@ -9,6 +9,9 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 - Carte du monde sur l'accueil (lot 6) : continents dans des nuances de vert distinctes, chacun est un lien vers sa page ; frontières Natural Earth 1:110 m déjà projetées en Equal Earth par notre serveur, lisibles sans JavaScript (QUE-29).
 - Pages des continents (`/fr/continent/europe`, `/en/continent/north-america`…), construites d'avance : fil d'Ariane « Monde › Europe », pays du continent en Natural Earth 1:50 m, voisins en sombre, noms des principaux pays sans chevauchement, en-tête du panneau (« Continent · 52°N 15°E ») ; d'après la maquette « Continent — Europe » (QUE-29).
 - Zoom de la carte avec d3-zoom (16 Ko de JavaScript) : molette, glisser, pincer, boutons + et − (sur ordinateur), touches + − 0 et flèches ; les traits et les noms gardent leur taille, et davantage de pays sont nommés en zoomant ; sur téléphone, un doigt fait toujours défiler la page (QUE-29).
+- Panneau des espèces sur la page d'un continent, d'après la maquette : chiffres (espèces observées, menacées, pays), puces des pays (les plus riches, puis « + N »), onglets Toutes / Menacées / Par groupe et premières espèces avec leur badge, liens vers les fiches ; tout en liens, sans JavaScript ; sur téléphone, sous la carte avec sa poignée (QUE-30).
+- Choisir un pays (puce ou carte) montre ses espèces dans le panneau (`?pays=ch`), le pays entouré d'ambre sur la carte et dans le fil d'Ariane « Monde › Europe › Suisse », en attendant les pages pays du lot 7 (QUE-30).
+- Import : adresse de la fiche et groupe dans chaque ligne des listes, listes « toutes » et « menacées » par région (4 014 fichiers de listes) ; données d'exemple complétées (QUE-30).
 - Outil `tools/carte/pays.ts` (lecteur shapefile sans dépendance, simplification, découpe au cadre) : 16 Ko compressés pour le monde, de 3 à 23 Ko par continent (QUE-29).
 - Moteur de recherche en TypeScript, traduit de l'essai du lot 1 (même score, même tri) : **39/40** sur le jeu de test du lot 1, comme en Python ; lu par notre serveur (index et fiches), le navigateur ne reçoit que les résultats (QUE-27).
 - Espèces proposées : « Tu voulais dire… » quand le texte n'a été trouvé que par le son (« boulot » → bouleaux), espèces les plus observées d'abord, espèces du genre visé (« birch » → bouleaux) : **55/55** recherches de test avec une bonne réponse dans les 5 premières, 54 en première (QUE-27).
@@ -24,6 +27,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 - Outil `evaluer-recherche.ts` : les 40 recherches du lot 1 et 15 recherches imprévues ; l'import mensuel échoue si le score passe sous 38/40 (QUE-27).
 
 ### Modifié
+- Pages des continents rendues par le serveur (le panneau dépend du pays et de l'onglet choisis), gardées un jour chez Cloudflare avec une entrée par pays et par onglet ; 166 Ko par page (QUE-30).
 - Fonds de courbes de niveau (page de résultats, page introuvable) allégés : coordonnées arrondies au pixel, 37 Ko au lieu de 45 Ko compressés sur ordinateur, 9 Ko au lieu de 11 Ko sur téléphone, sans différence visible (QUE-28).
 
 ### Corrigé
