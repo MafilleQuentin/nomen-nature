@@ -8,6 +8,7 @@
         "http://127.0.0.1:8789/fr",
         "http://127.0.0.1:8789/en",
         "http://127.0.0.1:8789/fr/espece/quercus-robur",
+        "http://127.0.0.1:8789/fr/continent/europe",
         "http://127.0.0.1:8789/fr/recherche?q=chene"
       ],
       "numberOfRuns": 3,
