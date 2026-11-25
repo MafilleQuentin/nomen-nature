@@ -1,14 +1,21 @@
 ---
-// Page d'un continent en français (/fr/continent/europe), construite d'avance : la carte ne
-// dépend que des frontières de Natural Earth (lot 6, QUE-29).
-import { CODES_CONTINENTS, CONTINENTS } from "../../../lib/carte/continents";
+// Page d'un continent en français (/fr/continent/europe?pays=ch&onglet=menacees), rendue à la
+// demande par le Worker : le panneau lit les listes du mois (lot 6, QUE-30). Gardée un jour chez
+// Cloudflare (src/middleware.ts), une entrée par pays et par onglet ; 5 minutes dans le navigateur.
+import { EN_TETE_CACHE } from "../../../lib/cache";
+import { continentDeLAdresse } from "../../../lib/carte/continents";
+import { chargerPanneau } from "../../../lib/carte/serveur";
 import Continent from "../../../vues/Continent.astro";
 
-export function getStaticPaths() {
-  return CODES_CONTINENTS.map((code) => ({ params: { adresse: CONTINENTS[code].adresse.fr }, props: { code } }));
-}
+export const prerender = false;
 
-const { code } = Astro.props;
+const continent = continentDeLAdresse(Astro.params.adresse ?? "", "fr");
+// Continent inconnu : la page introuvable du site (sans importer sa vue ici, dont le fond de
+// courbes de niveau, 37 Ko, serait sinon chargé sur toutes les pages des continents).
+if (!continent) return Astro.rewrite("/404");
+const panneau = await chargerPanneau(Astro.url, "fr", continent.code);
+Astro.response.headers.set("Cache-Control", "public, max-age=300");
+if (panneau) Astro.response.headers.set(EN_TETE_CACHE, "1");
 ---
 
-<Continent langue="fr" code={code} />
+<Continent langue="fr" code={continent.code} panneau={panneau} />

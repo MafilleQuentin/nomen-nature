@@ -5,29 +5,46 @@
 //   « bien documentée », puis observations dans la région), plus toutes les espèces menacées
 //   (CR, EN, VU) de la région, pour que le filtre « menacées » n'en oublie aucune ;
 // - un résumé par région : nombre d'espèces et d'espèces menacées par groupe ;
-// - le pays « ZZ » (inconnu, souvent en haute mer) n'a pas de liste.
+// - le pays « ZZ » (inconnu, souvent en haute mer) n'a pas de liste ;
+// - pour le panneau de la carte (lot 6, QUE-30) : chaque ligne porte l'adresse de la fiche et le
+//   groupe ; deux listes de plus par région, « toutes » (les 100 mieux classées, tous groupes) et
+//   « menacees » (CR, puis EN, puis VU, les plus observées d'abord ; 300 au plus).
 //
-// Sorties (dans le paquet) : listes/pays/<CODE>/<groupe>.json et resume.json,
+// Sorties (dans le paquet) : listes/pays/<CODE>/<groupe>.json, toutes.json, menacees.json et resume.json,
 // listes/continents/<continent>/…, et listes/regions.json (toutes les régions et leurs chiffres).
 //
 // Utilisation seule : node tools/donnees/listes.ts <dossier COL> <dossier de sortie>
 import { createReadStream, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { lignesTsv } from "./col.ts";
+import { FICHIER_COMPLEMENTS } from "./fiches.ts";
 import { GROUPES } from "./groupes.ts";
 
 export const SEUIL_OBSERVATIONS = 5;
 export const MAX_PAR_LISTE = 500;
 export const MENACEES = new Set(["CR", "EN", "VU"]);
+/** Listes « toutes » et « menacees » de chaque région (panneau de la carte). */
+export const MAX_TOUTES = 100;
+export const MAX_MENACEES = 300;
+const GRAVITE: Record<string, number> = { CR: 0, EN: 1, VU: 2 };
 
 export interface Candidate {
   id: string;
+  groupe?: string;
   score: number;
   observations: number; // dans la région
   uicn: string;
 }
 
 const ordre = (a: Candidate, b: Candidate) => b.score - a.score || b.observations - a.observations || (a.id < b.id ? -1 : 1);
+
+/** Menacées d'une région : CR, puis EN, puis VU ; les plus observées d'abord ; `max` au plus. */
+export function menaceesDAbord(candidates: Candidate[], max = MAX_MENACEES): Candidate[] {
+  return candidates
+    .filter((c) => MENACEES.has(c.uicn))
+    .sort((a, b) => (GRAVITE[a.uicn] ?? 9) - (GRAVITE[b.uicn] ?? 9) || b.observations - a.observations || (a.id < b.id ? -1 : 1))
+    .slice(0, max);
+}
 
 /** Les `max` mieux classées, plus toutes les menacées, dans l'ordre (score, puis observations). */
 export function selectionner(candidates: Candidate[], max = MAX_PAR_LISTE): Candidate[] {
@@ -43,7 +60,7 @@ interface Espece {
   photo: string;
 }
 
-const COLONNES = ["id", "nom", "nom_fr", "nom_en", "uicn", "score", "observations", "photo"];
+export const COLONNES = ["id", "nom", "nom_fr", "nom_en", "uicn", "score", "observations", "photo", "adresse", "groupe"];
 
 export async function construireListes(dossierCol: string, donnees: string, sortie: string) {
   // 1. Les espèces : groupe, statut, score, noms, photo.
@@ -57,6 +74,9 @@ export async function construireListes(dossierCol: string, donnees: string, sort
       photo: e["photo"] ?? "",
     });
   }
+  // Adresse de la fiche de chaque espèce (écrite par fiches.ts, étape précédente de l'import).
+  const adresses = new Map<string, string>();
+  for await (const c of lignesTsv(createReadStream(join(donnees, FICHIER_COMPLEMENTS)))) adresses.set(c["id"] ?? "", c["adresse"] ?? "");
   const nomsLatins = new Map<string, string>();
   for await (const t of lignesTsv(createReadStream(join(dossierCol, "taxons.tsv")))) {
     if (t["rang"] === "species" && especes.has(t["id"] ?? "")) nomsLatins.set(t["id"] ?? "", t["nom"] ?? "");
@@ -90,11 +110,15 @@ export async function construireListes(dossierCol: string, donnees: string, sort
       if (!e.groupe) continue; // hors des 13 groupes : trouvable par la recherche seulement
       const parGroupe = parRegion.get(region) ?? new Map<string, Candidate[]>();
       const liste = parGroupe.get(e.groupe) ?? [];
-      liste.push({ id: c["id"] ?? "", score: e.score, observations, uicn: e.uicn });
+      liste.push({ id: c["id"] ?? "", groupe: e.groupe, score: e.score, observations, uicn: e.uicn });
       parGroupe.set(e.groupe, liste);
       parRegion.set(region, parGroupe);
     }
 
+    const ligne = (c: Candidate) => {
+      const e = especes.get(c.id);
+      return [c.id, nomsLatins.get(c.id) ?? "", e?.nomFr ?? "", nomsAnglais.get(c.id) ?? "", c.uicn, c.score, c.observations, e?.photo ?? "", adresses.get(c.id) ?? "", c.groupe ?? ""];
+    };
     for (const [region, parGroupe] of parRegion) {
       const dossier = join(sortie, type, region);
       mkdirSync(dossier, { recursive: true });
@@ -105,18 +129,18 @@ export async function construireListes(dossierCol: string, donnees: string, sort
         const choisies = selectionner(candidates);
         const menacees = candidates.filter((c) => MENACEES.has(c.uicn)).length;
         resumeGroupes[groupe] = { especes: candidates.length, menacees };
-        const contenu = {
-          region,
-          groupe,
-          especes: candidates.length,
-          menacees,
-          colonnes: COLONNES,
-          lignes: choisies.map((c) => {
-            const e = especes.get(c.id);
-            return [c.id, nomsLatins.get(c.id) ?? "", e?.nomFr ?? "", nomsAnglais.get(c.id) ?? "", c.uicn, c.score, c.observations, e?.photo ?? ""];
-          }),
-        };
+        const contenu = { region, groupe, especes: candidates.length, menacees, colonnes: COLONNES, lignes: choisies.map(ligne) };
         writeFileSync(join(dossier, `${groupe}.json`), JSON.stringify(contenu));
+        fichiers++;
+      }
+      // Panneau de la carte : toutes les espèces (les mieux classées) et les menacées, tous groupes.
+      const tous = [...parGroupe.values()].flat();
+      const total = totaux.get(region) ?? { especes: 0, menacees: 0 };
+      for (const [nom, lignes] of [
+        ["toutes", [...tous].sort(ordre).slice(0, MAX_TOUTES)],
+        ["menacees", menaceesDAbord(tous)],
+      ] as const) {
+        writeFileSync(join(dossier, `${nom}.json`), JSON.stringify({ region, groupe: "", ...total, colonnes: COLONNES, lignes: lignes.map(ligne) }));
         fichiers++;
       }
       const resume = { region, type, ...totaux.get(region), groupes: resumeGroupes };

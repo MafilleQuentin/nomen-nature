@@ -121,6 +121,12 @@ Code : [`listes.ts`](../../tools/donnees/listes.ts). Décisions de l'utilisateur
 - **Résultat** : 251 pays, 7 continents, **3 498 fichiers** (88 Mo bruts ; le plus lourd, les fleurs d'Afrique, 85 Ko en brotli). Paquet complet : **11 464 fichiers**, sous la limite de 20 000. Exemple, Suisse : 28 195 espèces, dont 247 menacées ; oiseaux en tête : pinson des arbres, fauvette à tête noire, merle noir, mésange charbonnière.
 - **Nom français principal** : le Catalogue of Life ne marque aucun nom « préféré » ; on prend celui qui correspond au titre de l'article Wikipédia français, sinon le premier (1 885 noms améliorés : « fayard » → « hêtre commun », « Casseron » → « Seiche commune »). Les majuscules sont inégales d'une source à l'autre : à uniformiser à l'affichage (lot 7).
 
+### Pour le panneau de la carte (lot 6, QUE-30, 25.11.2026)
+
+- Chaque ligne des listes porte aussi l'**adresse de la fiche** et le **groupe** (colonnes `adresse` et `groupe`), lus dans `data/complements-recherche.tsv` (étape des fiches).
+- Deux listes de plus par région : `toutes.json` (les **100 mieux classées**, tous groupes) et `menacees.json` (**CR, puis EN, puis VU**, les plus observées d'abord, **300 au plus** ; Europe : l'anguille européenne en tête, comme la maquette).
+- **4 014 fichiers** de listes (123 Mo bruts) au lieu de 3 498 ; paquet complet ≈ **17 300 fichiers** (index 7 274, fiches 3 000, zones 3 000, listes 4 014), sous la limite de 20 000 mais avec moins de 3 000 fichiers de marge.
+
 ## Fiches espèces (lot 4, QUE-22, 23.11.2026)
 
 Décisions de l'utilisateur ([journal des décisions](../Decisions.md)) : données de base en **fichiers regroupés par genre**, contenus tiers (photos, tuiles) **servis par notre serveur**, encadré **« Sais-tu ? » d'après Wikidata**, adresse **`/fr/espece/quercus-robur`**. Code : [`fiches.ts`](../../tools/donnees/fiches.ts) (import), [`src/lib/especes/`](../../src/lib/especes/) (adresse, format, lecture par le serveur, mise en forme).

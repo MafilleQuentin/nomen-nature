@@ -30,9 +30,36 @@ test.describe("sans JavaScript", () => {
       await expect(fil.getByRole("link", { name: "Monde" })).toHaveAttribute("href", "/fr");
     }
     await expect(page.getByText("Continent · 52°N 15°E")).toBeVisible();
-    await expect(page.getByRole("img", { name: "Carte : Europe et ses pays" })).toBeVisible();
+    await expect(page.getByRole("group", { name: "Carte : Europe et ses pays" })).toBeVisible();
     await expect(page.locator("text.etiquette", { hasText: "FRANCE" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Zoomer", exact: true })).toBeHidden();
+  });
+
+  test("panneau du continent : chiffres, pays, onglets et espèces (données d'exemple)", async ({ page }) => {
+    await page.goto("/fr/continent/europe");
+    const panneau = page.getByRole("region", { name: "Europe" });
+    await expect(panneau.getByText("Espèces observées")).toBeVisible();
+    await expect(panneau.getByRole("list", { name: "Espèces les mieux documentées" }).getByRole("link")).toHaveCount(5);
+    await panneau.getByRole("navigation", { name: "Liste des espèces" }).getByRole("link", { name: "Menacées" }).click();
+    await expect(page).toHaveURL(/\?onglet=menacees$/);
+    await expect(page.getByRole("list", { name: "Espèces menacées" }).getByRole("link").first()).toContainText("CR");
+  });
+
+  test("choisir un pays sur la carte montre ses espèces, puis revient au continent", async ({ page }) => {
+    await page.goto("/fr/continent/europe?onglet=menacees");
+    // Au clavier : le lien de la Suisse sur la carte.
+    await page.getByRole("link", { name: "Suisse : voir ses espèces" }).focus();
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(/\?pays=ch&onglet=menacees$/);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Suisse");
+    await expect(page.getByText("Groupes", { exact: true }).first()).toBeAttached();
+    await page.getByRole("link", { name: /Tout le continent/ }).click();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Europe");
+  });
+
+  test("un continent inconnu répond 404", async ({ page }) => {
+    const reponse = await page.goto("/fr/continent/atlantide");
+    expect(reponse?.status()).toBe(404);
   });
 
   test("en anglais, avec les adresses traduites", async ({ page }) => {

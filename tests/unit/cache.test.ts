@@ -4,8 +4,11 @@ import { cleDeCache, estPageEnCache } from "../../src/lib/cache.ts";
 import { apercuCommons, vignetteCommons } from "../../src/lib/especes/photos.ts";
 
 describe("cache des pages", () => {
-  it("ne concerne que les fiches espèces", () => {
+  it("concerne les fiches espèces et les pages des continents", () => {
     expect(estPageEnCache("/fr/espece/quercus-robur")).toBe(true);
+    expect(estPageEnCache("/fr/continent/amerique-du-nord")).toBe(true);
+    expect(estPageEnCache("/en/continent/europe")).toBe(true);
+    expect(estPageEnCache("/fr/recherche")).toBe(false);
     expect(estPageEnCache("/en/species/morus-alba-4x7qz")).toBe(true);
     expect(estPageEnCache("/fr")).toBe(false);
     expect(estPageEnCache("/fr/espece/quercus-robur/autre")).toBe(false);
@@ -16,6 +19,11 @@ describe("cache des pages", () => {
     const url = new URL("https://nomenature.org/fr/espece/quercus-robur?utm_source=x");
     expect(cleDeCache(url, "abc-123")).toBe("https://nomenature.org/fr/espece/quercus-robur?version=abc-123");
     expect(cleDeCache(url, "abc-124")).not.toBe(cleDeCache(url, "abc-123"));
+  });
+
+  it("garde les choix du panneau de la carte dans la clé, dans un ordre fixe", () => {
+    const url = new URL("https://nomenature.org/fr/continent/europe?onglet=menacees&utm=x&pays=CH");
+    expect(cleDeCache(url, "v1")).toBe("https://nomenature.org/fr/continent/europe?pays=ch&onglet=menacees&version=v1");
   });
 });
 

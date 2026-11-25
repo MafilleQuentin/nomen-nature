@@ -1,35 +1,30 @@
 ---
-// Carte d'un continent (lot 6, QUE-29 ; Figma « Continent — Europe », 81:3) : ses pays en clair,
-// les pays voisins en sombre, frontières Natural Earth 1:50 m (tools/carte/pays.ts →
+// Carte d'un continent (lot 6, QUE-29 et QUE-30 ; Figma « Continent — Europe », 81:3) : ses pays
+// en clair, les pays voisins en sombre, frontières Natural Earth 1:50 m (tools/carte/pays.ts →
 // src/data/carte/continents/<code>.json), noms des principaux pays en capitales sans
-// chevauchement. Les pays deviendront des liens avec le panneau des espèces (QUE-30).
+// chevauchement. Les pays qui ont des espèces sont des liens vers leur panneau (`liens`) ; le pays
+// choisi est entouré d'ambre.
 import type { Langue } from "../i18n/langues";
 import { t } from "../i18n/textes";
 import type { CodeContinent } from "../lib/carte/continents";
+import { carteDuContinent } from "../lib/carte/donnees";
 import { choisirEtiquettes } from "../lib/carte/etiquettes";
+import { nomDuPays } from "../lib/carte/panneau";
 import { remplir } from "../lib/especes/affichage";
 import CarteInteractive from "./CarteInteractive.astro";
 
 interface Props {
   langue: Langue;
   code: CodeContinent;
+  /** Lien de chaque pays (code ISO en minuscules) vers son panneau. */
+  liens?: Record<string, string>;
+  /** Pays choisi (code ISO en minuscules). */
+  choisi?: string;
 }
 
-interface PaysCarte {
-  code: string;
-  membre: boolean;
-  chemin: string;
-  etiquette: [number, number];
-  rang: number;
-}
-
-const cartes = import.meta.glob<{ default: { vue: [number, number, number, number]; pays: PaysCarte[] } }>("../data/carte/continents/*.json", { eager: true });
-
-const { langue, code } = Astro.props;
-const carte = cartes[`../data/carte/continents/${code.toLowerCase()}.json`]?.default;
-if (!carte) throw new Error(`Carte du continent ${code} absente (node tools/carte/pays.ts)`);
+const { langue, code, liens = {}, choisi = "" } = Astro.props;
+const carte = carteDuContinent(code);
 const textes = t(langue);
-const nomDuPays = new Intl.DisplayNames([langue], { type: "region" });
 
 // Étiquettes : taille de la maquette (11 px) pour une carte de 625 px de large.
 const TAILLE = 11;
@@ -39,10 +34,13 @@ const taillePlan = (TAILLE * carte.vue[2]) / 625;
 // le script de CarteInteractive refait ce choix selon la largeur réelle et le zoom.
 const candidates = carte.pays
   .filter((p) => p.membre && p.code)
-  .map((p) => ({ code: p.code, nom: (nomDuPays.of(p.code) ?? p.code).toLocaleUpperCase(langue), point: p.etiquette, rang: p.rang }))
+  .map((p) => ({ code: p.code, nom: nomDuPays(p.code, langue).toLocaleUpperCase(langue), point: p.etiquette, rang: p.rang }))
   .sort((a, b) => a.rang - b.rang || a.nom.localeCompare(b.nom))
   .slice(0, 40);
 const parDefaut = new Set(choisirEtiquettes(candidates, carte.vue, taillePlan).map((e) => e.code));
+// Le pays choisi est dessiné en dernier : son contour ambre passe au-dessus de ses voisins.
+const membres = carte.pays.filter((p) => p.membre).sort((a, b) => Number(a.code.toLowerCase() === choisi) - Number(b.code.toLowerCase() === choisi));
+const avecLiens = Object.keys(liens).length > 0;
 ---
 
 <CarteInteractive
@@ -50,11 +48,23 @@ const parDefaut = new Set(choisirEtiquettes(candidates, carte.vue, taillePlan).m
   vue={carte.vue}
   libelle={remplir(textes.carte.carteContinent, { nom: textes.continents[code] })}
   aide={textes.carte.aideContinent}
-  role="img"
+  role={avecLiens ? "group" : "img"}
   etiquettesLibres
 >
   {carte.pays.filter((p) => !p.membre).map((p) => <path class="voisin" d={p.chemin} transform="scale(0.1)" />)}
-  {carte.pays.filter((p) => p.membre).map((p) => <path class="pays" d={p.chemin} transform="scale(0.1)" data-pays={p.code} />)}
+  {
+    membres.map((p) => {
+      const lien = liens[p.code.toLowerCase()];
+      const classe = { pays: true, "pays--choisi": p.code.toLowerCase() === choisi };
+      return lien ? (
+        <a href={lien} class="lien-pays" aria-label={remplir(textes.panneau.paysCarte, { nom: nomDuPays(p.code, langue) })}>
+          <path class:list={classe} d={p.chemin} transform="scale(0.1)" />
+        </a>
+      ) : (
+        <path class:list={classe} d={p.chemin} transform="scale(0.1)" />
+      );
+    })
+  }
   {
     candidates.map((e) => (
       <text class="etiquette" x={e.point[0]} y={e.point[1]} data-taille={TAILLE} data-defaut={parDefaut.has(e.code) ? "" : undefined} font-size={taillePlan}>
@@ -79,6 +89,22 @@ const parDefaut = new Set(choisirEtiquettes(candidates, carte.vue, taillePlan).m
     stroke: var(--color-map-coast);
     stroke-width: 0.6;
     stroke-opacity: 0.7;
+  }
+  .lien-pays:hover .pays,
+  .lien-pays:focus-visible .pays {
+    fill: var(--color-map-hover);
+  }
+  .lien-pays:focus-visible {
+    outline: none;
+  }
+  .lien-pays:focus-visible .pays,
+  .pays--choisi {
+    stroke: var(--color-border-accent);
+    stroke-width: 2;
+    stroke-opacity: 1;
+  }
+  .pays--choisi {
+    fill: var(--color-map-hover);
   }
   .etiquette:not([data-defaut]) {
     display: none;
