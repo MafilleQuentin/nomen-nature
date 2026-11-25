@@ -3,6 +3,7 @@
 // (lot 6, QUE-30). Même page que /fr/continent/… (voir ce fichier).
 import { EN_TETE_CACHE } from "../../../lib/cache";
 import { continentDeLAdresse } from "../../../lib/carte/continents";
+import { lireCourbes } from "../../../lib/carte/courbes";
 import { chargerPanneau } from "../../../lib/carte/serveur";
 import Continent from "../../../vues/Continent.astro";
 
@@ -12,9 +13,9 @@ const continent = continentDeLAdresse(Astro.params.adresse ?? "", "en");
 // Continent inconnu : la page introuvable du site (sans importer sa vue ici, dont le fond de
 // courbes de niveau, 37 Ko, serait sinon chargé sur toutes les pages des continents).
 if (!continent) return Astro.rewrite("/404");
-const panneau = await chargerPanneau(Astro.url, "en", continent.code);
+const [panneau, courbes] = await Promise.all([chargerPanneau(Astro.url, "en", continent.code), lireCourbes(Astro.url)]);
 Astro.response.headers.set("Cache-Control", "public, max-age=300");
 if (panneau) Astro.response.headers.set(EN_TETE_CACHE, "1");
 ---
 
-<Continent langue="en" code={continent.code} panneau={panneau} />
+<Continent langue="en" code={continent.code} panneau={panneau} courbes={courbes?.continents[continent.code]} />

@@ -11,7 +11,9 @@ import { carteDuContinent } from "../lib/carte/donnees";
 import { choisirEtiquettes } from "../lib/carte/etiquettes";
 import { nomDuPays } from "../lib/carte/panneau";
 import { remplir } from "../lib/especes/affichage";
+import type { Courbe } from "../lib/carte/courbes";
 import CarteInteractive from "./CarteInteractive.astro";
+import CourbesDeNiveau from "./CourbesDeNiveau.astro";
 
 interface Props {
   langue: Langue;
@@ -20,9 +22,11 @@ interface Props {
   liens?: Record<string, string>;
   /** Pays choisi (code ISO en minuscules). */
   choisi?: string;
+  /** Courbes de niveau du continent (QUE-31), si le paquet de données en a. */
+  courbes?: Courbe[] | undefined;
 }
 
-const { langue, code, liens = {}, choisi = "" } = Astro.props;
+const { langue, code, liens = {}, choisi = "", courbes } = Astro.props;
 const carte = carteDuContinent(code);
 const textes = t(langue);
 
@@ -51,19 +55,36 @@ const avecLiens = Object.keys(liens).length > 0;
   role={avecLiens ? "group" : "img"}
   etiquettesLibres
 >
-  {carte.pays.filter((p) => !p.membre).map((p) => <path class="voisin" d={p.chemin} transform="scale(0.1)" />)}
+  {carte.pays.filter((p) => !p.membre).map((p, i) => <path class="voisin" id={`voisin-${i}`} d={p.chemin} transform="scale(0.1)" />)}
   {
-    membres.map((p) => {
+    membres.map((p, i) => {
       const lien = liens[p.code.toLowerCase()];
       const classe = { pays: true, "pays--choisi": p.code.toLowerCase() === choisi };
       return lien ? (
         <a href={lien} class="lien-pays" aria-label={remplir(textes.panneau.paysCarte, { nom: nomDuPays(p.code, langue) })}>
-          <path class:list={classe} d={p.chemin} transform="scale(0.1)" />
+          <path class:list={classe} id={`membre-${i}`} d={p.chemin} transform="scale(0.1)" />
         </a>
       ) : (
-        <path class:list={classe} d={p.chemin} transform="scale(0.1)" />
+        <path class:list={classe} id={`membre-${i}`} d={p.chemin} transform="scale(0.1)" />
       );
     })
+  }
+  {
+    courbes && (
+      <>
+        <clipPath id="decoupe-terres">
+          {carte.pays
+            .filter((p) => !p.membre)
+            .map((_, i) => (
+              <use href={`#voisin-${i}`} />
+            ))}
+          {membres.map((_, i) => (
+            <use href={`#membre-${i}`} />
+          ))}
+        </clipPath>
+        <CourbesDeNiveau courbes={courbes} decoupe="decoupe-terres" />
+      </>
+    )
   }
   {
     candidates.map((e) => (

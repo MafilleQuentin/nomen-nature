@@ -13,6 +13,7 @@ import { langues } from "../i18n/langues";
 import { t } from "../i18n/textes";
 import Base from "../layouts/Base.astro";
 import { CONTINENTS, coordonnees, type CodeContinent } from "../lib/carte/continents";
+import type { Courbe } from "../lib/carte/courbes";
 import type { ContenuPanneau } from "../lib/carte/serveur";
 import { remplir } from "../lib/especes/affichage";
 import { lien, lienContinent } from "../lib/liens";
@@ -22,9 +23,11 @@ interface Props {
   code: CodeContinent;
   /** Contenu du panneau, ou undefined si les listes ne sont pas disponibles. */
   panneau: ContenuPanneau | undefined;
+  /** Courbes de niveau du continent (QUE-31), si le paquet de données en a. */
+  courbes?: Courbe[] | undefined;
 }
 
-const { langue, code, panneau } = Astro.props;
+const { langue, code, panneau, courbes } = Astro.props;
 const textes = t(langue);
 const continent = CONTINENTS[code];
 const nom = textes.continents[code];
@@ -60,11 +63,12 @@ const paysChoisi = panneau?.choix.pays ?? "";
       </ol>
     </nav>
     <div class="colonnes">
-      <CarteContinent langue={langue} code={code} liens={panneau?.liensPays ?? {}} choisi={paysChoisi} />
+      <CarteContinent langue={langue} code={code} liens={panneau?.liensPays ?? {}} choisi={paysChoisi} courbes={courbes} />
       <section class="panneau" aria-labelledby="nom-panneau">
         <span class="poignee" aria-hidden="true"></span>
         <p class="t-mono-surtitre surtitre">{panneau?.surtitre ?? `${textes.carte.continent} · ${coordonnees(continent.centre)}`}</p>
         <h1 class="t-display-compact" id="nom-panneau">{panneau?.titre ?? nom}</h1>
+        {courbes && courbes.length > 0 && <p class="phrase t-texte-petit">{textes.carte.phraseCourbes}</p>}
         {
           panneau?.retour && (
             <a class="retour t-libelle-petit" href={panneau.retour.lien}>
@@ -195,6 +199,10 @@ const paysChoisi = panneau?.choix.pays ?? "";
   }
   h1 {
     margin: 0;
+  }
+  .phrase {
+    margin: 0;
+    color: var(--color-text-secondary);
   }
   .retour {
     align-self: flex-start;

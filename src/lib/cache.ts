@@ -8,9 +8,9 @@
 /** En-tête posé par la page quand elle peut être gardée en cache (retiré avant l'envoi). */
 export const EN_TETE_CACHE = "X-Nomen-Peut-Cacher";
 
-/** Pages concernées : les fiches espèces et les pages des continents, en français et en anglais. */
+/** Pages concernées : les fiches espèces, l'accueil (carte du monde) et les pages des continents. */
 export function estPageEnCache(chemin: string): boolean {
-  return /^\/(fr\/espece|en\/species)\/[a-z0-9-]+$/.test(chemin) || /^\/(fr|en)\/continent\/[a-z-]+$/.test(chemin);
+  return /^\/(fr|en)$/.test(chemin) || /^\/(fr\/espece|en\/species)\/[a-z0-9-]+$/.test(chemin) || /^\/(fr|en)\/continent\/[a-z-]+$/.test(chemin);
 }
 
 /** Paramètres de l'adresse qui changent la page (panneau de la carte) ; les autres sont ignorés. */
