@@ -4,13 +4,14 @@ import { cleDeCache, estPageEnCache } from "../../src/lib/cache.ts";
 import { apercuCommons, vignetteCommons } from "../../src/lib/especes/photos.ts";
 
 describe("cache des pages", () => {
-  it("concerne les fiches espèces et les pages des continents", () => {
+  it("concerne les fiches espèces, l'accueil et les pages des continents", () => {
     expect(estPageEnCache("/fr/espece/quercus-robur")).toBe(true);
     expect(estPageEnCache("/fr/continent/amerique-du-nord")).toBe(true);
     expect(estPageEnCache("/en/continent/europe")).toBe(true);
     expect(estPageEnCache("/fr/recherche")).toBe(false);
     expect(estPageEnCache("/en/species/morus-alba-4x7qz")).toBe(true);
-    expect(estPageEnCache("/fr")).toBe(false);
+    expect(estPageEnCache("/fr")).toBe(true); // accueil : carte du monde et ses courbes (lot 6)
+    expect(estPageEnCache("/")).toBe(false);
     expect(estPageEnCache("/fr/espece/quercus-robur/autre")).toBe(false);
     expect(estPageEnCache("/photos/commons/500/A.jpg")).toBe(false);
   });
