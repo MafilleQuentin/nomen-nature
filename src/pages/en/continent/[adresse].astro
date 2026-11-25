@@ -1,0 +1,13 @@
+---
+// Continent page in English (/en/continent/europe), built ahead of time (lot 6, QUE-29).
+import { CODES_CONTINENTS, CONTINENTS } from "../../../lib/carte/continents";
+import Continent from "../../../vues/Continent.astro";
+
+export function getStaticPaths() {
+  return CODES_CONTINENTS.map((code) => ({ params: { adresse: CONTINENTS[code].adresse.en }, props: { code } }));
+}
+
+const { code } = Astro.props;
+---
+
+<Continent langue="en" code={code} />

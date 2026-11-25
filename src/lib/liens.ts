@@ -27,6 +27,11 @@ export function traductions(page: Page): Record<Langue, string> {
   return Object.fromEntries(langues.map((l) => [l, lien(page, l)])) as Record<Langue, string>;
 }
 
+/** Adresse de la page d'un continent (/fr/continent/amerique-du-nord, /en/continent/north-america). */
+export function lienContinent(adresse: Record<Langue, string>, langue: Langue): string {
+  return `/${langue}/continent/${adresse[langue]}`;
+}
+
 /** Début de l'adresse des fiches espèces dans chaque langue (/fr/espece/quercus-robur). */
 const prefixesEspece: Record<Langue, string> = { fr: "/fr/espece", en: "/en/species" };
 
