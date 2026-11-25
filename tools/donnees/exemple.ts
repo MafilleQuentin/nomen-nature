@@ -102,3 +102,9 @@ for (const region of ["continents/europe", "pays/fr", "pays/ch"]) {
   }
   console.log(`listes/${region} : ${readdirSync(join(SORTIE_LISTES, region)).length} fichiers`);
 }
+
+// Courbes de niveau de la carte (lot 6, QUE-31), telles quelles.
+const SOURCE_COURBES = process.env["SOURCE_COURBES"] ?? "public/donnees/carte/courbes.json";
+mkdirSync("tests/fixtures/donnees/carte", { recursive: true });
+writeFileSync("tests/fixtures/donnees/carte/courbes.json", readFileSync(SOURCE_COURBES, "utf8"));
+console.log("carte/courbes.json copié");
