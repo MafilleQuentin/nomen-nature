@@ -12,6 +12,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 - Panneau des espèces sur la page d'un continent, d'après la maquette : chiffres (espèces observées, menacées, pays), puces des pays (les plus riches, puis « + N »), onglets Toutes / Menacées / Par groupe et premières espèces avec leur badge, liens vers les fiches ; tout en liens, sans JavaScript ; sur téléphone, sous la carte avec sa poignée (QUE-30).
 - Choisir un pays (puce ou carte) montre ses espèces dans le panneau (`?pays=ch`), le pays entouré d'ambre sur la carte et dans le fil d'Ariane « Monde › Europe › Suisse », en attendant les pages pays du lot 7 (QUE-30).
 - Import : adresse de la fiche et groupe dans chaque ligne des listes, listes « toutes » et « menacées » par région (4 014 fichiers de listes) ; données d'exemple complétées (QUE-30).
+- Courbes de niveau calculées sur la carte du monde et des continents : richesse du vivant d'après les espèces distinctes observées par case d'un degré (nouvelle demande SQL à GBIF dans l'import mensuel), échelle logarithmique, terres seules, lissage, d3-contour ; niveaux propres à chaque continent sur sa page ; traits fins, une courbe sur quatre plus marquée, à épaisseur fixe au zoom ; phrase du panneau « Les courbes serrées montrent où la vie est la plus riche » (QUE-31).
+- Import : courbes de niveau dans le paquet (`carte/courbes.json`, 30 Ko compressés pour le monde) ; masque des terres à un degré versionné (`src/data/carte/terres-un-degre.txt`) ; données d'exemple complétées (QUE-31).
 - Outil `tools/carte/pays.ts` (lecteur shapefile sans dépendance, simplification, découpe au cadre) : 16 Ko compressés pour le monde, de 3 à 23 Ko par continent (QUE-29).
 - Moteur de recherche en TypeScript, traduit de l'essai du lot 1 (même score, même tri) : **39/40** sur le jeu de test du lot 1, comme en Python ; lu par notre serveur (index et fiches), le navigateur ne reçoit que les résultats (QUE-27).
 - Espèces proposées : « Tu voulais dire… » quand le texte n'a été trouvé que par le son (« boulot » → bouleaux), espèces les plus observées d'abord, espèces du genre visé (« birch » → bouleaux) : **55/55** recherches de test avec une bonne réponse dans les 5 premières, 54 en première (QUE-27).
@@ -27,6 +29,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 - Outil `evaluer-recherche.ts` : les 40 recherches du lot 1 et 15 recherches imprévues ; l'import mensuel échoue si le score passe sous 38/40 (QUE-27).
 
 ### Modifié
+- Accueil rendu par le serveur (courbes de niveau du mois), gardé un jour chez Cloudflare ; 170 Ko (QUE-31).
 - Pages des continents rendues par le serveur (le panneau dépend du pays et de l'onglet choisis), gardées un jour chez Cloudflare avec une entrée par pays et par onglet ; 166 Ko par page (QUE-30).
 - Fonds de courbes de niveau (page de résultats, page introuvable) allégés : coordonnées arrondies au pixel, 37 Ko au lieu de 45 Ko compressés sur ordinateur, 9 Ko au lieu de 11 Ko sur téléphone, sans différence visible (QUE-28).
 
