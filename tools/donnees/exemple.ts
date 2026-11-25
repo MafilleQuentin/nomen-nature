@@ -85,3 +85,20 @@ for (const n of parFichier.keys()) {
   writeFileSync(join(SORTIE_ZONES, `${n}.json`), JSON.stringify(gardees, null, 1) + FIN_DE_LIGNE);
   console.log(`zones/${n}.json : ${Object.keys(gardees).length} espèce(s)`);
 }
+
+// Listes du panneau de la carte (lot 6, QUE-30) : le décompte des régions en entier, et l'Europe,
+// la France et la Suisse avec les 5 premières lignes de chaque liste.
+const SOURCE_LISTES = process.env["SOURCE_LISTES"] ?? "public/donnees/listes";
+const SORTIE_LISTES = "tests/fixtures/donnees/listes";
+rmSync(SORTIE_LISTES, { recursive: true, force: true });
+mkdirSync(SORTIE_LISTES, { recursive: true });
+writeFileSync(join(SORTIE_LISTES, "regions.json"), readFileSync(join(SOURCE_LISTES, "regions.json"), "utf8"));
+for (const region of ["continents/europe", "pays/fr", "pays/ch"]) {
+  mkdirSync(join(SORTIE_LISTES, region), { recursive: true });
+  for (const nom of readdirSync(join(SOURCE_LISTES, region)).sort()) {
+    const contenu = JSON.parse(readFileSync(join(SOURCE_LISTES, region, nom), "utf8")) as { lignes?: unknown[] };
+    if (contenu.lignes) contenu.lignes = contenu.lignes.slice(0, 5);
+    writeFileSync(join(SORTIE_LISTES, region, nom), JSON.stringify(contenu) + FIN_DE_LIGNE);
+  }
+  console.log(`listes/${region} : ${readdirSync(join(SORTIE_LISTES, region)).length} fichiers`);
+}
