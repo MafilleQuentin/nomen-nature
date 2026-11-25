@@ -1,13 +1,20 @@
 ---
-// Continent page in English (/en/continent/europe), built ahead of time (lot 6, QUE-29).
-import { CODES_CONTINENTS, CONTINENTS } from "../../../lib/carte/continents";
+// Continent page in English (/en/continent/europe?pays=ch), rendered on demand by the Worker
+// (lot 6, QUE-30). Même page que /fr/continent/… (voir ce fichier).
+import { EN_TETE_CACHE } from "../../../lib/cache";
+import { continentDeLAdresse } from "../../../lib/carte/continents";
+import { chargerPanneau } from "../../../lib/carte/serveur";
 import Continent from "../../../vues/Continent.astro";
 
-export function getStaticPaths() {
-  return CODES_CONTINENTS.map((code) => ({ params: { adresse: CONTINENTS[code].adresse.en }, props: { code } }));
-}
+export const prerender = false;
 
-const { code } = Astro.props;
+const continent = continentDeLAdresse(Astro.params.adresse ?? "", "en");
+// Continent inconnu : la page introuvable du site (sans importer sa vue ici, dont le fond de
+// courbes de niveau, 37 Ko, serait sinon chargé sur toutes les pages des continents).
+if (!continent) return Astro.rewrite("/404");
+const panneau = await chargerPanneau(Astro.url, "en", continent.code);
+Astro.response.headers.set("Cache-Control", "public, max-age=300");
+if (panneau) Astro.response.headers.set(EN_TETE_CACHE, "1");
 ---
 
-<Continent langue="en" code={code} />
+<Continent langue="en" code={continent.code} panneau={panneau} />

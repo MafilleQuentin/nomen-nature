@@ -1,48 +1,135 @@
 ---
-// Page d'un continent (lot 6, QUE-29 ; Figma « Continent — Europe », 81:3 ordinateur et 81:168
-// téléphone) : fil d'Ariane « Monde › Europe », carte du continent à gauche, panneau à droite
-// (sur téléphone : la carte, puis le panneau avec sa poignée). Le panneau reçoit les chiffres,
-// les pays et les espèces avec QUE-30 ; il montre déjà le surtitre et le nom.
+// Page d'un continent (lot 6, QUE-29 et QUE-30 ; Figma « Continent — Europe », 81:3 ordinateur
+// et 81:168 téléphone) : fil d'Ariane « Monde › Europe », carte du continent à gauche, panneau
+// des espèces à droite (sur téléphone : la carte, puis le panneau avec sa poignée). Le panneau
+// montre le continent ou le pays choisi (?pays=ch) : chiffres, pays, onglets Toutes / Menacées /
+// Par groupe et premières espèces. Tout est en liens : la page marche sans JavaScript.
 import CarteContinent from "../components/CarteContinent.astro";
+import LigneEspece from "../components/LigneEspece.astro";
+import PuceFiltre from "../components/PuceFiltre.astro";
+import Statistique from "../components/Statistique.astro";
 import type { Langue } from "../i18n/langues";
 import { langues } from "../i18n/langues";
 import { t } from "../i18n/textes";
 import Base from "../layouts/Base.astro";
 import { CONTINENTS, coordonnees, type CodeContinent } from "../lib/carte/continents";
+import type { ContenuPanneau } from "../lib/carte/serveur";
 import { remplir } from "../lib/especes/affichage";
 import { lien, lienContinent } from "../lib/liens";
 
 interface Props {
   langue: Langue;
   code: CodeContinent;
+  /** Contenu du panneau, ou undefined si les listes ne sont pas disponibles. */
+  panneau: ContenuPanneau | undefined;
 }
 
-const { langue, code } = Astro.props;
+const { langue, code, panneau } = Astro.props;
 const textes = t(langue);
 const continent = CONTINENTS[code];
 const nom = textes.continents[code];
+const base = lienContinent(continent.adresse, langue);
 const adresses = Object.fromEntries(langues.map((l) => [l, lienContinent(continent.adresse, l)])) as Record<Langue, string>;
+const nombre = new Intl.NumberFormat(langue === "fr" ? "fr-FR" : "en-US", { useGrouping: "always" });
+const paysChoisi = panneau?.choix.pays ?? "";
 ---
 
 <Base
-  titre={remplir(textes.carte.titreContinent, { nom })}
+  titre={remplir(textes.carte.titreContinent, { nom: panneau && paysChoisi ? panneau.titre : nom })}
   description={remplir(textes.carte.descriptionContinent, { nom })}
   langue={langue}
   adresses={adresses}
+  indexer={!paysChoisi}
 >
   <div class="page">
     <nav class="fil t-mono-surtitre" aria-label={textes.carte.filAriane}>
       <ol>
         <li><a href={lien("carte", langue)}>{textes.carte.monde}</a></li>
-        <li aria-current="page">{nom}</li>
+        {
+          panneau && paysChoisi ? (
+            <>
+              <li>
+                <a href={base}>{nom}</a>
+              </li>
+              <li aria-current="page">{panneau.titre}</li>
+            </>
+          ) : (
+            <li aria-current="page">{nom}</li>
+          )
+        }
       </ol>
     </nav>
     <div class="colonnes">
-      <CarteContinent langue={langue} code={code} />
-      <section class="panneau" aria-labelledby="nom-continent">
+      <CarteContinent langue={langue} code={code} liens={panneau?.liensPays ?? {}} choisi={paysChoisi} />
+      <section class="panneau" aria-labelledby="nom-panneau">
         <span class="poignee" aria-hidden="true"></span>
-        <p class="t-mono-surtitre surtitre">{textes.carte.continent} · {coordonnees(continent.centre)}</p>
-        <h1 class="t-display-compact" id="nom-continent">{nom}</h1>
+        <p class="t-mono-surtitre surtitre">{panneau?.surtitre ?? `${textes.carte.continent} · ${coordonnees(continent.centre)}`}</p>
+        <h1 class="t-display-compact" id="nom-panneau">{panneau?.titre ?? nom}</h1>
+        {
+          panneau?.retour && (
+            <a class="retour t-libelle-petit" href={panneau.retour.lien}>
+              ← {remplir(textes.panneau.retour, { nom: panneau.retour.libelle })}
+            </a>
+          )
+        }
+        {
+          panneau ? (
+            <>
+              <div class="chiffres">
+                {panneau.chiffres.map((c) => (
+                  <Statistique valeur={nombre.format(c.valeur)} libelle={c.libelle} accent={c.accent ?? false} />
+                ))}
+              </div>
+              <p class="t-mono-surtitre intitule" id="titre-pays">
+                {textes.panneau.choixPays}
+              </p>
+              <ul class="puces" aria-labelledby="titre-pays">
+                {panneau.pays.map((p) => (
+                  <li>
+                    <PuceFiltre href={p.lien} actif={p.actif}>
+                      {p.libelle}
+                    </PuceFiltre>
+                  </li>
+                ))}
+              </ul>
+              <nav class="onglets" aria-label={textes.panneau.choixListe}>
+                <ul class="puces">
+                  {panneau.onglets.map((o) => (
+                    <li>
+                      <PuceFiltre href={o.lien} actif={o.actif}>
+                        {o.libelle}
+                      </PuceFiltre>
+                    </li>
+                  ))}
+                </ul>
+                {panneau.groupes.length > 0 && (
+                  <ul class="puces groupes" aria-label={textes.panneau.choixGroupe}>
+                    {panneau.groupes.map((g) => (
+                      <li>
+                        <PuceFiltre href={g.lien} actif={g.actif}>
+                          {g.libelle}
+                        </PuceFiltre>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </nav>
+              {panneau.lignes.length > 0 ? (
+                <ul class="liste" aria-label={panneau.nomListe}>
+                  {panneau.lignes.map((ligne) => (
+                    <li>
+                      <LigneEspece ligne={ligne} langue={langue} />
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p class="vide t-texte-petit">{textes.panneau.aucune}</p>
+              )}
+            </>
+          ) : (
+            <p class="vide t-texte-petit">{textes.panneau.indisponible}</p>
+          )
+        }
       </section>
     </div>
   </div>
@@ -85,6 +172,9 @@ const adresses = Object.fromEntries(langues.map((l) => [l, lienContinent(contine
   }
   .panneau {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
     padding: var(--space-6) var(--space-5);
     border-top: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
@@ -100,11 +190,64 @@ const adresses = Object.fromEntries(langues.map((l) => [l, lienContinent(contine
     background: var(--color-border-strong);
   }
   .surtitre {
-    margin: 0 0 var(--space-3);
+    margin: 0 0 calc(-1 * var(--space-2));
     color: var(--color-text-highlight);
   }
   h1 {
     margin: 0;
+  }
+  .retour {
+    align-self: flex-start;
+    color: var(--color-text-highlight);
+    text-decoration: none;
+  }
+  .retour:hover {
+    text-decoration: underline;
+  }
+  .chiffres {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+  .intitule {
+    margin: 0 0 calc(-1 * var(--space-2));
+    color: var(--color-text-highlight);
+  }
+  .onglets {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .puces {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .liste {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .vide {
+    margin: 0;
+    color: var(--color-text-secondary);
+  }
+
+  /* Téléphone : pas de puces de pays (maquette) ; on choisit un pays sur la carte. */
+  @media (max-width: 599px) {
+    .intitule,
+    .intitule + .puces {
+      display: none;
+    }
+    .chiffres {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .chiffres :global(.statistique:nth-child(3)) {
+      display: none;
+    }
   }
 
   @media (min-width: 900px) {
