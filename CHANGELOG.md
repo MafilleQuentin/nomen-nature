@@ -6,6 +6,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 ## [Non publié]
 
 ### Ajouté
+- Carte du monde sur l'accueil (lot 6) : continents dans des nuances de vert distinctes, chacun est un lien vers sa page ; frontières Natural Earth 1:110 m déjà projetées en Equal Earth par notre serveur, lisibles sans JavaScript (QUE-29).
+- Pages des continents (`/fr/continent/europe`, `/en/continent/north-america`…), construites d'avance : fil d'Ariane « Monde › Europe », pays du continent en Natural Earth 1:50 m, voisins en sombre, noms des principaux pays sans chevauchement, en-tête du panneau (« Continent · 52°N 15°E ») ; d'après la maquette « Continent — Europe » (QUE-29).
+- Zoom de la carte avec d3-zoom (16 Ko de JavaScript) : molette, glisser, pincer, boutons + et − (sur ordinateur), touches + − 0 et flèches ; les traits et les noms gardent leur taille, et davantage de pays sont nommés en zoomant ; sur téléphone, un doigt fait toujours défiler la page (QUE-29).
+- Outil `tools/carte/pays.ts` (lecteur shapefile sans dépendance, simplification, découpe au cadre) : 16 Ko compressés pour le monde, de 3 à 23 Ko par continent (QUE-29).
 - Moteur de recherche en TypeScript, traduit de l'essai du lot 1 (même score, même tri) : **39/40** sur le jeu de test du lot 1, comme en Python ; lu par notre serveur (index et fiches), le navigateur ne reçoit que les résultats (QUE-27).
 - Espèces proposées : « Tu voulais dire… » quand le texte n'a été trouvé que par le son (« boulot » → bouleaux), espèces les plus observées d'abord, espèces du genre visé (« birch » → bouleaux) : **55/55** recherches de test avec une bonne réponse dans les 5 premières, 54 en première (QUE-27).
 - Suggestions pendant la frappe sur la barre de recherche : îlot Svelte (~15 Ko compressés), au clavier (flèches, Entrée, Échap) et au lecteur d'écran (combobox ARIA), en français, anglais et latin ; API `/api/recherche` (8 espèces, gardées en cache) ; sans JavaScript, la barre reste un formulaire vers la page de résultats (QUE-27).
