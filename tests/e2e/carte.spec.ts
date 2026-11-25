@@ -12,7 +12,7 @@ test.describe("sans JavaScript", () => {
       ["Afrique", "/fr/continent/afrique"],
       ["Amérique du Nord", "/fr/continent/amerique-du-nord"],
       ["Antarctique", "/fr/continent/antarctique"],
-    ]) {
+    ] as const) {
       await expect(carte.getByRole("link", { name: nom, exact: true })).toHaveAttribute("href", adresse);
     }
     // Au clavier : le centre de la zone de l'Europe tombe en mer (pas de clic possible là).
