@@ -1,0 +1,38 @@
+---
+// Courbes de niveau de la carte (lot 6, QUE-31) : la richesse du vivant (espèces observées
+// autour de chaque point, GBIF). Traits fins, une courbe sur quatre plus visible ; à mettre dans
+// une CarteInteractive, au-dessus des terres et sous les noms. Les clics passent au travers.
+// `decoupe` : identifiant d'un clipPath des terres, pour ne dessiner les courbes que sur terre
+// (en mer, les valeurs sont prolongées depuis les côtes et ne veulent rien dire).
+import type { Courbe } from "../lib/carte/courbes";
+
+interface Props {
+  courbes: Courbe[];
+  decoupe?: string;
+}
+
+const { courbes, decoupe } = Astro.props;
+---
+
+<g class="courbes" aria-hidden="true" clip-path={decoupe ? `url(#${decoupe})` : undefined}>
+  {courbes.map((c) => <path class:list={["courbe", { "courbe--maitresse": c.maitresse }]} d={c.chemin} transform="scale(0.1)" />)}
+</g>
+
+<style>
+  .courbes {
+    pointer-events: none;
+  }
+  /* Menthe transparente : visible sur les terres comme sur la mer (le vert des courbes du design
+     system, --color-map-contour, se perdrait sur le vert des terres). */
+  .courbe {
+    fill: none;
+    stroke: var(--color-map-contour-index);
+    stroke-width: 0.7;
+    stroke-opacity: 0.3;
+    stroke-linejoin: round;
+  }
+  .courbe--maitresse {
+    stroke-width: 1;
+    stroke-opacity: 0.6;
+  }
+</style>

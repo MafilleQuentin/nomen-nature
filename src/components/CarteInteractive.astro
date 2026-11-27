@@ -1,0 +1,208 @@
+---
+// Carte interactive (lot 6, QUE-29, décision du 25.11.2026) : SVG déjà projeté en Equal Earth par
+// notre serveur (lisible et cliquable sans JavaScript), et zoom ajouté par un petit script avec
+// d3-zoom (molette, glisser, pincer, boutons + et −, touches + − 0 et flèches). Le contenu
+// (continents ou pays) est dans l'emplacement ; il est dessiné dans le plan de la projection
+// (1 000 unités pour le monde) et cadré par `vue`.
+//
+// Les traits gardent leur épaisseur (vector-effect) et les étiquettes leur taille en pixels
+// pendant le zoom : le script recalcule la taille des textes marqués data-taille (en pixels).
+// Sur téléphone, un doigt fait défiler la page tant que la carte n'est pas zoomée ; deux doigts zooment.
+import BoutonIcone from "./BoutonIcone.astro";
+import type { Langue } from "../i18n/langues";
+import { t } from "../i18n/textes";
+
+interface Props {
+  langue: Langue;
+  /** Cadre du contenu dans le plan : [x, y, largeur, hauteur]. */
+  vue: [number, number, number, number];
+  /** Nom de la carte pour les lecteurs d'écran. */
+  libelle: string;
+  /** Phrase d'aide sous la carte (en bas à gauche). */
+  aide?: string;
+  /** « img » si la carte n'a aucun lien (carte d'un continent), « group » sinon. */
+  role?: "img" | "group";
+  /** Les étiquettes (text[data-taille]) sont choisies par le script selon la place (carte d'un continent). */
+  etiquettesLibres?: boolean;
+  class?: string;
+}
+
+const { langue, vue, libelle, aide, role = "group", etiquettesLibres = false, class: classe } = Astro.props;
+const textes = t(langue).carte;
+---
+
+<div class:list={["carte", classe]} data-carte>
+  <svg
+    class="carte__svg"
+    viewBox={vue.join(" ")}
+    role={role}
+    aria-label={libelle}
+    data-vue={vue.join(" ")}
+    data-etiquettes-libres={etiquettesLibres ? "" : undefined}
+  >
+    <g class="carte__contenu">
+      <slot />
+    </g>
+  </svg>
+  <div class="carte__zoom" hidden data-zoom>
+    <BoutonIcone icone="plus" libelle={textes.zoomer} data-zoom-plus />
+    <BoutonIcone icone="moins" libelle={textes.dezoomer} data-zoom-moins />
+  </div>
+  {aide && <p class="carte__aide t-mono-legende">{aide}</p>}
+</div>
+
+<script>
+  import { select } from "d3-selection";
+  import { zoom, zoomIdentity, type ZoomTransform } from "d3-zoom";
+
+  for (const carte of document.querySelectorAll<HTMLElement>("[data-carte]")) {
+    const svg = carte.querySelector<SVGSVGElement>("svg");
+    const contenu = carte.querySelector<SVGGElement>(".carte__contenu");
+    if (!svg || !contenu) continue;
+    const [x, y, largeur, hauteur] = (svg.dataset["vue"] ?? "0 0 1 1").split(" ").map(Number) as [number, number, number, number];
+    const textes = [...svg.querySelectorAll<SVGTextElement>("text[data-taille]")];
+    let actuel: ZoomTransform = zoomIdentity;
+
+    // Taille des étiquettes en pixels, quels que soient la largeur de la carte et le zoom.
+    const ajuster = () => {
+      const pixels = svg.clientWidth || largeur;
+      const unitesParPixel = largeur / pixels / actuel.k;
+      // Sur une carte étroite (téléphone), les étiquettes rétrécissent un peu : jusqu'à 75 %.
+      const reduction = Math.min(1, Math.max(0.75, pixels / 700));
+      for (const texte of textes) texte.setAttribute("font-size", String(Number(texte.dataset["taille"]) * reduction * unitesParPixel));
+      choisirEtiquettes();
+      // Un doigt fait défiler la page tant que la carte n'est pas zoomée.
+      svg.style.touchAction = actuel.k > 1 ? "none" : "pan-y";
+    };
+
+    // Étiquettes visibles : dans l'ordre (le plus important d'abord), celles qui ne chevauchent
+    // ni une étiquette déjà gardée ni le bord de la carte. Zoomer laisse de la place à d'autres.
+    const choisirEtiquettes = () => {
+      if (!("etiquettesLibres" in svg.dataset)) return;
+      const cadre = svg.getBoundingClientRect();
+      const gardees: DOMRect[] = [];
+      // 14 noms sans zoom (comme la maquette), 10 de plus par niveau de zoom.
+      const maximum = Math.round(14 + (actuel.k - 1) * 10);
+      for (const texte of textes) {
+        if (gardees.length >= maximum) {
+          texte.style.display = "none";
+          continue;
+        }
+        texte.style.display = "inline";
+        const boite = texte.getBoundingClientRect();
+        const dedans = boite.left >= cadre.left && boite.right <= cadre.right && boite.top >= cadre.top && boite.bottom <= cadre.bottom;
+        const libre = gardees.every((g) => boite.left > g.right + 6 || g.left > boite.right + 6 || boite.top > g.bottom + 2 || g.top > boite.bottom + 2);
+        if (dedans && libre) gardees.push(boite);
+        else texte.style.display = "none";
+      }
+    };
+
+    const comportement = zoom<SVGSVGElement, unknown>()
+      .scaleExtent([1, 8])
+      .extent([
+        [x, y],
+        [x + largeur, y + hauteur],
+      ])
+      .translateExtent([
+        [x, y],
+        [x + largeur, y + hauteur],
+      ])
+      .filter((evenement: Event) => {
+        if (evenement.type === "touchstart") return (evenement as TouchEvent).touches.length > 1 || actuel.k > 1;
+        // Souris : bouton principal seulement (comme le filtre d'origine de d3-zoom) ; molette toujours.
+        return evenement.type === "wheel" || !(evenement as MouseEvent).button;
+      })
+      .on("zoom", ({ transform }: { transform: ZoomTransform }) => {
+        actuel = transform;
+        contenu.setAttribute("transform", transform.toString());
+        ajuster();
+      });
+
+    const selection = select(svg).call(comportement);
+    // Sans animation : immédiat, et rien qui bouge pour qui préfère réduire les animations.
+    const zoomer = (facteur: number) => comportement.scaleBy(selection, facteur);
+    const deplacer = (dx: number, dy: number) => comportement.translateBy(selection, (dx * largeur) / 8 / actuel.k, (dy * hauteur) / 8 / actuel.k);
+
+    const boutons = carte.querySelector<HTMLElement>("[data-zoom]");
+    if (boutons) boutons.hidden = false;
+    carte.querySelector("[data-zoom-plus]")?.addEventListener("click", () => zoomer(2));
+    carte.querySelector("[data-zoom-moins]")?.addEventListener("click", () => zoomer(0.5));
+    carte.addEventListener("keydown", (evenement) => {
+      const actions: Record<string, () => unknown> = {
+        "+": () => zoomer(2),
+        "=": () => zoomer(2),
+        "-": () => zoomer(0.5),
+        "0": () => comportement.transform(selection, zoomIdentity),
+        ArrowLeft: () => deplacer(1, 0),
+        ArrowRight: () => deplacer(-1, 0),
+        ArrowUp: () => deplacer(0, 1),
+        ArrowDown: () => deplacer(0, -1),
+      };
+      const action = actions[evenement.key];
+      if (!action || evenement.altKey || evenement.ctrlKey || evenement.metaKey) return;
+      // Les flèches ne déplacent la carte que si elle est zoomée (sinon : défilement normal).
+      if (evenement.key.startsWith("Arrow") && actuel.k === 1) return;
+      evenement.preventDefault();
+      action();
+    });
+    new ResizeObserver(ajuster).observe(svg);
+    ajuster();
+  }
+</script>
+
+<style>
+  .carte {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-xl);
+    background: var(--color-bg-sunken);
+  }
+  .carte__svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    cursor: grab;
+    user-select: none;
+  }
+  .carte__svg:active {
+    cursor: grabbing;
+  }
+  .carte :global(path) {
+    vector-effect: non-scaling-stroke;
+  }
+  .carte__zoom {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  /* Sur un écran étroit, on zoome en pinçant : les boutons cacheraient une partie de la carte. */
+  .carte__zoom,
+  .carte__zoom[hidden] {
+    display: none;
+  }
+  .carte__zoom :global(.bouton-icone) {
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-bg-surface);
+  }
+  .carte__aide {
+    display: none;
+    position: absolute;
+    bottom: var(--space-3);
+    left: var(--space-4);
+    margin: 0;
+    color: var(--color-text-secondary);
+    pointer-events: none;
+  }
+  @media (min-width: 600px) {
+    .carte__aide {
+      display: block;
+    }
+    .carte__zoom:not([hidden]) {
+      display: flex;
+    }
+  }
+</style>

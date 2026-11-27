@@ -72,3 +72,4 @@
 | **WebP** | Format d'image plus léger que le JPEG, lu par tous les navigateurs récents. Wikimedia Commons le fournit pour ses vignettes. |
 | **Homonyme** | Même nom latin donné à deux espèces de règnes différents (*Morus* est un mûrier et un fou de Bassan). Leurs fiches sont départagées par l'identifiant du Catalogue of Life à la fin de l'adresse. |
 | **Zones d'une espèce** | Pays et continents où une espèce a été observée au moins 5 fois (GBIF) ; servent au filtre « Où » de la page de résultats. |
+| **Shapefile** | Format de fichier courant pour les cartes (formes et attributs dans plusieurs fichiers). Natural Earth publie ses pays dans ce format ; notre outil de carte le lit lui-même. |

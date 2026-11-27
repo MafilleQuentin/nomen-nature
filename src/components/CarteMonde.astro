@@ -1,0 +1,120 @@
+---
+// Carte du monde (lot 6, QUE-29) : un lien par continent vers sa page, dans sa nuance de vert, avec
+// son nom ; les îles hors continent (Natural Earth « Seven seas ») en gris. Frontières Natural
+// Earth 1:110 m (tools/carte/pays.ts → src/data/carte/monde.json) ; courbes de niveau par-dessus.
+import monde from "../data/carte/monde.json";
+import type { Langue } from "../i18n/langues";
+import { t } from "../i18n/textes";
+import { CODES_CONTINENTS, CONTINENTS } from "../lib/carte/continents";
+import { lienContinent } from "../lib/liens";
+import type { Courbe } from "../lib/carte/courbes";
+import CarteInteractive from "./CarteInteractive.astro";
+import CourbesDeNiveau from "./CourbesDeNiveau.astro";
+
+interface Props {
+  langue: Langue;
+  /** Courbes de niveau du monde (QUE-31), si le paquet de données en a. */
+  courbes?: Courbe[] | undefined;
+}
+
+const { langue, courbes } = Astro.props;
+const textes = t(langue);
+const vue: [number, number, number, number] = [0, 0, monde.largeur, monde.hauteur];
+const continents = CODES_CONTINENTS.map((code) => ({
+  code,
+  nom: textes.continents[code],
+  lien: lienContinent(CONTINENTS[code].adresse, langue),
+  ...monde.continents[code],
+}));
+---
+
+<CarteInteractive langue={langue} vue={vue} libelle={textes.carte.carteMonde} aide={textes.carte.aideMonde}>
+  <path class="autres" id="terres-autres" d={monde.autres} transform="scale(0.1)" />
+  {
+    continents.map((c) => (
+      <a href={c.lien} class={`continent continent--${c.code.toLowerCase().replace("_", "-")}`} aria-label={c.nom}>
+        <path id={`terres-${c.code.toLowerCase()}`} d={c.chemin} transform="scale(0.1)" />
+      </a>
+    ))
+  }
+  {
+    courbes && (
+      <>
+        <clipPath id="decoupe-terres">
+          <use href="#terres-autres" />
+          {continents.map((c) => (
+            <use href={`#terres-${c.code.toLowerCase()}`} />
+          ))}
+        </clipPath>
+        <CourbesDeNiveau courbes={courbes} decoupe="decoupe-terres" />
+      </>
+    )
+  }
+  {
+    continents.map((c) => (
+      <text class="etiquette" x={c.etiquette[0]} y={c.etiquette[1]} data-taille="12" font-size="9" aria-hidden="true">
+        {c.nom.toLocaleUpperCase(langue)}
+      </text>
+    ))
+  }
+</CarteInteractive>
+
+<style>
+  path {
+    stroke: var(--color-map-coast);
+    stroke-width: 0.6;
+    stroke-linejoin: round;
+    fill-rule: evenodd;
+  }
+  .autres {
+    fill: var(--color-map-neighbor);
+    stroke-opacity: 0.5;
+  }
+  .continent path {
+    transition: fill 0.15s;
+  }
+  .continent:hover path,
+  .continent:focus-visible path {
+    fill: var(--color-map-hover);
+  }
+  .continent:focus-visible {
+    outline: none;
+  }
+  .continent:focus-visible path {
+    stroke: var(--color-border-accent);
+    stroke-width: 2;
+  }
+  .continent--europe path {
+    fill: var(--color-continent-europe);
+  }
+  .continent--africa path {
+    fill: var(--color-continent-africa);
+  }
+  .continent--asia path {
+    fill: var(--color-continent-asia);
+  }
+  .continent--north-america path {
+    fill: var(--color-continent-north-america);
+  }
+  .continent--south-america path {
+    fill: var(--color-continent-south-america);
+  }
+  .continent--oceania path {
+    fill: var(--color-continent-oceania);
+  }
+  .continent--antarctica path {
+    fill: var(--color-continent-antarctica);
+  }
+  .etiquette {
+    fill: var(--color-text-primary);
+    font-family: var(--font-mono);
+    letter-spacing: 0.12em;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    pointer-events: none;
+    paint-order: stroke;
+    stroke: var(--color-bg-sunken);
+    stroke-width: 3px;
+    stroke-opacity: 0.6;
+  }
+</style>

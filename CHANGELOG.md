@@ -5,6 +5,25 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ## [Non publié]
 
+## [0.10.0] - 2026-11-27
+
+Lot 6 terminé : la carte. La carte du monde est sur l'accueil et chaque continent a sa page avec ses pays, dessinées par notre serveur en Equal Earth (Natural Earth) et zoomables à la souris, aux doigts et au clavier. Un panneau montre les espèces du continent ou du pays choisi (toutes, menacées, par groupe), et les courbes de niveau, calculées chaque mois à partir des observations GBIF, montrent où l'on a observé le plus d'espèces. Prochain lot : les listes et l'accueil.
+
+### Ajouté
+- Carte du monde sur l'accueil (lot 6) : continents dans des nuances de vert distinctes, chacun est un lien vers sa page ; frontières Natural Earth 1:110 m déjà projetées en Equal Earth par notre serveur, lisibles sans JavaScript (QUE-29).
+- Pages des continents (`/fr/continent/europe`, `/en/continent/north-america`…), construites d'avance : fil d'Ariane « Monde › Europe », pays du continent en Natural Earth 1:50 m, voisins en sombre, noms des principaux pays sans chevauchement, en-tête du panneau (« Continent · 52°N 15°E ») ; d'après la maquette « Continent — Europe » (QUE-29).
+- Zoom de la carte avec d3-zoom (16 Ko de JavaScript) : molette, glisser, pincer, boutons + et − (sur ordinateur), touches + − 0 et flèches ; les traits et les noms gardent leur taille, et davantage de pays sont nommés en zoomant ; sur téléphone, un doigt fait toujours défiler la page (QUE-29).
+- Panneau des espèces sur la page d'un continent, d'après la maquette : chiffres (espèces observées, menacées, pays), puces des pays (les plus riches, puis « + N »), onglets Toutes / Menacées / Par groupe et premières espèces avec leur badge, liens vers les fiches ; tout en liens, sans JavaScript ; sur téléphone, sous la carte avec sa poignée (QUE-30).
+- Choisir un pays (puce ou carte) montre ses espèces dans le panneau (`?pays=ch`), le pays entouré d'ambre sur la carte et dans le fil d'Ariane « Monde › Europe › Suisse », en attendant les pages pays du lot 7 (QUE-30).
+- Import : adresse de la fiche et groupe dans chaque ligne des listes, listes « toutes » et « menacées » par région (4 014 fichiers de listes) ; données d'exemple complétées (QUE-30).
+- Courbes de niveau calculées sur la carte du monde et des continents : richesse du vivant d'après les espèces distinctes observées par case d'un degré (nouvelle demande SQL à GBIF dans l'import mensuel), échelle logarithmique, terres seules, lissage, d3-contour ; niveaux propres à chaque continent sur sa page ; traits fins, une courbe sur quatre plus marquée, à épaisseur fixe au zoom ; phrase du panneau « Les courbes serrées montrent où la vie est la plus riche » (QUE-31).
+- Import : courbes de niveau dans le paquet (`carte/courbes.json`, 30 Ko compressés pour le monde) ; masque des terres à un degré versionné (`src/data/carte/terres-un-degre.txt`) ; données d'exemple complétées (QUE-31).
+- Outil `tools/carte/pays.ts` (lecteur shapefile sans dépendance, simplification, découpe au cadre) : 16 Ko compressés pour le monde, de 3 à 23 Ko par continent (QUE-29).
+
+### Modifié
+- Accueil rendu par le serveur (courbes de niveau du mois), gardé un jour chez Cloudflare ; 170 Ko (QUE-31).
+- Pages des continents rendues par le serveur (le panneau dépend du pays et de l'onglet choisis), gardées un jour chez Cloudflare avec une entrée par pays et par onglet ; 166 Ko par page (QUE-30).
+
 ## [0.9.0] - 2026-11-27
 
 Lot 5 terminé : la recherche. La barre de recherche propose les espèces pendant la frappe, en français, anglais et latin, même avec des fautes (« boulot » → bouleaux), et mène à une page de résultats avec « Tu voulais dire… » et des filtres par groupe, par statut et par lieu (Monde, ton pays, ton continent), qui marche sans JavaScript. Prochain lot : la carte.
@@ -157,7 +176,8 @@ Fin du cadrage : le projet est défini, aucune ligne de code encore.
 - Coffre Obsidian dans `docs/`.
 - Licence MIT.
 
-[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.9.0...HEAD
+[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.6.0...v0.7.0

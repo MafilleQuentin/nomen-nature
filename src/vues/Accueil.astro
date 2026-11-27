@@ -1,16 +1,21 @@
 ---
 // Accueil provisoire du socle (lot 2) : il sera remplacé par la vraie page d'accueil au lot 7.
+// Depuis le lot 6 (QUE-29), il montre la carte du monde : chaque continent mène à sa page.
 // Une « vue » contient la page ; src/pages/fr/… et src/pages/en/… ne font que l'appeler
 // avec leur langue, pour que les adresses puissent être traduites.
 import type { Langue } from "../i18n/langues";
 import { t } from "../i18n/textes";
+import CarteMonde from "../components/CarteMonde.astro";
 import Base from "../layouts/Base.astro";
+import type { Courbe } from "../lib/carte/courbes";
 
 interface Props {
   langue: Langue;
+  /** Courbes de niveau du monde (QUE-31), si le paquet de données en a. */
+  courbes?: Courbe[] | undefined;
 }
 
-const { langue } = Astro.props;
+const { langue, courbes } = Astro.props;
 const { titre, description, enConstruction } = t(langue).accueil;
 ---
 
@@ -20,15 +25,28 @@ const { titre, description, enConstruction } = t(langue).accueil;
     <h1 class="t-display-grand">{titre}</h1>
     <p class="t-texte-grand">{description}</p>
   </div>
+  <div class="carte-monde">
+    <CarteMonde langue={langue} courbes={courbes} />
+  </div>
 </Base>
 
 <style>
   .page {
     max-width: 960px;
     margin: 0 auto;
-    padding: var(--space-20) var(--space-4);
+    padding: var(--space-20) var(--space-4) var(--space-10);
   }
   .surtitre {
     color: var(--color-text-highlight);
+  }
+  .carte-monde {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 var(--space-4) var(--space-14);
+  }
+  @media (min-width: 900px) {
+    .carte-monde {
+      padding: 0 var(--space-20) var(--space-20);
+    }
   }
 </style>

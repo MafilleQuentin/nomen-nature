@@ -7,6 +7,8 @@
 // - pays.tsv : pays, id, observations — une ligne par couple espèce × pays ;
 // - continents.tsv : continent, id, observations — une ligne par couple espèce × continent
 //   (continent de chaque observation d'après ses coordonnées, décision du 23.11.2026) ;
+// - cases.tsv : lat, lon, especes — espèces distinctes par case d'un degré, pour les courbes de
+//   niveau de la carte (lot 6, QUE-31, décision du 25.11.2026) ;
 // - gbif.json : clés, dates, DOI et licences des téléchargements (à citer), et chiffres.
 //
 // Utilisation : node tools/donnees/gbif.ts
@@ -18,7 +20,8 @@ import { ouvrirParNom, sourceLocale } from "./zip.ts";
 
 const REQUETES = "tools/donnees/requetes";
 // Volumes du 23.11.2026 : 1 734 319 et 5 986 994 lignes. Bien en dessous, quelque chose a changé.
-const LIGNES_MIN = { especes: 1_000_000, pays: 3_000_000, continents: 1_000_000 };
+// Cases d'un degré : environ 25 000 attendues (terres et côtes) ; bien en dessous, quelque chose a changé.
+const LIGNES_MIN = { especes: 1_000_000, pays: 3_000_000, continents: 1_000_000, cases: 10_000 };
 
 /** Catégories UICN « évaluées » : tout sauf NE (non évaluée) et l'absence de statut. */
 const NON_EVALUEE = new Set(["", "NE"]);
@@ -59,10 +62,11 @@ async function ecrireFlux(chemin: string, lignes: AsyncIterable<string[]> | Iter
 }
 
 export async function preparer(dossier = DOSSIER) {
-  const [especes, pays, continents] = await Promise.all([
+  const [especes, pays, continents, cases] = await Promise.all([
     obtenir(join(REQUETES, "especes.sql"), { lignesMin: LIGNES_MIN.especes, dossier }),
     obtenir(join(REQUETES, "especes-par-pays.sql"), { lignesMin: LIGNES_MIN.pays, dossier }),
     obtenir(join(REQUETES, "especes-par-continent.sql"), { lignesMin: LIGNES_MIN.continents, dossier }),
+    obtenir(join(REQUETES, "especes-par-case.sql"), { lignesMin: LIGNES_MIN.cases, dossier }),
   ]);
 
   // 1. Une ligne par espèce : observations additionnées, statut UICN choisi.
@@ -100,12 +104,22 @@ export async function preparer(dossier = DOSSIER) {
     })(),
   );
 
+  // 4. Espèces distinctes par case d'un degré (courbes de niveau de la carte).
+  const nCases = await ecrireFlux(
+    join(dossier, "cases.tsv"),
+    (async function* () {
+      yield ["lat", "lon", "especes"];
+      for await (const c of lignesDuZip(cases.fichier)) yield [c["lat"] ?? "", c["lon"] ?? "", c["especes"] ?? "0"];
+    })(),
+  );
+
   const resume = {
     preparation: new Date().toISOString(),
     especes: nEspeces,
     couples_espece_pays: nCouples,
     couples_espece_continent: nCouplesContinent,
-    telechargements: [especes, pays, continents].map(({ cle, creation, lignes, doi, licence }) => ({
+    cases_un_degre: nCases,
+    telechargements: [especes, pays, continents, cases].map(({ cle, creation, lignes, doi, licence }) => ({
       cle,
       creation,
       lignes,

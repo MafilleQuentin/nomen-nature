@@ -26,6 +26,11 @@ exclude = [
   # cette liste au fur et à mesure qu'elles arrivent (lots 3 à 10).
   '/fr/(autour-de-moi|identifier|especes-menacees|recherche|a-propos|sources-et-credits|confidentialite|mentions-legales)(\.html)?$',
   '/en/(near-me|identify|threatened-species|search|about|sources-and-credits|privacy|legal-notice)(\.html)?$',
+  # Pages rendues à la demande par le serveur (pas de fichier dans dist/client) : vérifiées par
+  # les tests navigateur (tests/e2e/carte.spec.ts). Pages des continents depuis le lot 6 (QUE-30).
+  '/(fr|en)/continent/[a-z-]+(\.html)?$',
+  # Accueil, rendu par le serveur depuis le lot 6 (QUE-31, courbes de niveau du mois).
+  '/(fr|en)(\.html)?$',
   # Sites qui refusent les robots ou demandent une connexion.
   '^https://(www\.)?linkedin\.com',
   '^https://(www\.)?figma\.com',
