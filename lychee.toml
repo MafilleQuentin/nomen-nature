@@ -24,8 +24,8 @@ exclude = [
   '^https://nomenature\.org',
   # Pages prévues dans la table des adresses mais pas encore construites. À retirer de
   # cette liste au fur et à mesure qu'elles arrivent (lots 3 à 10).
-  '/fr/(autour-de-moi|identifier|especes-menacees|recherche|a-propos|sources-et-credits|confidentialite|mentions-legales)(\.html)?$',
-  '/en/(near-me|identify|threatened-species|search|about|sources-and-credits|privacy|legal-notice)(\.html)?$',
+  '/fr/(autour-de-moi|identifier|recherche|a-propos|sources-et-credits|confidentialite|mentions-legales)(\.html)?$',
+  '/en/(near-me|identify|search|about|sources-and-credits|privacy|legal-notice)(\.html)?$',
   # Pages rendues à la demande par le serveur (pas de fichier dans dist/client) : vérifiées par
   # les tests navigateur (tests/e2e/carte.spec.ts). Pages des continents depuis le lot 6 (QUE-30).
   '/(fr|en)/continent/[a-z-]+(\.html)?$',
@@ -33,6 +33,9 @@ exclude = [
   '/(fr|en)(\.html)?$',
   # Pages des pays, rendues par le serveur depuis le lot 7 (QUE-32) : tests/e2e/pays.spec.ts.
   '/(fr/pays|en/country)/[a-z0-9-]+(\.html)?$',
+  # Listes d'un groupe et espèces menacées, rendues par le serveur depuis le lot 7 (QUE-33) : tests/e2e/listes.spec.ts.
+  '/(fr/groupe|en/group)/[a-z0-9-]+(\.html)?$',
+  '/(fr/especes-menacees|en/threatened-species)(\.html)?(\?.*)?$',
   # Sites qui refusent les robots ou demandent une connexion.
   '^https://(www\.)?linkedin\.com',
   '^https://(www\.)?figma\.com',

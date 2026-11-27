@@ -17,6 +17,9 @@ const pages = [
   { nom: "continent (en)", chemin: "/en/continent/north-america" },
   { nom: "pays (fr)", chemin: "/fr/pays/suisse" },
   { nom: "pays (en)", chemin: "/en/country/switzerland" },
+  { nom: "liste d'un groupe (fr)", chemin: "/fr/groupe/oiseaux?lieu=CH" },
+  { nom: "liste d'un groupe (en)", chemin: "/en/group/birds?lieu=monde" },
+  { nom: "espèces menacées (fr)", chemin: "/fr/especes-menacees?lieu=EUROPE" },
 ];
 
 async function auditer(page: Page) {

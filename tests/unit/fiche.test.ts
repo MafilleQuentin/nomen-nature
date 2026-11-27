@@ -16,6 +16,7 @@ import {
   majuscule,
   manques,
   nomAffiche,
+  nomFrancais,
   nombreCourt,
   phraseSaisTu,
   statutAffiche,
@@ -125,6 +126,22 @@ describe("mise en forme", () => {
     expect(nomAffiche(fiche, "fr")).toBe("Chêne pédonculé");
     expect(nomAffiche(fiche, "en")).toBe("Quercus robur");
     expect(majuscule("")).toBe("");
+  });
+
+  it("remet en forme les noms français écrits à l'anglaise (lot 7)", () => {
+    expect(nomFrancais("L'Anguille Européenne")).toBe("L'anguille européenne");
+    expect(nomFrancais("Rouge-Gorge Familier")).toBe("Rouge-gorge familier");
+    expect(nomFrancais("Bouleau á papier")).toBe("Bouleau à papier");
+    // Un nom propre dans un nom bien écrit est gardé.
+    expect(nomFrancais("Pic de Bonaparte")).toBe("Pic de Bonaparte");
+    expect(nomFrancais("Mésange charbonnière")).toBe("Mésange charbonnière");
+    expect(nomFrancais("pinson des arbres")).toBe("pinson des arbres");
+    expect(nomFrancais("Compère De Guinée")).toBe("Compère de Guinée");
+    expect(nomFrancais("Vanneau d'Abyssinie")).toBe("Vanneau d'Abyssinie");
+    expect(nomFrancais("lilas Josika")).toBe("lilas Josika");
+    expect(nomFrancais("Agrion Rougeâtre de l'Est")).toBe("Agrion Rougeâtre de l'Est");
+    expect(nomAffiche({ nom: "Anguilla anguilla", nomFr: "L'Anguille Européenne", nomEn: "European Eel" }, "fr")).toBe("L'anguille européenne");
+    expect(nomAffiche({ nom: "Anguilla anguilla", nomFr: "L'Anguille Européenne", nomEn: "European Eel" }, "en")).toBe("European Eel");
   });
 
   it("raccourcit les grands nombres", () => {

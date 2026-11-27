@@ -18,7 +18,7 @@ Le troisième lot, les **données**, est terminé (v0.7.0) : un import mensuel a
 
 Le deuxième lot, le **socle du site**, est terminé (v0.6.0) : gabarit bilingue (français et anglais) fidèle aux maquettes, page 404, tests automatiques sur GitHub, et un site de test en ligne sur <https://test.nomenature.org> (non indexé).
 
-Le septième lot, les **listes et l'accueil**, est en cours : chaque pays a sa page (`/fr/pays/suisse`), avec ses chiffres, une carte de situation et ses espèces, les menacées d'abord.
+Le septième lot, les **listes et l'accueil**, est en cours : chaque pays a sa page (`/fr/pays/suisse`), avec ses chiffres, une carte de situation et ses espèces, les menacées d'abord ; chaque groupe a sa liste (`/fr/groupe/oiseaux`), près de chez toi, sur ton continent ou dans le monde, et la page des espèces menacées les réunit toutes (`/fr/especes-menacees`).
 
 Le sixième lot, la **carte**, est terminé (v0.10.0) : la carte du monde est sur l'accueil, et chaque continent a sa page avec ses pays (`/fr/continent/europe`), zoomable à la souris, aux doigts et au clavier, et un panneau d'espèces (toutes, menacées, par groupe) pour le continent ou le pays choisi. Les courbes de niveau montrent où l'on a observé le plus d'espèces (GBIF).
 

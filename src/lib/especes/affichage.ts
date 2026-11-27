@@ -32,8 +32,39 @@ export function nombreCourt(n: number, langue: Langue): string {
 
 /** Nom affiché en titre : le nom courant dans la langue de la page, sinon le nom latin. */
 export function nomAffiche(fiche: Pick<Fiche, "nom" | "nomFr" | "nomEn">, langue: Langue): string {
-  const courant = langue === "fr" ? fiche.nomFr : fiche.nomEn;
+  const courant = langue === "fr" ? nomFrancais(fiche.nomFr) : fiche.nomEn;
   return majuscule(courant) || fiche.nom;
+}
+
+/**
+ * Nom français remis en forme (lot 7, QUE-33) : certains noms de Wikidata ou du Catalogue of Life
+ * ont une majuscule à chaque mot, à l'anglaise (« L'Anguille Européenne », « Compère De Guinée ») ;
+ * en français, seul le premier mot en prend une, avec les noms propres. Un nom dont le premier
+ * mot, le deuxième et tous les mots de trois lettres ou plus commencent par une majuscule est donc
+ * remis en minuscules, sauf le premier mot et le mot qui suit « de », « du » ou « des » (souvent un
+ * nom propre : « Compère de Guinée »). « Vanneau d'Abyssinie », « Pic de Bonaparte » ou « lilas
+ * Josika » sont gardés. Le « á » (espagnol, « Bouleau á papier ») devient « à ».
+ */
+export function nomFrancais(nom: string): string {
+  const texte = nom.replace(/ á /g, " à ");
+  const mots = texte.split(" ");
+  const debut = /^\p{Lu}/u;
+  const morceaux = mots.flatMap((m) => m.split("-")).slice(1);
+  const enCapitales = debut.test(mots[0] ?? "") && debut.test(morceaux[0] ?? "") && morceaux.filter((m) => m.length >= 3).every((m) => debut.test(m));
+  if (!enCapitales) return texte;
+  const minuscule = (m: string) => m.charAt(0).toLocaleLowerCase("fr") + m.slice(1);
+  return mots
+    .map((mot, i) => {
+      const parties = mot.split("-");
+      // Premier mot : la majuscule reste, l'élision et les mots composés passent en minuscules (« L'anguille »).
+      if (i === 0)
+        return parties
+          .map((p, j) => (j === 0 ? p.replace(/(['’])(\p{Lu})/u, (_, a: string, l: string) => a + l.toLocaleLowerCase("fr")) : minuscule(p)))
+          .join("-");
+      if (/^(de|du|des)$/i.test(mots[i - 1] ?? "")) return mot;
+      return parties.map(minuscule).join("-");
+    })
+    .join(" ");
 }
 
 /** Première lettre en majuscule (« chêne pédonculé » → « Chêne pédonculé »). */
@@ -122,7 +153,10 @@ export function listeDesManques(liste: Manque[], langue: Langue): string {
   const noms = { nom: textes.manqueNom, description: textes.manqueDescription, photo: textes.manquePhoto };
   const mots = liste.map((m) => noms[m]);
   if (mots.length <= 1) return mots.map((m) => `${textes.pasDe} ${m}`).join("");
-  const debut = mots.slice(0, -1).map((m) => `${textes.pasDe} ${m}`).join(", ");
+  const debut = mots
+    .slice(0, -1)
+    .map((m) => `${textes.pasDe} ${m}`)
+    .join(", ");
   return `${debut} ${textes.niDe} ${mots.at(-1)}`;
 }
 

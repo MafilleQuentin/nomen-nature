@@ -184,9 +184,15 @@ describe("listes par pays et par continent (QUE-21)", async () => {
     expect(liste.map((x) => x.id)).toEqual(["d", "b", "c", "a"]);
   });
 
-  it("garde les N premières, plus toutes les menacées au-delà", () => {
+  it("garde les N premières, plus les menacées au-delà", () => {
     const liste = selectionner([c("a", 9, 10), c("b", 8, 10), c("c", 7, 10), c("menacee", 0, 5, "EN"), c("d", 6, 10), c("quasi", 0, 5, "NT")], 3);
     expect(liste.map((x) => x.id)).toEqual(["a", "b", "c", "menacee"]);
+  });
+
+  it("au-delà, garde au plus les N premières menacées : les plus graves, puis les plus observées (lot 7)", () => {
+    const liste = selectionner([c("a", 9, 10), c("vu", 0, 900, "VU"), c("cr", 0, 1, "CR"), c("en", 0, 5, "EN")], 1, 2);
+    // La VU, pourtant plus observée, est laissée ; l'ordre reste celui du classement (observations).
+    expect(liste.map((x) => x.id)).toEqual(["a", "en", "cr"]);
   });
 
   it("liste les menacées du panneau : CR, puis EN, puis VU, les plus observées d'abord (lot 6)", () => {

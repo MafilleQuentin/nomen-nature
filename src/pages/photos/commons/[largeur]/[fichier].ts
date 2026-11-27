@@ -24,5 +24,6 @@ export const GET: APIRoute = async ({ params, request }) => {
   const format = new URL(request.url).searchParams.get("format") === "original" ? "original" : "webp";
   // Repli : l'original, si la photo est plus petite que la vignette demandée.
   const original = `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(nomCommons(fichier))}`;
-  return relayer(request, vignetteCommons(fichier, largeur, format), original);
+  // Une vignette de 330 ou 500 px pèse 20 à 100 Ko : au-delà de 200 Ko, elle est anormale.
+  return relayer(request, vignetteCommons(fichier, largeur, format), original, largeur <= 500 ? 200 * 1024 : undefined);
 };

@@ -37,7 +37,8 @@ import {
 const MAX_EN_MEMOIRE = 64;
 const memoire = new Map<string, Promise<unknown>>();
 
-function lireJson<T>(chemin: string, origine: URL): Promise<T | undefined> {
+/** Fichier JSON du paquet de données, gardé en mémoire tant que le Worker tourne (64 au plus). */
+export function lireJson<T>(chemin: string, origine: URL): Promise<T | undefined> {
   const connu = memoire.get(chemin) as Promise<T | undefined> | undefined;
   if (connu) return connu;
   const lecture = lireFichierDuSite(chemin, origine).then((r) => (r.ok ? (r.json() as Promise<T>) : undefined));
