@@ -9,7 +9,15 @@ export const prerender = false;
 
 export const GET: APIRoute = async ({ params, request }) => {
   const largeur = Number(params["largeur"]);
-  const fichier = params["fichier"] ?? "";
+  // Astro laisse certains caractères encodés dans le paramètre (« , » reste « %2C ») : on décode
+  // une fois de plus, sinon la vignette serait demandée avec « %252C » (introuvable).
+  const brut = params["fichier"] ?? "";
+  let fichier = brut;
+  try {
+    fichier = decodeURIComponent(brut);
+  } catch {
+    // Un « % » isolé dans le nom : on le garde tel quel.
+  }
   // Un nom de fichier Commons : pas de barre oblique, une extension d'image.
   if (!estLargeurCommons(largeur) || !/^[^/]{1,240}\.(jpe?g|png|tiff?|webp|gif)$/i.test(fichier)) return introuvable();
   // ?format=original : vignette dans le format de l'original (image d'aperçu des partages).
