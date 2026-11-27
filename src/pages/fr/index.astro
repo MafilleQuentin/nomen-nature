@@ -1,5 +1,16 @@
 ---
+// Accueil (français). Rendu par le serveur depuis le lot 6 (QUE-31) : la carte du monde porte les
+// courbes de niveau du mois, lues dans le paquet de données. Gardé un jour chez Cloudflare
+// (src/middleware.ts), 5 minutes dans le navigateur.
+import { EN_TETE_CACHE } from "../../lib/cache";
+import { lireCourbes } from "../../lib/carte/courbes";
 import Accueil from "../../vues/Accueil.astro";
+
+export const prerender = false;
+
+const courbes = await lireCourbes(Astro.url);
+Astro.response.headers.set("Cache-Control", "public, max-age=300");
+if (courbes) Astro.response.headers.set(EN_TETE_CACHE, "1");
 ---
 
-<Accueil langue="fr" />
+<Accueil langue="fr" courbes={courbes?.monde} />

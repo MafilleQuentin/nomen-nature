@@ -1,19 +1,23 @@
 ---
 // Carte du monde (lot 6, QUE-29) : un lien par continent vers sa page, dans sa nuance de vert, avec
 // son nom ; les îles hors continent (Natural Earth « Seven seas ») en gris. Frontières Natural
-// Earth 1:110 m (tools/carte/pays.ts → src/data/carte/monde.json).
+// Earth 1:110 m (tools/carte/pays.ts → src/data/carte/monde.json) ; courbes de niveau par-dessus.
 import monde from "../data/carte/monde.json";
 import type { Langue } from "../i18n/langues";
 import { t } from "../i18n/textes";
 import { CODES_CONTINENTS, CONTINENTS } from "../lib/carte/continents";
 import { lienContinent } from "../lib/liens";
+import type { Courbe } from "../lib/carte/courbes";
 import CarteInteractive from "./CarteInteractive.astro";
+import CourbesDeNiveau from "./CourbesDeNiveau.astro";
 
 interface Props {
   langue: Langue;
+  /** Courbes de niveau du monde (QUE-31), si le paquet de données en a. */
+  courbes?: Courbe[] | undefined;
 }
 
-const { langue } = Astro.props;
+const { langue, courbes } = Astro.props;
 const textes = t(langue);
 const vue: [number, number, number, number] = [0, 0, monde.largeur, monde.hauteur];
 const continents = CODES_CONTINENTS.map((code) => ({
@@ -25,13 +29,26 @@ const continents = CODES_CONTINENTS.map((code) => ({
 ---
 
 <CarteInteractive langue={langue} vue={vue} libelle={textes.carte.carteMonde} aide={textes.carte.aideMonde}>
-  <path class="autres" d={monde.autres} transform="scale(0.1)" />
+  <path class="autres" id="terres-autres" d={monde.autres} transform="scale(0.1)" />
   {
     continents.map((c) => (
       <a href={c.lien} class={`continent continent--${c.code.toLowerCase().replace("_", "-")}`} aria-label={c.nom}>
-        <path d={c.chemin} transform="scale(0.1)" />
+        <path id={`terres-${c.code.toLowerCase()}`} d={c.chemin} transform="scale(0.1)" />
       </a>
     ))
+  }
+  {
+    courbes && (
+      <>
+        <clipPath id="decoupe-terres">
+          <use href="#terres-autres" />
+          {continents.map((c) => (
+            <use href={`#terres-${c.code.toLowerCase()}`} />
+          ))}
+        </clipPath>
+        <CourbesDeNiveau courbes={courbes} decoupe="decoupe-terres" />
+      </>
+    )
   }
   {
     continents.map((c) => (

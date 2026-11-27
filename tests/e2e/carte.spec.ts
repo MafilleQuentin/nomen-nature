@@ -82,3 +82,13 @@ test("zoom au clavier et aux boutons, étiquettes à taille fixe", async ({ page
   await page.keyboard.press("-");
   await expect(contenu).toHaveAttribute("transform", /scale\(1\)/);
 });
+
+test("courbes de niveau sur la carte du monde et d'un continent, sous les noms et sans gêner les clics", async ({ page }) => {
+  await page.goto("/fr");
+  const courbesMonde = page.locator(".carte .courbes path.courbe");
+  expect(await courbesMonde.count()).toBeGreaterThan(8);
+  await expect(page.locator(".carte .courbes")).toHaveCSS("pointer-events", "none");
+  await page.goto("/fr/continent/europe");
+  expect(await page.locator(".carte .courbes path.courbe").count()).toBeGreaterThan(4);
+  await expect(page.getByText("Les courbes serrées montrent où la vie est la plus riche", { exact: false })).toBeVisible();
+});

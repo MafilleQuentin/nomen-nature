@@ -150,6 +150,18 @@ La recherche est lue par notre serveur (décision du 24.11.2026). Pour qu'elle r
 
 Le filtre « Où » de la page de résultats (Monde, pays du visiteur, son continent) doit savoir où chaque espèce trouvée a été observée. Comme la recherche ne lit plus les fiches, l'import écrit les pays et continents de chaque espèce (à partir de 5 observations, comme les listes ; pays « ZZ » ignoré) dans des fichiers à part, regroupés par genre avec le même numéro que les fiches ([`zones.ts`](../../tools/donnees/zones.ts), décision du 24.11.2026) : `{ "4R5YN": "AT BE CH …|EUROPE ASIA" }`. Mesuré sur l'import de novembre : **948 659 espèces, 4 018 078 couples** (pays et continents), 3 000 fichiers, 29 Mo, 10 Ko en moyenne et 78 Ko au plus. Le serveur ne les lit que si un lieu est choisi, tous en même temps (au plus une trentaine de fichiers) : ~0,23 s pour une page en local. Paquet complet ≈ 16 800 fichiers.
 
+## Courbes de niveau de la carte (QUE-31, 25.11.2026)
+
+Les courbes montrent la richesse du vivant (décision du 17.11.2026), calculées chaque mois par l'import ([`courbes.ts`](../../tools/carte/courbes.ts), décision du 25.11.2026) :
+
+1. **Données** : une quatrième demande SQL à GBIF ([`especes-par-case.sql`](../../tools/donnees/requetes/especes-par-case.sql)) compte les espèces distinctes observées par case d'un degré (mêmes filtres que les autres demandes, plus les coordonnées sans problème connu) : **53 578 cases**, jusqu'à **32 386 espèces** dans une case (calcul de GBIF : une vingtaine de minutes, fichier de 1 Mo).
+2. **Échelle logarithmique** : passer de 10 à 100 espèces compte autant que de 100 à 1 000.
+3. **Terres seules** : un masque d'un degré tiré des terres de Natural Earth ([`masque.ts`](../../tools/carte/masque.ts), 23 607 cases de terre, versionné) écarte les observations en mer, rares, qui empilaient les courbes le long des côtes ; les autres cases prennent la valeur de leurs voisines, de proche en proche, puis la grille est lissée.
+4. **Niveaux** : sur la carte du monde, 16 courbes régulières (en logarithme) de 10 à environ 12 000 espèces ; sur la carte d'un continent, 12 courbes réparties entre ses propres valeurs (Europe : de 682 à 16 849 espèces), sinon l'Europe, observée partout, n'aurait presque aucune courbe. Une courbe sur quatre est maîtresse (plus visible).
+5. **Affichage** : les courbes sont dessinées seulement sur les terres (découpées par la forme des pays), au-dessus du fond et sous les noms ; elles gardent leur épaisseur au zoom.
+
+**À savoir** : ces courbes montrent aussi l'**effort d'observation** (une case des Alpes : 22 000 espèces observées ; une case de Sibérie : 3). Le panneau le dit : « là où l'on a observé le plus d'espèces ». Poids : 30 Ko compressés pour le monde, de 3 à 14 Ko par continent ; accueil 170 Ko, page Europe 170 Ko.
+
 ## Questions ouvertes (lots suivants)
 
 - **Noms français** : seulement 3,2 % des espèces observées en ont un dans le Catalogue of Life, et Wikidata n'en ajoute que 249. Le titre de l'article Wikipédia français est souvent le nom français (« Chêne pédonculé ») : à étudier pour la recherche et les fiches (76 111 espèces ont un article).
