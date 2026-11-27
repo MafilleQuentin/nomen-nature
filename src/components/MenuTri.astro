@@ -1,0 +1,78 @@
+---
+// Menu « Tri : … ▾ » des listes d'espèces (lot 7 ; Figma « Pays — Suisse » et « Liste d'un
+// groupe — Oiseaux ») : un <details> avec un lien par tri, qui marche sans JavaScript.
+import type { Langue } from "../i18n/langues";
+import { t } from "../i18n/textes";
+import { remplir } from "../lib/especes/affichage";
+import type { Puce } from "../lib/recherche/resultats";
+
+interface Props {
+  langue: Langue;
+  tris: Puce[];
+}
+
+const { langue, tris } = Astro.props;
+const actif = tris.find((p) => p.actif)?.libelle ?? "";
+---
+
+<details class="tri">
+  <summary class="t-mono-navigation">{remplir(t(langue).pays.tri, { tri: actif })} <span aria-hidden="true">▾</span></summary>
+  <ul>
+    {
+      tris.map((p) => (
+        <li>
+          <a class="t-libelle-petit" href={p.lien} aria-current={p.actif ? "true" : undefined}>
+            {p.libelle}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</details>
+
+<style>
+  .tri {
+    position: relative;
+    flex: none;
+  }
+  summary {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    list-style: none;
+    white-space: nowrap;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  ul {
+    position: absolute;
+    right: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    min-width: 220px;
+    margin: 0;
+    padding: var(--space-2);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-surface);
+    list-style: none;
+  }
+  a {
+    display: block;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    text-decoration: none;
+  }
+  a:hover {
+    background: var(--color-bg-surface-raised);
+  }
+  a[aria-current] {
+    color: var(--color-text-highlight);
+  }
+</style>

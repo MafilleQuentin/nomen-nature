@@ -4,10 +4,10 @@
 // du 27.11.2026), chiffres clés, carte de situation, puces des groupes, tri et grille d'espèces
 // (menacées d'abord). Tout est en liens (?groupe=oiseaux&tri=observees&n=32) : la page marche
 // sans JavaScript ; seules les photos attendent d'être à l'écran pour se charger.
-import CarteEspece from "../components/CarteEspece.astro";
 import CarteSituation from "../components/CarteSituation.astro";
+import GrilleEspeces from "../components/GrilleEspeces.astro";
 import ImagesDifferees from "../components/ImagesDifferees.astro";
-import Bouton from "../components/Bouton.astro";
+import MenuTri from "../components/MenuTri.astro";
 import PuceFiltre from "../components/PuceFiltre.astro";
 import Statistique from "../components/Statistique.astro";
 import type { Langue } from "../i18n/langues";
@@ -31,7 +31,6 @@ const nombre = new Intl.NumberFormat(langue === "fr" ? "fr-FR" : "en-US", { useG
 const chiffres = { especes: nombre.format(resume.especes), menacees: nombre.format(resume.menacees) };
 const nomContinent = textes.continents[contenu.continent];
 const surtitre = contenu.centre ? `${textes.pays.surtitre} · ${coordonneesPays(contenu.centre)}` : `${textes.pays.surtitre} · ${nomContinent}`;
-const triActif = contenu.tris.find((p) => p.actif)?.libelle ?? "";
 const avecChoix = Boolean(choix.groupe || choix.tri !== "menacees" || contenu.especes.length > 8);
 ---
 
@@ -77,48 +76,17 @@ const avecChoix = Boolean(choix.groupe || choix.tri !== "menacees" || contenu.es
           ))
         }
       </ul>
-      <details class="tri">
-        <summary class="t-mono-navigation">{remplir(textes.pays.tri, { tri: triActif })} <span aria-hidden="true">▾</span></summary>
-        <ul>
-          {
-            contenu.tris.map((p) => (
-              <li>
-                <a class="t-libelle-petit" href={p.lien} aria-current={p.actif ? "true" : undefined}>
-                  {p.libelle}
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-      </details>
+      <MenuTri langue={langue} tris={contenu.tris} />
     </div>
 
-    {
-      contenu.especes.length > 0 ? (
-        <ul class="grille" id="especes" aria-label={textes.pays.especes}>
-          {contenu.especes.map((e) => (
-            <li>
-              <CarteEspece espece={e} langue={langue} photo={contenu.photos.get(e.photo)} />
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p class="vide t-texte-petit">{textes.panneau.aucune}</p>
-      )
-    }
-
-    <div class="suite">
-      {
-        contenu.plus && (
-          <Bouton variante="secondaire" icone="fleche-droite" href={contenu.plus.lien}>
-            {contenu.plus.nombre === 1 ? textes.pays.plusUne : remplir(textes.pays.plus, { n: String(contenu.plus.nombre) })}
-          </Bouton>
-        )
-      }
-      <p class="compte t-mono-legende">
-        {remplir(textes.pays.compte, { n: nombre.format(contenu.especes.length), total: nombre.format(contenu.total) })}
-      </p>
-    </div>
+    <GrilleEspeces
+      langue={langue}
+      especes={contenu.especes}
+      photos={contenu.photos}
+      plus={contenu.plus}
+      compte={remplir(textes.pays.compte, { n: nombre.format(contenu.especes.length), total: nombre.format(contenu.total) })}
+      vide={textes.panneau.aucune}
+    />
   </div>
   <ImagesDifferees />
 </Base>
@@ -224,82 +192,6 @@ const avecChoix = Boolean(choix.groupe || choix.tri !== "menacees" || contenu.es
     scrollbar-width: none;
     list-style: none;
   }
-  .tri {
-    position: relative;
-  }
-  .tri summary {
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-    color: var(--color-text-primary);
-    cursor: pointer;
-    list-style: none;
-  }
-  .tri summary::-webkit-details-marker {
-    display: none;
-  }
-  .tri ul {
-    position: absolute;
-    right: 0;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    min-width: 220px;
-    margin: 0;
-    padding: var(--space-2);
-    border: 1px solid var(--color-border-strong);
-    border-radius: var(--radius-lg);
-    background: var(--color-bg-surface);
-    list-style: none;
-  }
-  .tri a {
-    display: block;
-    padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius-md);
-    color: var(--color-text-primary);
-    text-decoration: none;
-  }
-  .tri a:hover {
-    background: var(--color-bg-surface-raised);
-  }
-  .tri a[aria-current] {
-    color: var(--color-text-highlight);
-  }
-  .grille {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-6);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .grille > li {
-    display: flex;
-  }
-  .grille :global(.carte) {
-    flex: 1;
-  }
-  .vide {
-    margin: 0;
-    color: var(--color-text-secondary);
-  }
-  .suite {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-4);
-  }
-  .compte {
-    margin: 0;
-    color: var(--color-text-secondary);
-  }
-
-  @media (min-width: 600px) {
-    .grille {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
 
   @media (min-width: 900px) {
     .page {
@@ -340,9 +232,6 @@ const avecChoix = Boolean(choix.groupe || choix.tri !== "menacees" || contenu.es
     }
     .chiffres :global(.chiffres__groupes) {
       display: flex;
-    }
-    .grille {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
 

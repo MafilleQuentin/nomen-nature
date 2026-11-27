@@ -1,0 +1,94 @@
+---
+// Grille de cartes espèce des listes (lot 7 ; Figma « Pays — Suisse » et « Liste d'un groupe —
+// Oiseaux ») : une carte par espèce (photo Commons créditée, sinon courbes de niveau), puis
+// « Afficher N espèces de plus » (un lien vers la même page avec plus de cartes) et le décompte.
+// Mettre ImagesDifferees dans la page pour charger les photos quand elles arrivent à l'écran.
+import type { Langue } from "../i18n/langues";
+import { t } from "../i18n/textes";
+import type { EspecePays } from "../lib/carte/especes-pays";
+import { remplir } from "../lib/especes/affichage";
+import type { Photo } from "../lib/especes/photos";
+import Bouton from "./Bouton.astro";
+import CarteEspece from "./CarteEspece.astro";
+
+interface Props {
+  langue: Langue;
+  especes: EspecePays[];
+  photos: Map<string, Photo>;
+  /** « Afficher N espèces de plus », s'il en reste. */
+  plus?: { nombre: number; lien: string } | undefined;
+  /** Décompte sous la grille (« 8 espèces sur 429 observées »). */
+  compte: string;
+  /** Texte quand la liste est vide. */
+  vide: string;
+}
+
+const { langue, especes, photos, plus, compte, vide } = Astro.props;
+const textes = t(langue).pays;
+---
+
+{
+  especes.length > 0 ? (
+    <ul class="grille" id="especes" aria-label={textes.especes}>
+      {especes.map((e) => (
+        <li>
+          <CarteEspece espece={e} langue={langue} photo={photos.get(e.photo)} />
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p class="vide t-texte-petit">{vide}</p>
+  )
+}
+
+<div class="suite">
+  {
+    plus && (
+      <Bouton variante="secondaire" icone="fleche-droite" href={plus.lien}>
+        {plus.nombre === 1 ? textes.plusUne : remplir(textes.plus, { n: String(plus.nombre) })}
+      </Bouton>
+    )
+  }
+  <p class="compte t-mono-legende">{compte}</p>
+</div>
+
+<style>
+  .grille {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .grille > li {
+    display: flex;
+  }
+  .grille :global(.carte) {
+    flex: 1;
+  }
+  .vide {
+    margin: 0;
+    color: var(--color-text-secondary);
+  }
+  .suite {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .compte {
+    margin: 0;
+    color: var(--color-text-secondary);
+  }
+  @media (min-width: 600px) {
+    .grille {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 900px) {
+    .grille {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

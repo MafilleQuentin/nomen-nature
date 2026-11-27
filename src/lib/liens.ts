@@ -37,6 +37,11 @@ export function lienPays(adresse: string, langue: Langue): string {
   return `/${langue}/${langue === "fr" ? "pays" : "country"}/${adresse}`;
 }
 
+/** Adresse de la liste d'un groupe (/fr/groupe/oiseaux, /en/group/birds) ; `adresse` dans la langue de la page. */
+export function lienGroupe(adresse: string, langue: Langue): string {
+  return `/${langue}/${langue === "fr" ? "groupe" : "group"}/${adresse}`;
+}
+
 /** Début de l'adresse des fiches espèces dans chaque langue (/fr/espece/quercus-robur). */
 const prefixesEspece: Record<Langue, string> = { fr: "/fr/espece", en: "/en/species" };
 

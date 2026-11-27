@@ -10,6 +10,7 @@
         "http://127.0.0.1:8789/fr/espece/quercus-robur",
         "http://127.0.0.1:8789/fr/continent/europe",
         "http://127.0.0.1:8789/fr/pays/suisse",
+        "http://127.0.0.1:8789/fr/groupe/oiseaux?lieu=CH",
         "http://127.0.0.1:8789/fr/recherche?q=chene"
       ],
       "numberOfRuns": 3,

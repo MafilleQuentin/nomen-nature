@@ -1,0 +1,38 @@
+---
+// Liste d'un groupe en français (/fr/groupe/oiseaux?lieu=CH&statut=menacees&tri=menacees&n=32), rendue à la demande par le Worker à partir des listes du mois
+// (lot 7, QUE-33). 5 minutes dans le navigateur seulement (« private ») : le lieu proposé et les
+// puces du filtre « Où » dépendent du pays du visiteur (Cloudflare, jamais enregistré).
+import MessageEtat from "../../../components/MessageEtat.astro";
+import { t } from "../../../i18n/textes";
+import Base from "../../../layouts/Base.astro";
+import { chargerListe } from "../../../lib/listes/serveur";
+import { lieuxDuVisiteur } from "../../../lib/recherche/lieux";
+import ListeEspeces from "../../../vues/ListeEspeces.astro";
+
+export const prerender = false;
+
+const cf = (Astro.request as Request & { cf?: { country?: unknown; continent?: unknown } }).cf;
+const contenu = await chargerListe(Astro.url, "fr", "groupe", Astro.params.adresse ?? "", lieuxDuVisiteur(cf));
+if (contenu === "inconnu") return Astro.rewrite("/404");
+if (contenu === "indisponible") Astro.response.status = 503;
+Astro.response.headers.set("Cache-Control", contenu === "indisponible" ? "no-store" : "private, max-age=300");
+const textes = t("fr");
+---
+
+{
+  contenu === "indisponible" ? (
+    <Base titre={textes.pays.indisponible} description={textes.panneau.indisponible} langue="fr" indexer={false}>
+      <div class="indisponible">
+        <MessageEtat niveau={1} titre={textes.pays.indisponible} texte={textes.panneau.indisponible} />
+      </div>
+    </Base>
+  ) : (
+    <ListeEspeces langue="fr" contenu={contenu} />
+  )
+}
+
+<style>
+  .indisponible {
+    padding: var(--space-14) var(--space-5);
+  }
+</style>

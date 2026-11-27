@@ -1,0 +1,225 @@
+---
+// Liste d'un groupe (lot 7, QUE-33 ; Figma « Liste d'un groupe — Oiseaux », 95:218 ordinateur et
+// 95:362 téléphone) et page des espèces menacées, qui reprend ce modèle avec le filtre « Menacées »
+// activé et les groupes à la place du statut. Fil d'Ariane « Explorer › Oiseaux », surtitre,
+// titre, phrase, filtres Où et Statut (ou Groupe), tri, grille d'espèces et « Afficher plus ».
+// Tout est en liens : la page marche sans JavaScript.
+import GrilleEspeces from "../components/GrilleEspeces.astro";
+import ImagesDifferees from "../components/ImagesDifferees.astro";
+import MenuTri from "../components/MenuTri.astro";
+import PuceFiltre from "../components/PuceFiltre.astro";
+import type { Langue } from "../i18n/langues";
+import { t } from "../i18n/textes";
+import Base from "../layouts/Base.astro";
+import { remplir } from "../lib/especes/affichage";
+import type { ContenuListe } from "../lib/listes/serveur";
+import { lien } from "../lib/liens";
+
+interface Props {
+  langue: Langue;
+  contenu: ContenuListe;
+}
+
+const { langue, contenu } = Astro.props;
+const textes = t(langue);
+const { mode, choix } = contenu;
+const nombre = new Intl.NumberFormat(langue === "fr" ? "fr-FR" : "en-US", { useGrouping: "always" });
+const nomGroupe = (textes.groupes as Record<string, string>)[choix.groupe] ?? "";
+const titre = mode === "groupe" ? nomGroupe : textes.listes.menacees;
+const surtitre = remplir(mode === "groupe" ? textes.listes.surtitreGroupe : textes.listes.surtitreMenacees, { n: nombre.format(contenu.totalMonde) });
+const lieu = contenu.nomLieu;
+const total = nombre.format(contenu.total);
+const resume = remplir(choix.menacees ? textes.listes.resumeMenacees : textes.listes.resume, { total, lieu });
+// Rangées de filtres : Où, puis Statut (groupe) ou Groupe (menacées).
+const rangees = [
+  { nom: textes.listes.ou, puces: contenu.lieux },
+  mode === "groupe" ? { nom: textes.listes.statut, puces: contenu.statuts } : { nom: textes.listes.groupe, puces: contenu.groupes },
+];
+---
+
+<Base
+  titre={mode === "groupe" ? remplir(textes.listes.titreGroupe, { groupe: nomGroupe }) : textes.listes.titreMenacees}
+  description={mode === "groupe" ? remplir(textes.listes.descriptionGroupe, { groupe: nomGroupe }) : textes.listes.descriptionMenacees}
+  langue={langue}
+  adresses={contenu.adresses}
+  indexer={!contenu.avecChoix}
+>
+  <div class="page">
+    <nav class="fil t-mono-surtitre" aria-label={textes.carte.filAriane}>
+      <ol>
+        <li><a href={lien("carte", langue)}>{textes.listes.explorer}</a></li>
+        <li aria-current="page">{titre}</li>
+      </ol>
+    </nav>
+
+    <div class="presentation">
+      <p class="t-mono-surtitre surtitre">{surtitre}</p>
+      <h1 class="titre">{titre}</h1>
+      <p class="phrase t-texte-grand">{mode === "groupe" ? textes.listes.phraseGroupe : textes.listes.phraseMenacees}</p>
+      <p class="resume t-mono-legende">{resume}</p>
+    </div>
+
+    <div class="filtres">
+      {
+        rangees.map((r) => (
+          <div class="rangee">
+            <span class="t-mono-surtitre intitule" aria-hidden="true">
+              {r.nom}
+            </span>
+            <ul class="puces" aria-label={r.nom}>
+              {r.puces.map((p) => (
+                <li>
+                  <PuceFiltre href={p.lien} actif={p.actif}>
+                    {p.libelle}
+                  </PuceFiltre>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+      <MenuTri langue={langue} tris={contenu.tris} />
+    </div>
+
+    <GrilleEspeces
+      langue={langue}
+      especes={contenu.especes}
+      photos={contenu.photos}
+      plus={contenu.plus}
+      compte={remplir(textes.listes.compte, { n: nombre.format(contenu.especes.length), total, lieu })}
+      vide={textes.listes.vide}
+    />
+  </div>
+  <ImagesDifferees />
+</Base>
+
+<style>
+  /* Fond de courbes de niveau sur toute la page, comme la page d'un pays (maquette). */
+  :global(body) {
+    background:
+      url("../assets/motifs/courbes-telephone.svg") top left / max(100%, 390px) auto no-repeat,
+      var(--color-bg-page);
+  }
+  @media (min-width: 600px) {
+    :global(body) {
+      background:
+        url("../assets/motifs/courbes-ordinateur.svg") top left / max(100%, 1440px) auto no-repeat,
+        var(--color-bg-page);
+    }
+  }
+
+  .page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    padding: var(--space-6) var(--space-5) var(--space-14);
+  }
+  .fil ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fil li + li::before {
+    content: "›";
+    margin-right: var(--space-2);
+    color: var(--color-text-secondary);
+  }
+  .fil a {
+    color: var(--color-text-highlight);
+    text-decoration: none;
+  }
+  .fil a:hover {
+    text-decoration: underline;
+  }
+  .fil [aria-current] {
+    color: var(--color-text-primary);
+  }
+  .presentation {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .presentation p,
+  .titre {
+    margin: 0;
+  }
+  .surtitre {
+    color: var(--color-text-highlight);
+  }
+  .titre {
+    font: 700 34px / 1.08 var(--font-titre);
+    letter-spacing: -0.02em;
+  }
+  .phrase {
+    color: var(--color-text-secondary);
+  }
+  .resume {
+    color: var(--color-text-secondary);
+  }
+  /* Téléphone : ni surtitre ni phrase, le décompte sous le titre ; les filtres en une rangée qui défile (maquette). */
+  .surtitre,
+  .phrase {
+    display: none;
+  }
+  .filtres {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-6);
+  }
+  .rangee {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-width: 0;
+    max-width: 100%;
+  }
+  .intitule {
+    display: none;
+    color: var(--color-text-secondary);
+  }
+  .puces {
+    display: flex;
+    gap: var(--space-2);
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    list-style: none;
+  }
+
+  @media (min-width: 900px) {
+    .page {
+      gap: var(--space-8);
+      padding: var(--space-6) var(--space-20) var(--space-20);
+    }
+    .presentation {
+      gap: var(--space-4);
+    }
+    .surtitre,
+    .phrase {
+      display: block;
+    }
+    .resume {
+      display: none;
+    }
+    .titre {
+      font: 700 58px / 1.05 var(--font-titre);
+    }
+    .intitule {
+      display: inline;
+    }
+    .puces {
+      flex-wrap: wrap;
+      overflow: visible;
+    }
+    /* Le tri à droite, sur la même ligne que les filtres. */
+    .filtres :global(.tri) {
+      margin-left: auto;
+    }
+  }
+</style>

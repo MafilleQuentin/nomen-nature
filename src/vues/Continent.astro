@@ -4,6 +4,7 @@
 // des espèces à droite (sur téléphone : la carte, puis le panneau avec sa poignée) : chiffres, pays
 // (liens vers leur page, lot 7), onglets Toutes / Menacées / Par groupe et premières espèces. Tout
 // est en liens : la page marche sans JavaScript.
+import Bouton from "../components/Bouton.astro";
 import CarteContinent from "../components/CarteContinent.astro";
 import LigneEspece from "../components/LigneEspece.astro";
 import PuceFiltre from "../components/PuceFiltre.astro";
@@ -107,6 +108,11 @@ const nombre = new Intl.NumberFormat(langue === "fr" ? "fr-FR" : "en-US", { useG
                 </ul>
               ) : (
                 <p class="vide t-texte-petit">{textes.panneau.aucune}</p>
+              )}
+              {(panneau.chiffres[1]?.valeur ?? 0) > 0 && (
+                <Bouton variante="secondaire" icone="fleche-droite" href={`${lien("menacees", langue)}?lieu=${code}`} class="voir-menacees">
+                  {remplir(textes.panneau.voirMenacees, { n: nombre.format(panneau.chiffres[1]?.valeur ?? 0) })}
+                </Bouton>
               )}
             </>
           ) : (
@@ -213,6 +219,10 @@ const nombre = new Intl.NumberFormat(langue === "fr" ? "fr-FR" : "en-US", { useG
   .vide {
     margin: 0;
     color: var(--color-text-secondary);
+  }
+  .panneau :global(.voir-menacees) {
+    align-self: flex-start;
+    white-space: normal;
   }
 
   /* Téléphone : pas de puces de pays (maquette) ; on choisit un pays sur la carte. */
