@@ -5,6 +5,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ## [Non publié]
 
+## [0.9.0] - 2026-11-27
+
+Lot 5 terminé : la recherche. La barre de recherche propose les espèces pendant la frappe, en français, anglais et latin, même avec des fautes (« boulot » → bouleaux), et mène à une page de résultats avec « Tu voulais dire… » et des filtres par groupe, par statut et par lieu (Monde, ton pays, ton continent), qui marche sans JavaScript. Prochain lot : la carte.
+
 ### Ajouté
 - Moteur de recherche en TypeScript, traduit de l'essai du lot 1 (même score, même tri) : **39/40** sur le jeu de test du lot 1, comme en Python ; lu par notre serveur (index et fiches), le navigateur ne reçoit que les résultats (QUE-27).
 - Espèces proposées : « Tu voulais dire… » quand le texte n'a été trouvé que par le son (« boulot » → bouleaux), espèces les plus observées d'abord, espèces du genre visé (« birch » → bouleaux) : **55/55** recherches de test avec une bonne réponse dans les 5 premières, 54 en première (QUE-27).
@@ -153,7 +157,8 @@ Fin du cadrage : le projet est défini, aucune ligne de code encore.
 - Coffre Obsidian dans `docs/`.
 - Licence MIT.
 
-[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.8.0...HEAD
+[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.5.0...v0.6.0
