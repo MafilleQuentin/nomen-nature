@@ -2,16 +2,20 @@
 // décisions du 23.11.2026 :
 // - une espèce entre dans la liste d'un pays (ou d'un continent) à partir de 5 observations ;
 // - un fichier par région et par groupe courant : les 500 espèces les mieux classées (score
-//   « bien documentée », puis observations dans la région), plus toutes les espèces menacées
-//   (CR, EN, VU) de la région, pour que le filtre « menacées » n'en oublie aucune ;
+//   « bien documentée », puis observations dans la région), plus les espèces menacées (CR, EN,
+//   VU) de la région, 300 au plus (les plus graves, puis les plus observées : lot 7, QUE-33 ; sans
+//   limite, la liste des arbres du monde pesait 1,2 Mo, trop pour le serveur) ;
 // - un résumé par région : nombre d'espèces et d'espèces menacées par groupe ;
 // - le pays « ZZ » (inconnu, souvent en haute mer) n'a pas de liste ;
 // - pour le panneau de la carte (lot 6, QUE-30) : chaque ligne porte l'adresse de la fiche et le
 //   groupe ; deux listes de plus par région, « toutes » (les 100 mieux classées, tous groupes) et
-//   « menacees » (CR, puis EN, puis VU, les plus observées d'abord ; 300 au plus).
+//   « menacees » (CR, puis EN, puis VU, les plus observées d'abord ; 300 au plus) ;
+// - pour les listes d'un groupe (lot 7, QUE-33, décision du 27.11.2026) : les mêmes listes pour le
+//   monde entier, d'après les observations de chaque espèce dans le monde (même seuil).
 //
 // Sorties (dans le paquet) : listes/pays/<CODE>/<groupe>.json, toutes.json, menacees.json et resume.json,
-// listes/continents/<continent>/…, et listes/regions.json (toutes les régions et leurs chiffres).
+// listes/continents/<continent>/…, listes/monde/…, et listes/regions.json (toutes les régions et
+// leurs chiffres, « monde » compris).
 //
 // Utilisation seule : node tools/donnees/listes.ts <dossier COL> <dossier de sortie>
 import { createReadStream, mkdirSync, rmSync, writeFileSync } from "node:fs";
@@ -46,16 +50,18 @@ export function menaceesDAbord(candidates: Candidate[], max = MAX_MENACEES): Can
     .slice(0, max);
 }
 
-/** Les `max` mieux classées, plus toutes les menacées, dans l'ordre (score, puis observations). */
-export function selectionner(candidates: Candidate[], max = MAX_PAR_LISTE): Candidate[] {
-  const triees = [...candidates].sort(ordre);
-  return triees.filter((c, rang) => rang < max || MENACEES.has(c.uicn));
+/** Les `max` mieux classées, plus les `maxMenacees` premières menacées, dans l'ordre (score, puis observations). */
+export function selectionner(candidates: Candidate[], max = MAX_PAR_LISTE, maxMenacees = MAX_MENACEES): Candidate[] {
+  const menacees = new Set(menaceesDAbord(candidates, maxMenacees));
+  return [...candidates].sort(ordre).filter((c, rang) => rang < max || menacees.has(c));
 }
 
 interface Espece {
   groupe: string;
   uicn: string;
   score: number;
+  /** Observations dans le monde. */
+  observations: number;
   nomFr: string;
   photo: string;
 }
@@ -70,6 +76,7 @@ export async function construireListes(dossierCol: string, donnees: string, sort
       groupe: e["groupe"] ?? "",
       uicn: e["uicn"] ?? "NE",
       score: Number(e["score"] ?? 0),
+      observations: Number(e["observations"] ?? 0),
       nomFr: e["nom_fr"] ?? "",
       photo: e["photo"] ?? "",
     });
@@ -90,6 +97,49 @@ export async function construireListes(dossierCol: string, donnees: string, sort
   rmSync(sortie, { recursive: true, force: true });
   const regions: Record<string, Record<string, unknown>> = {};
   let fichiers = 0;
+
+  const ligne = (c: Candidate) => {
+    const e = especes.get(c.id);
+    return [
+      c.id,
+      nomsLatins.get(c.id) ?? "",
+      e?.nomFr ?? "",
+      nomsAnglais.get(c.id) ?? "",
+      c.uicn,
+      c.score,
+      c.observations,
+      e?.photo ?? "",
+      adresses.get(c.id) ?? "",
+      c.groupe ?? "",
+    ];
+  };
+
+  /** Écrit les listes d'une région : une par groupe, « toutes », « menacees » et le résumé. */
+  const ecrireRegion = (dossier: string, region: string, type: string, parGroupe: Map<string, Candidate[]>, total: { especes: number; menacees: number }) => {
+    mkdirSync(dossier, { recursive: true });
+    const resumeGroupes: Record<string, { especes: number; menacees: number }> = {};
+    for (const groupe of GROUPES) {
+      const candidates = parGroupe.get(groupe) ?? [];
+      if (!candidates.length) continue;
+      const choisies = selectionner(candidates);
+      const menacees = candidates.filter((c) => MENACEES.has(c.uicn)).length;
+      resumeGroupes[groupe] = { especes: candidates.length, menacees };
+      const contenu = { region, groupe, especes: candidates.length, menacees, colonnes: COLONNES, lignes: choisies.map(ligne) };
+      writeFileSync(join(dossier, `${groupe}.json`), JSON.stringify(contenu));
+      fichiers++;
+    }
+    // Panneau de la carte : toutes les espèces (les mieux classées) et les menacées, tous groupes.
+    const tous = [...parGroupe.values()].flat();
+    for (const [nom, lignes] of [
+      ["toutes", [...tous].sort(ordre).slice(0, MAX_TOUTES)],
+      ["menacees", menaceesDAbord(tous)],
+    ] as const) {
+      writeFileSync(join(dossier, `${nom}.json`), JSON.stringify({ region, groupe: "", ...total, colonnes: COLONNES, lignes: lignes.map(ligne) }));
+      fichiers++;
+    }
+    writeFileSync(join(dossier, "resume.json"), JSON.stringify({ region, type, ...total, groupes: resumeGroupes }));
+    fichiers++;
+  };
 
   // 2. Pour chaque type de région (pays, continents) : regrouper, sélectionner, écrire.
   for (const [type, fichier, colonne] of [
@@ -115,44 +165,32 @@ export async function construireListes(dossierCol: string, donnees: string, sort
       parRegion.set(region, parGroupe);
     }
 
-    const ligne = (c: Candidate) => {
-      const e = especes.get(c.id);
-      return [c.id, nomsLatins.get(c.id) ?? "", e?.nomFr ?? "", nomsAnglais.get(c.id) ?? "", c.uicn, c.score, c.observations, e?.photo ?? "", adresses.get(c.id) ?? "", c.groupe ?? ""];
-    };
     for (const [region, parGroupe] of parRegion) {
-      const dossier = join(sortie, type, region);
-      mkdirSync(dossier, { recursive: true });
-      const resumeGroupes: Record<string, { especes: number; menacees: number }> = {};
-      for (const groupe of GROUPES) {
-        const candidates = parGroupe.get(groupe) ?? [];
-        if (!candidates.length) continue;
-        const choisies = selectionner(candidates);
-        const menacees = candidates.filter((c) => MENACEES.has(c.uicn)).length;
-        resumeGroupes[groupe] = { especes: candidates.length, menacees };
-        const contenu = { region, groupe, especes: candidates.length, menacees, colonnes: COLONNES, lignes: choisies.map(ligne) };
-        writeFileSync(join(dossier, `${groupe}.json`), JSON.stringify(contenu));
-        fichiers++;
-      }
-      // Panneau de la carte : toutes les espèces (les mieux classées) et les menacées, tous groupes.
-      const tous = [...parGroupe.values()].flat();
       const total = totaux.get(region) ?? { especes: 0, menacees: 0 };
-      for (const [nom, lignes] of [
-        ["toutes", [...tous].sort(ordre).slice(0, MAX_TOUTES)],
-        ["menacees", menaceesDAbord(tous)],
-      ] as const) {
-        writeFileSync(join(dossier, `${nom}.json`), JSON.stringify({ region, groupe: "", ...total, colonnes: COLONNES, lignes: lignes.map(ligne) }));
-        fichiers++;
-      }
-      const resume = { region, type, ...totaux.get(region), groupes: resumeGroupes };
-      writeFileSync(join(dossier, "resume.json"), JSON.stringify(resume));
-      fichiers++;
-      regions[`${type}/${region}`] = { especes: totaux.get(region)?.especes ?? 0, menacees: totaux.get(region)?.menacees ?? 0 };
+      ecrireRegion(join(sortie, type, region), region, type, parGroupe, total);
+      regions[`${type}/${region}`] = { especes: total.especes, menacees: total.menacees };
     }
   }
+
+  // 3. Le monde entier (listes d'un groupe, lot 7) : observations de chaque espèce dans le monde.
+  const monde = new Map<string, Candidate[]>();
+  const totalMonde = { especes: 0, menacees: 0 };
+  for (const [id, e] of especes) {
+    if (e.observations < SEUIL_OBSERVATIONS) continue;
+    totalMonde.especes++;
+    if (MENACEES.has(e.uicn)) totalMonde.menacees++;
+    if (!e.groupe) continue;
+    const liste = monde.get(e.groupe) ?? [];
+    liste.push({ id, groupe: e.groupe, score: e.score, observations: e.observations, uicn: e.uicn });
+    monde.set(e.groupe, liste);
+  }
+  ecrireRegion(join(sortie, "monde"), "monde", "monde", monde, totalMonde);
+  regions["monde"] = totalMonde;
   writeFileSync(join(sortie, "regions.json"), JSON.stringify(regions));
   fichiers++;
   const pays = Object.keys(regions).filter((r) => r.startsWith("pays/")).length;
-  return { pays, continents: Object.keys(regions).length - pays, fichiers };
+  const continents = Object.keys(regions).filter((r) => r.startsWith("continents/")).length;
+  return { pays, continents, monde: totalMonde, fichiers };
 }
 
 if (import.meta.main) {
