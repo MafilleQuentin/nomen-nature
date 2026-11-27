@@ -5,6 +5,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ## [Non publié]
 
+## [0.10.0] - 2026-11-27
+
+Lot 6 terminé : la carte. La carte du monde est sur l'accueil et chaque continent a sa page avec ses pays, dessinées par notre serveur en Equal Earth (Natural Earth) et zoomables à la souris, aux doigts et au clavier. Un panneau montre les espèces du continent ou du pays choisi (toutes, menacées, par groupe), et les courbes de niveau, calculées chaque mois à partir des observations GBIF, montrent où l'on a observé le plus d'espèces. Prochain lot : les listes et l'accueil.
+
 ### Ajouté
 - Carte du monde sur l'accueil (lot 6) : continents dans des nuances de vert distinctes, chacun est un lien vers sa page ; frontières Natural Earth 1:110 m déjà projetées en Equal Earth par notre serveur, lisibles sans JavaScript (QUE-29).
 - Pages des continents (`/fr/continent/europe`, `/en/continent/north-america`…), construites d'avance : fil d'Ariane « Monde › Europe », pays du continent en Natural Earth 1:50 m, voisins en sombre, noms des principaux pays sans chevauchement, en-tête du panneau (« Continent · 52°N 15°E ») ; d'après la maquette « Continent — Europe » (QUE-29).
@@ -172,7 +176,8 @@ Fin du cadrage : le projet est défini, aucune ligne de code encore.
 - Coffre Obsidian dans `docs/`.
 - Licence MIT.
 
-[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.9.0...HEAD
+[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.6.0...v0.7.0
