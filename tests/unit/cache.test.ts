@@ -4,10 +4,14 @@ import { cleDeCache, estPageEnCache } from "../../src/lib/cache.ts";
 import { apercuCommons, vignetteCommons } from "../../src/lib/especes/photos.ts";
 
 describe("cache des pages", () => {
-  it("concerne les fiches espèces, l'accueil et les pages des continents", () => {
+  it("concerne les fiches espèces, l'accueil et les pages des continents et des pays", () => {
     expect(estPageEnCache("/fr/espece/quercus-robur")).toBe(true);
     expect(estPageEnCache("/fr/continent/amerique-du-nord")).toBe(true);
     expect(estPageEnCache("/en/continent/europe")).toBe(true);
+    // Pages des pays (lot 7, QUE-32).
+    expect(estPageEnCache("/fr/pays/suisse")).toBe(true);
+    expect(estPageEnCache("/en/country/switzerland")).toBe(true);
+    expect(estPageEnCache("/fr/pays/suisse/autre")).toBe(false);
     expect(estPageEnCache("/fr/recherche")).toBe(false);
     expect(estPageEnCache("/en/species/morus-alba-4x7qz")).toBe(true);
     expect(estPageEnCache("/fr")).toBe(true); // accueil : carte du monde et ses courbes (lot 6)
@@ -25,6 +29,8 @@ describe("cache des pages", () => {
   it("garde les choix du panneau de la carte dans la clé, dans un ordre fixe", () => {
     const url = new URL("https://nomenature.org/fr/continent/europe?onglet=menacees&utm=x&pays=CH");
     expect(cleDeCache(url, "v1")).toBe("https://nomenature.org/fr/continent/europe?pays=ch&onglet=menacees&version=v1");
+    const pays = new URL("https://nomenature.org/fr/pays/suisse?n=32&tri=observees&groupe=oiseaux&fbclid=1");
+    expect(cleDeCache(pays, "v1")).toBe("https://nomenature.org/fr/pays/suisse?groupe=oiseaux&tri=observees&n=32&version=v1");
   });
 });
 

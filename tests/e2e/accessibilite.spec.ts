@@ -15,6 +15,8 @@ const pages = [
   { nom: "fiche courte (en)", chemin: "/en/species/agrilus-cyanescens" },
   { nom: "continent (fr)", chemin: "/fr/continent/europe" },
   { nom: "continent (en)", chemin: "/en/continent/north-america" },
+  { nom: "pays (fr)", chemin: "/fr/pays/suisse" },
+  { nom: "pays (en)", chemin: "/en/country/switzerland" },
 ];
 
 async function auditer(page: Page) {
