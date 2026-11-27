@@ -32,6 +32,11 @@ export function lienContinent(adresse: Record<Langue, string>, langue: Langue): 
   return `/${langue}/continent/${adresse[langue]}`;
 }
 
+/** Adresse de la page d'un pays (/fr/pays/suisse, /en/country/switzerland) ; `adresse` dans la langue de la page. */
+export function lienPays(adresse: string, langue: Langue): string {
+  return `/${langue}/${langue === "fr" ? "pays" : "country"}/${adresse}`;
+}
+
 /** Début de l'adresse des fiches espèces dans chaque langue (/fr/espece/quercus-robur). */
 const prefixesEspece: Record<Langue, string> = { fr: "/fr/espece", en: "/en/species" };
 

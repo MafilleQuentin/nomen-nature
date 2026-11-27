@@ -1,0 +1,358 @@
+---
+// Page d'un pays (lot 7, QUE-32 ; Figma « Pays — Suisse », 82:151 ordinateur et 82:332 téléphone) :
+// fil d'Ariane « Monde › Europe › Suisse », coordonnées, nom, phrase tirée des chiffres (décision
+// du 27.11.2026), chiffres clés, carte de situation, puces des groupes, tri et grille d'espèces
+// (menacées d'abord). Tout est en liens (?groupe=oiseaux&tri=observees&n=32) : la page marche
+// sans JavaScript ; seules les photos attendent d'être à l'écran pour se charger.
+import CarteEspece from "../components/CarteEspece.astro";
+import CarteSituation from "../components/CarteSituation.astro";
+import ImagesDifferees from "../components/ImagesDifferees.astro";
+import Bouton from "../components/Bouton.astro";
+import PuceFiltre from "../components/PuceFiltre.astro";
+import Statistique from "../components/Statistique.astro";
+import type { Langue } from "../i18n/langues";
+import { t } from "../i18n/textes";
+import Base from "../layouts/Base.astro";
+import { CONTINENTS } from "../lib/carte/continents";
+import { coordonneesPays } from "../lib/carte/pays";
+import type { ContenuPays } from "../lib/carte/serveur";
+import { remplir } from "../lib/especes/affichage";
+import { lien, lienContinent } from "../lib/liens";
+
+interface Props {
+  langue: Langue;
+  contenu: ContenuPays;
+}
+
+const { langue, contenu } = Astro.props;
+const textes = t(langue);
+const { nom, resume, choix } = contenu;
+const nombre = new Intl.NumberFormat(langue === "fr" ? "fr-FR" : "en-US", { useGrouping: "always" });
+const chiffres = { especes: nombre.format(resume.especes), menacees: nombre.format(resume.menacees) };
+const nomContinent = textes.continents[contenu.continent];
+const surtitre = contenu.centre ? `${textes.pays.surtitre} · ${coordonneesPays(contenu.centre)}` : `${textes.pays.surtitre} · ${nomContinent}`;
+const triActif = contenu.tris.find((p) => p.actif)?.libelle ?? "";
+const avecChoix = Boolean(choix.groupe || choix.tri !== "menacees" || contenu.especes.length > 8);
+---
+
+<Base
+  titre={remplir(textes.pays.titre, { nom })}
+  description={remplir(textes.pays.description, { nom, ...chiffres })}
+  langue={langue}
+  adresses={contenu.adresses}
+  indexer={!avecChoix}
+>
+  <div class="page">
+    <nav class="fil t-mono-surtitre" aria-label={textes.carte.filAriane}>
+      <ol>
+        <li class="fil__monde"><a href={lien("carte", langue)}>{textes.carte.monde}</a></li>
+        <li><a href={lienContinent(CONTINENTS[contenu.continent].adresse, langue)}>{nomContinent}</a></li>
+        <li aria-current="page">{nom}</li>
+      </ol>
+    </nav>
+
+    <div class="entete">
+      <div class="presentation">
+        <p class="t-mono-surtitre surtitre">{surtitre}</p>
+        <h1 class="titre">{nom}</h1>
+        <p class="intro t-texte-grand">{remplir(choix.tri === "observees" ? textes.pays.introObservees : textes.pays.intro, chiffres)}</p>
+        <div class="chiffres">
+          <Statistique valeur={chiffres.especes} libelle={textes.panneau.especesObservees} />
+          <Statistique valeur={chiffres.menacees} libelle={textes.panneau.menaceesChiffre} accent />
+          <Statistique class="chiffres__groupes" valeur={String(Object.keys(resume.groupes).length)} libelle={textes.panneau.groupesChiffre} />
+        </div>
+      </div>
+      {contenu.situation && <CarteSituation langue={langue} nom={nom} situation={contenu.situation} />}
+    </div>
+
+    <div class="filtres">
+      <ul class="puces" aria-label={textes.pays.groupes}>
+        {
+          contenu.groupes.map((g) => (
+            <li>
+              <PuceFiltre href={g.lien} actif={g.actif}>
+                {g.libelle}
+              </PuceFiltre>
+            </li>
+          ))
+        }
+      </ul>
+      <details class="tri">
+        <summary class="t-mono-navigation">{remplir(textes.pays.tri, { tri: triActif })} <span aria-hidden="true">▾</span></summary>
+        <ul>
+          {
+            contenu.tris.map((p) => (
+              <li>
+                <a class="t-libelle-petit" href={p.lien} aria-current={p.actif ? "true" : undefined}>
+                  {p.libelle}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </details>
+    </div>
+
+    {
+      contenu.especes.length > 0 ? (
+        <ul class="grille" id="especes" aria-label={textes.pays.especes}>
+          {contenu.especes.map((e) => (
+            <li>
+              <CarteEspece espece={e} langue={langue} photo={contenu.photos.get(e.photo)} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="vide t-texte-petit">{textes.panneau.aucune}</p>
+      )
+    }
+
+    <div class="suite">
+      {
+        contenu.plus && (
+          <Bouton variante="secondaire" icone="fleche-droite" href={contenu.plus.lien}>
+            {contenu.plus.nombre === 1 ? textes.pays.plusUne : remplir(textes.pays.plus, { n: String(contenu.plus.nombre) })}
+          </Bouton>
+        )
+      }
+      <p class="compte t-mono-legende">
+        {remplir(textes.pays.compte, { n: nombre.format(contenu.especes.length), total: nombre.format(contenu.total) })}
+      </p>
+    </div>
+  </div>
+  <ImagesDifferees />
+</Base>
+
+<style>
+  /* Fond de courbes de niveau sur toute la page, comme la page de résultats (maquette). */
+  :global(body) {
+    background:
+      url("../assets/motifs/courbes-telephone.svg") top left / max(100%, 390px) auto no-repeat,
+      var(--color-bg-page);
+  }
+  @media (min-width: 600px) {
+    :global(body) {
+      background:
+        url("../assets/motifs/courbes-ordinateur.svg") top left / max(100%, 1440px) auto no-repeat,
+        var(--color-bg-page);
+    }
+  }
+
+  .page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    padding: var(--space-6) var(--space-5) var(--space-14);
+  }
+  .fil ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fil li + li::before {
+    content: "›";
+    margin-right: var(--space-2);
+    color: var(--color-text-secondary);
+  }
+  /* Téléphone : « Europe › Suisse » (maquette), sans le monde. */
+  .fil__monde {
+    display: none;
+  }
+  .fil .fil__monde + li::before {
+    content: none;
+  }
+  .fil a {
+    color: var(--color-text-highlight);
+    text-decoration: none;
+  }
+  .fil a:hover {
+    text-decoration: underline;
+  }
+  .fil [aria-current] {
+    color: var(--color-text-primary);
+  }
+  .entete,
+  .presentation {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .surtitre,
+  .titre,
+  .intro {
+    margin: 0;
+  }
+  .surtitre {
+    color: var(--color-text-highlight);
+  }
+  .titre {
+    font: 700 34px / 1.08 var(--font-titre);
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+  }
+  /* Téléphone : ni phrase ni nombre de groupes (maquette). */
+  .intro,
+  .chiffres :global(.chiffres__groupes) {
+    display: none;
+  }
+  .intro {
+    color: var(--color-text-secondary);
+  }
+  .chiffres {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+  .filtres {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+  /* Téléphone : une rangée de puces à faire défiler (comme la page de résultats). */
+  .puces {
+    display: flex;
+    gap: var(--space-2);
+    max-width: 100%;
+    margin: 0 calc(-1 * var(--space-5));
+    padding: 0 var(--space-5);
+    overflow-x: auto;
+    scrollbar-width: none;
+    list-style: none;
+  }
+  .tri {
+    position: relative;
+  }
+  .tri summary {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    list-style: none;
+  }
+  .tri summary::-webkit-details-marker {
+    display: none;
+  }
+  .tri ul {
+    position: absolute;
+    right: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    min-width: 220px;
+    margin: 0;
+    padding: var(--space-2);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-surface);
+    list-style: none;
+  }
+  .tri a {
+    display: block;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    text-decoration: none;
+  }
+  .tri a:hover {
+    background: var(--color-bg-surface-raised);
+  }
+  .tri a[aria-current] {
+    color: var(--color-text-highlight);
+  }
+  .grille {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .grille > li {
+    display: flex;
+  }
+  .grille :global(.carte) {
+    flex: 1;
+  }
+  .vide {
+    margin: 0;
+    color: var(--color-text-secondary);
+  }
+  .suite {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .compte {
+    margin: 0;
+    color: var(--color-text-secondary);
+  }
+
+  @media (min-width: 600px) {
+    .grille {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 900px) {
+    .page {
+      gap: var(--space-8);
+      padding: var(--space-6) var(--space-20) var(--space-20);
+    }
+    .fil__monde {
+      display: list-item;
+    }
+    .fil .fil__monde + li::before {
+      content: "›";
+    }
+    .entete {
+      flex-direction: row;
+      align-items: center;
+      gap: var(--space-10);
+    }
+    .presentation {
+      flex: 1;
+      min-width: 0;
+    }
+    .entete :global(.situation) {
+      flex: none;
+      width: min(460px, 40%);
+    }
+    .titre {
+      font: 700 58px / 1.05 var(--font-titre);
+    }
+    .intro {
+      display: block;
+    }
+    .chiffres {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .chiffres :global(.statistique) {
+      width: 180px;
+    }
+    .chiffres :global(.chiffres__groupes) {
+      display: flex;
+    }
+    .grille {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 600px) {
+    .puces {
+      flex: 1;
+      flex-wrap: wrap;
+      margin: 0;
+      padding: 0;
+      overflow: visible;
+    }
+  }
+</style>
