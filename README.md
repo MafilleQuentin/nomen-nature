@@ -18,6 +18,8 @@ Le troisième lot, les **données**, est terminé (v0.7.0) : un import mensuel a
 
 Le deuxième lot, le **socle du site**, est terminé (v0.6.0) : gabarit bilingue (français et anglais) fidèle aux maquettes, page 404, tests automatiques sur GitHub, et un site de test en ligne sur <https://test.nomenature.org> (non indexé).
 
+Le septième lot, les **listes et l'accueil**, est en cours : chaque pays a sa page (`/fr/pays/suisse`), avec ses chiffres, une carte de situation et ses espèces, les menacées d'abord.
+
 Le sixième lot, la **carte**, est terminé (v0.10.0) : la carte du monde est sur l'accueil, et chaque continent a sa page avec ses pays (`/fr/continent/europe`), zoomable à la souris, aux doigts et au clavier, et un panneau d'espèces (toutes, menacées, par groupe) pour le continent ou le pays choisi. Les courbes de niveau montrent où l'on a observé le plus d'espèces (GBIF).
 
 Le cinquième lot, la **recherche**, est terminé (v0.9.0) : la barre de recherche propose les espèces pendant la frappe, en français, anglais et latin, même avec des fautes (« boulot » → bouleaux), et mène à une page de résultats (`/fr/recherche?q=boulot`) avec « Tu voulais dire… » et des filtres par groupe, par statut et par lieu (Monde, ton pays, ton continent), qui marche sans JavaScript.

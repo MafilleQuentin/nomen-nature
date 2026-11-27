@@ -10,6 +10,7 @@
 | **Famille** | Groupe d'espèces apparentées (ex. les Fagacées regroupent chênes, hêtres, châtaigniers). |
 | **Occurrence / observation** | Une trace qu'une espèce a été vue à un endroit et à une date (photo, spécimen de musée, relevé). C'est ce qui permet de dessiner la carte de répartition. |
 | **Carte de répartition** | Carte des endroits où une espèce a été observée. |
+| **Carte de situation** | Petite carte qui montre où se trouve un pays, entouré de ses voisins (page d'un pays). |
 | **GBIF** | *Global Biodiversity Information Facility* : réseau international qui rassemble les observations d'espèces du monde entier. Notre source principale. |
 | **UICN / Liste rouge** | Union internationale pour la conservation de la nature. Sa Liste rouge classe les espèces selon leur risque de disparition. |
 | **Statuts UICN** | LC : préoccupation mineure · NT : quasi menacée · VU : vulnérable · EN : en danger · CR : en danger critique · EW : éteinte à l'état sauvage · EX : éteinte · DD : données insuffisantes. VU, EN et CR sont les espèces dites « menacées ». |
