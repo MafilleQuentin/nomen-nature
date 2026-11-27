@@ -162,6 +162,12 @@ Les courbes montrent la richesse du vivant (décision du 17.11.2026), calculées
 
 **À savoir** : ces courbes montrent aussi l'**effort d'observation** (une case des Alpes : 22 000 espèces observées ; une case de Sibérie : 3). Le panneau le dit : « là où l'on a observé le plus d'espèces ». Poids : 30 Ko compressés pour le monde, de 3 à 14 Ko par continent ; accueil 170 Ko, page Europe 170 Ko.
 
+## Listes du monde et listes d'un groupe (QUE-33, 27.11.2026)
+
+- **Listes du monde** (décision du 27.11.2026) : les mêmes fichiers que pour un pays (`listes/monde/<groupe>.json`, `toutes.json`, `menacees.json`, `resume.json`), d'après les observations de chaque espèce dans le monde, avec le même seuil de 5 observations : **1 021 839 espèces**, dont **37 807 menacées** ; oiseaux : 11 192 espèces.
+- **Menacées plafonnées** : au-delà des 500 mieux classées, une liste garde au plus **300 espèces menacées** (les plus graves, puis les plus observées). Sans limite, la liste des arbres du monde pesait 1,2 Mo (12 856 menacées) et celle des fleurs 1 Mo, trop pour être lues à chaque page par le serveur (10 ms de calcul dans l'offre gratuite). Avec le plafond, aucun fichier de liste ne dépasse 150 Ko (oiseaux du monde : 126 Ko). Les totaux des résumés restent exacts ; une page n'affiche de toute façon que 56 espèces au plus.
+- **Noms français** : environ 1 900 noms de Wikidata ou du Catalogue of Life ont une majuscule à chaque mot (« L'Anguille Européenne ») ; ils sont remis en forme à l'affichage ([`affichage.ts`](../../src/lib/especes/affichage.ts)), sans toucher aux noms propres qui suivent « de » (« Compère de Guinée »).
+
 ## Questions ouvertes (lots suivants)
 
 - **Noms français** : seulement 3,2 % des espèces observées en ont un dans le Catalogue of Life, et Wikidata n'en ajoute que 249. Le titre de l'article Wikipédia français est souvent le nom français (« Chêne pédonculé ») : à étudier pour la recherche et les fiches (76 111 espèces ont un article).

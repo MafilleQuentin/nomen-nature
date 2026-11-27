@@ -6,13 +6,19 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 ## [Non publié]
 
 ### Ajouté
+- Listes d'un groupe, d'après la maquette « Liste d'un groupe — Oiseaux » (ordinateur et téléphone), en français (`/fr/groupe/oiseaux`) et en anglais (`/en/group/birds`), rendues par le serveur : « Groupe · 11 192 espèces observées dans le monde », filtres en liens « Où » (le pays et le continent de la connexion, le monde, ou le lieu d'un lien partagé) et « Statut » (toutes, menacées), tri, grille de cartes espèce et « Afficher 24 espèces de plus » ; sans JavaScript (QUE-33).
+- Page des espèces menacées (`/fr/especes-menacees`, `/en/threatened-species`), sur le même modèle : les plus menacées d'abord, filtres « Où » et « Groupe » ; lien du menu ; bouton « Voir les N espèces menacées » du panneau des continents (QUE-33).
+- Import : listes du monde entier par groupe (`listes/monde/…`, d'après les observations de chaque espèce dans le monde : 1 021 839 espèces observées au moins 5 fois, dont 37 807 menacées) ; données d'exemple complétées (QUE-33).
+- Grille de cartes espèce et menu de tri communs aux pages des pays et aux listes (QUE-33).
 - Pages des pays, d'après la maquette « Pays — Suisse » (ordinateur et téléphone), en français (`/fr/pays/suisse`) et en anglais (`/en/country/switzerland`), rendues par le serveur à partir des listes du mois : fil d'Ariane « Monde › Europe › Suisse », coordonnées, phrase tirée des chiffres, chiffres clés, carte de situation (le pays et ses voisins, point ambre, noms sans chevauchement), puces des groupes, tri « menacées d'abord » ou « les plus observées » (menu qui marche sans JavaScript), grille de cartes espèce avec photo créditée, « Afficher 24 espèces de plus » ; 251 pays et territoires (QUE-32).
 - Outil `tools/carte/pays.ts` : cadre de chaque pays et de son plus grand morceau dans les cartes des continents, continent et position de chaque pays (`src/data/carte/pays.json`) (QUE-32).
 
 ### Modifié
+- Listes : au-delà des 500 mieux classées, les espèces menacées d'un groupe sont plafonnées à 300 (les plus graves, puis les plus observées) ; sans limite, la liste des arbres du monde pesait 1,2 Mo. Les totaux restent exacts (QUE-33).
 - Les pays du panneau des continents (puces et carte) mènent à la page du pays ; l'ancienne adresse `?pays=ch` y est redirigée (QUE-32).
 
 ### Corrigé
+- Noms français écrits à l'anglaise, avec une majuscule à chaque mot (« L'Anguille Européenne », « Compère De Guinée ») : remis en forme à l'affichage (« L'anguille européenne », « Compère de Guinée ») ; « Bouleau á papier » → « Bouleau à papier » ; environ 1 900 noms concernés (QUE-33).
 - Photos Commons dont le nom contient une virgule (« Sociable_Lapwing,_Korgalzhynskiy… ») : le relais de notre serveur répondait 404 (QUE-32).
 
 ## [0.10.0] - 2026-11-27
