@@ -14,6 +14,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 - Outil `tools/carte/pays.ts` : cadre de chaque pays et de son plus grand morceau dans les cartes des continents, continent et position de chaque pays (`src/data/carte/pays.json`) (QUE-32).
 
 ### Modifié
+- Budget de poids des pages de listes avec photos (pays, groupes, espèces menacées) porté à 300 Ko, comme les fiches espèces ; Lighthouse mesure aussi la liste des oiseaux (QUE-33).
 - Listes : au-delà des 500 mieux classées, les espèces menacées d'un groupe sont plafonnées à 300 (les plus graves, puis les plus observées) ; sans limite, la liste des arbres du monde pesait 1,2 Mo. Les totaux restent exacts (QUE-33).
 - Les pays du panneau des continents (puces et carte) mènent à la page du pays ; l'ancienne adresse `?pays=ch` y est redirigée (QUE-32).
 

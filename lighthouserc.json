@@ -10,7 +10,7 @@
         "http://127.0.0.1:8789/fr/espece/quercus-robur",
         "http://127.0.0.1:8789/fr/continent/europe",
         "http://127.0.0.1:8789/fr/pays/suisse",
-        "http://127.0.0.1:8789/fr/groupe/oiseaux?lieu=CH",
+        "http://127.0.0.1:8789/fr/groupe/oiseaux",
         "http://127.0.0.1:8789/fr/recherche?q=chene"
       ],
       "numberOfRuns": 3,
@@ -22,7 +22,7 @@
     "assert": {
       "assertMatrix": [
         {
-          "matchingUrlPattern": "^(?!.*/(espece|species|recherche|search)).*$",
+          "matchingUrlPattern": "^(?!.*/(espece|species|recherche|search|pays|country|groupe|group|threatened-species)).*$",
           "assertions": {
             "categories:performance": [
               "error",
@@ -89,7 +89,7 @@
           }
         },
         {
-          "matchingUrlPattern": ".*/(espece|species)/.*",
+          "matchingUrlPattern": ".*/((espece|species|pays|country|groupe|group)/.*|especes-menacees|threatened-species)([?].*)?$",
           "assertions": {
             "categories:performance": [
               "error",
