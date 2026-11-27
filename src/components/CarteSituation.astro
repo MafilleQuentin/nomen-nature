@@ -1,0 +1,90 @@
+---
+// Carte de situation d'un pays (lot 7, QUE-32 ; Figma « Pays — Suisse », 82:193) : le pays et ses
+// voisins, tirés de la carte de son continent (Natural Earth 1:50 m, src/data/carte/continents),
+// recadrés sur son plus grand morceau ; point ambre et noms en capitales sans chevauchement.
+// Image fixe dessinée par notre serveur, sans JavaScript.
+import type { Langue } from "../i18n/langues";
+import { t } from "../i18n/textes";
+import { choisirEtiquettes } from "../lib/carte/etiquettes";
+import { nomDuPays } from "../lib/carte/panneau";
+import type { Situation } from "../lib/carte/pays";
+import { remplir } from "../lib/especes/affichage";
+
+interface Props {
+  langue: Langue;
+  nom: string;
+  situation: Situation;
+}
+
+const { langue, nom, situation } = Astro.props;
+const { vue, pays, point } = situation;
+// Noms : 12 px pour une carte de 460 px de large (maquette) ; le pays d'abord, sous son point.
+const TAILLE = 12;
+const LARGEUR = 460;
+const taillePlan = (TAILLE * vue[2]) / LARGEUR;
+const rayon = (8 * vue[2]) / LARGEUR;
+const nomPays = { code: "", nom: nom.toLocaleUpperCase(langue), point: [point[0], point[1] + rayon + taillePlan * 0.9] as [number, number], rang: -Infinity };
+const voisins = pays
+  .filter((p) => !p.choisi && p.code)
+  .map((p) => ({ code: p.code, nom: nomDuPays(p.code, langue).toLocaleUpperCase(langue), point: p.etiquette, rang: p.rang }));
+const etiquettes = choisirEtiquettes([nomPays, ...voisins], vue, taillePlan, 4);
+// Le pays est dessiné en dernier : son contour clair passe au-dessus de ceux des voisins.
+const traces = [...pays].sort((a, b) => Number(a.choisi) - Number(b.choisi));
+---
+
+<figure class="situation">
+  <svg viewBox={vue.join(" ")} role="img" aria-label={remplir(t(langue).pays.carte, { nom })} preserveAspectRatio="xMidYMid slice">
+    {traces.map((p) => <path class:list={["terre", { "terre--voisin": !p.membre, "terre--choisie": p.choisi }]} d={p.chemin} transform="scale(0.1)" />)}
+    <circle class="point" cx={point[0]} cy={point[1]} r={rayon} />
+    {
+      etiquettes.map((e) => (
+        <text x={e.point[0]} y={e.point[1]} font-size={taillePlan}>
+          {e.nom}
+        </text>
+      ))
+    }
+  </svg>
+</figure>
+
+<style>
+  .situation {
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-xl);
+    background: var(--color-bg-sunken);
+    aspect-ratio: 460 / 300;
+  }
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .terre {
+    fill: var(--color-bg-land);
+    stroke: var(--color-map-coast);
+    stroke-width: 0.8;
+    stroke-opacity: 0.6;
+    stroke-linejoin: round;
+    fill-rule: evenodd;
+    vector-effect: non-scaling-stroke;
+  }
+  .terre--voisin {
+    fill: var(--color-map-neighbor);
+  }
+  .terre--choisie {
+    stroke: var(--color-text-highlight);
+    stroke-width: 1.5;
+    stroke-opacity: 1;
+  }
+  .point {
+    fill: var(--color-bg-accent);
+  }
+  text {
+    fill: var(--color-text-primary);
+    font-family: var(--font-mono);
+    letter-spacing: 0.12em;
+    text-anchor: middle;
+    dominant-baseline: middle;
+  }
+</style>

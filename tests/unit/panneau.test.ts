@@ -4,17 +4,17 @@ import { describe, expect, it } from "vitest";
 import { adressePanneau, groupeAffiche, lignesPanneau, lireChoix, onglets, pucesGroupes, pucesPays, type Choix } from "../../src/lib/carte/panneau.ts";
 
 const BASE = "/fr/continent/europe";
-const choix = (c: Partial<Choix> = {}): Choix => ({ pays: "", onglet: "toutes", groupe: "", tousLesPays: false, ...c });
+const choix = (c: Partial<Choix> = {}): Choix => ({ onglet: "toutes", groupe: "", tousLesPays: false, ...c });
 
 describe("choix du panneau", () => {
-  it("lit le pays, l'onglet et le groupe, et ignore ce qui n'existe pas", () => {
-    expect(lireChoix(new URLSearchParams("pays=CH&onglet=menacees"), ["ch", "fr"])).toEqual(choix({ pays: "ch", onglet: "menacees" }));
-    expect(lireChoix(new URLSearchParams("pays=us&onglet=tout&groupe=dragons&tous=1"), ["ch"])).toEqual(choix({ tousLesPays: true }));
+  it("lit l'onglet et le groupe, et ignore ce qui n'existe pas (le pays a sa page depuis le lot 7)", () => {
+    expect(lireChoix(new URLSearchParams("pays=CH&onglet=menacees"))).toEqual(choix({ onglet: "menacees" }));
+    expect(lireChoix(new URLSearchParams("onglet=tout&groupe=dragons&tous=1"))).toEqual(choix({ tousLesPays: true }));
   });
 
   it("écrit l'adresse sans les choix par défaut", () => {
     expect(adressePanneau(BASE, choix())).toBe(BASE);
-    expect(adressePanneau(BASE, choix({ pays: "ch", onglet: "groupes", groupe: "oiseaux" }))).toBe(`${BASE}?pays=ch&onglet=groupes&groupe=oiseaux`);
+    expect(adressePanneau(BASE, choix({ onglet: "groupes", groupe: "oiseaux" }))).toBe(`${BASE}?onglet=groupes&groupe=oiseaux`);
     // Le groupe ne compte que dans l'onglet « Par groupe ».
     expect(adressePanneau(BASE, choix({ onglet: "menacees", groupe: "oiseaux" }))).toBe(`${BASE}?onglet=menacees`);
   });
@@ -23,20 +23,19 @@ describe("choix du panneau", () => {
 describe("puces et onglets", () => {
   const pays = ["fr", "de", "gb", "es", "it", "se", "ch", "li"].map((code, i) => ({ code, especes: 1000 - i * 10 }));
 
-  it("montre les 6 pays les plus riches, puis « + N » ; le pays choisi reste visible", () => {
-    const puces = pucesPays(pays, choix(), BASE, "fr");
+  it("montre les 6 pays les plus riches, vers leur page, puis « + N »", () => {
+    const puces = pucesPays(pays, choix(), BASE, "fr", (code) => `/fr/pays/${code}`);
     expect(puces.map((p) => p.libelle)).toEqual(["France", "Allemagne", "Royaume-Uni", "Espagne", "Italie", "Suède", "+ 2"]);
+    expect(puces[0]?.lien).toBe("/fr/pays/fr");
     expect(puces[6]?.lien).toBe(`${BASE}?tous=1`);
-    const avecChoix = pucesPays(pays, choix({ pays: "li", onglet: "menacees" }), BASE, "fr");
-    expect(avecChoix.map((p) => [p.libelle, p.actif])).toContainEqual(["Liechtenstein", true]);
-    // Cliquer le pays choisi revient au continent, en gardant l'onglet.
-    expect(avecChoix.find((p) => p.actif)?.lien).toBe(`${BASE}?onglet=menacees`);
+    const tous = pucesPays(pays, choix({ tousLesPays: true }), BASE, "fr", (code) => code);
+    expect(tous.map((p) => p.libelle)).toContain("Liechtenstein");
   });
 
-  it("garde le pays dans les onglets", () => {
-    const [toutes, menacees] = onglets(choix({ pays: "ch" }), BASE, "en");
-    expect(toutes).toEqual({ libelle: "All", lien: `${BASE}?pays=ch`, actif: true });
-    expect(menacees?.lien).toBe(`${BASE}?pays=ch&onglet=menacees`);
+  it("écrit les onglets", () => {
+    const [toutes, menacees] = onglets(choix(), BASE, "en");
+    expect(toutes).toEqual({ libelle: "All", lien: BASE, actif: true });
+    expect(menacees?.lien).toBe(`${BASE}?onglet=menacees`);
   });
 
   it("montre le groupe le plus fourni d'abord, ou celui choisi", () => {

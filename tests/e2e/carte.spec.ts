@@ -45,16 +45,15 @@ test.describe("sans JavaScript", () => {
     await expect(page.getByRole("list", { name: "Espèces menacées" }).getByRole("link").first()).toContainText("CR");
   });
 
-  test("choisir un pays sur la carte montre ses espèces, puis revient au continent", async ({ page }) => {
+  test("choisir un pays sur la carte mène à sa page (lot 7) ; l'ancienne adresse y est redirigée", async ({ page }) => {
     await page.goto("/fr/continent/europe?onglet=menacees");
     // Au clavier : le lien de la Suisse sur la carte.
     await page.getByRole("link", { name: "Suisse : voir ses espèces" }).focus();
     await page.keyboard.press("Enter");
-    await expect(page).toHaveURL(/\?pays=ch&onglet=menacees$/);
+    await expect(page).toHaveURL(/\/fr\/pays\/suisse$/);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Suisse");
-    await expect(page.getByText("Groupes", { exact: true }).first()).toBeAttached();
-    await page.getByRole("link", { name: /Tout le continent/ }).click();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Europe");
+    await page.goto("/fr/continent/europe?pays=ch&onglet=menacees");
+    await expect(page).toHaveURL(/\/fr\/pays\/suisse$/);
   });
 
   test("un continent inconnu répond 404", async ({ page }) => {

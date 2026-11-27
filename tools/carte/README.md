@@ -5,7 +5,7 @@ Fichiers de carte générés à partir de [Natural Earth](https://www.naturalear
 | Outil | Rôle |
 |---|---|
 | [`fond.ts`](fond.ts) | Fond de la carte de répartition des fiches (lot 4) : terres 1:110 m dans [`src/assets/carte/terres.svg`](../../src/assets/carte/terres.svg) |
-| [`pays.ts`](pays.ts) | Carte interactive (lot 6, QUE-29) : terres de chaque continent pour la carte du monde (1:110 m, [`src/data/carte/monde.json`](../../src/data/carte/monde.json)) et pays de chaque continent (1:50 m, `src/data/carte/continents/<code>.json`), simplifiés et découpés au cadre du continent |
+| [`pays.ts`](pays.ts) | Carte interactive (lot 6, QUE-29) : terres de chaque continent pour la carte du monde (1:110 m, [`src/data/carte/monde.json`](../../src/data/carte/monde.json)) et pays de chaque continent (1:50 m, `src/data/carte/continents/<code>.json`), simplifiés et découpés au cadre du continent ; depuis le lot 7 (QUE-32), le cadre de chaque pays et de son plus grand morceau (carte de situation des pages pays) et `src/data/carte/pays.json` (continent et position de chaque pays) |
 | [`courbes.ts`](courbes.ts) | Courbes de niveau de la carte (lot 6, QUE-31) : richesse du vivant d'après les espèces distinctes par case d'un degré (GBIF), échelle logarithmique, lissage, d3-contour ; lancé par l'import mensuel, résultat dans le paquet de données (`carte/courbes.json`), pas dans le dépôt |
 | [`masque.ts`](masque.ts) | Masque des terres à un degré pour les courbes (Natural Earth 1:110 m), versionné dans [`src/data/carte/terres-un-degre.txt`](../../src/data/carte/terres-un-degre.txt) : l'import mensuel n'a pas Natural Earth |
 | [`donnees-disque.ts`](donnees-disque.ts) | Cadre des cartes des continents lu sur le disque, pour les outils hors du site |

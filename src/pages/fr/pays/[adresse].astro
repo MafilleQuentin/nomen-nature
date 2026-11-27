@@ -1,0 +1,39 @@
+---
+// Page d'un pays (/fr/pays/suisse?groupe=oiseaux&tri=observees&n=32), rendue à la
+// demande par le Worker à partir des listes du mois (lot 7, QUE-32). Gardée un jour chez Cloudflare
+// (src/middleware.ts), une entrée par groupe, tri et nombre ; 5 minutes dans le navigateur.
+import MessageEtat from "../../../components/MessageEtat.astro";
+import { t } from "../../../i18n/textes";
+import Base from "../../../layouts/Base.astro";
+import { EN_TETE_CACHE } from "../../../lib/cache";
+import { chargerPays } from "../../../lib/carte/serveur";
+import Pays from "../../../vues/Pays.astro";
+
+export const prerender = false;
+
+const contenu = await chargerPays(Astro.url, "fr", Astro.params.adresse ?? "");
+// Pays inconnu : la page introuvable du site (voir les pages des continents).
+if (contenu === "inconnu") return Astro.rewrite("/404");
+Astro.response.headers.set("Cache-Control", "public, max-age=300");
+if (contenu === "indisponible") Astro.response.status = 503;
+else Astro.response.headers.set(EN_TETE_CACHE, "1");
+const textes = t("fr");
+---
+
+{
+  contenu === "indisponible" ? (
+    <Base titre={textes.pays.indisponible} description={textes.panneau.indisponible} langue="fr" indexer={false}>
+      <div class="indisponible">
+        <MessageEtat niveau={1} titre={textes.pays.indisponible} texte={textes.panneau.indisponible} />
+      </div>
+    </Base>
+  ) : (
+    <Pays langue="fr" contenu={contenu} />
+  )
+}
+
+<style>
+  .indisponible {
+    padding: var(--space-14) var(--space-5);
+  }
+</style>

@@ -9,6 +9,10 @@ export interface PaysCarte {
   chemin: string;
   etiquette: [number, number];
   rang: number;
+  /** Boîte de tout le pays dans la vue : [x, y, largeur, hauteur] dans le plan (lot 7). */
+  cadre?: [number, number, number, number];
+  /** Boîte de son plus grand morceau sur ce continent (cadre de la carte de situation, lot 7). */
+  principal?: [number, number, number, number];
 }
 
 export interface CarteDuContinent {

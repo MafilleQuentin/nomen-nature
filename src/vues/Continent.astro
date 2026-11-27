@@ -1,9 +1,9 @@
 ---
 // Page d'un continent (lot 6, QUE-29 et QUE-30 ; Figma « Continent — Europe », 81:3 ordinateur
 // et 81:168 téléphone) : fil d'Ariane « Monde › Europe », carte du continent à gauche, panneau
-// des espèces à droite (sur téléphone : la carte, puis le panneau avec sa poignée). Le panneau
-// montre le continent ou le pays choisi (?pays=ch) : chiffres, pays, onglets Toutes / Menacées /
-// Par groupe et premières espèces. Tout est en liens : la page marche sans JavaScript.
+// des espèces à droite (sur téléphone : la carte, puis le panneau avec sa poignée) : chiffres, pays
+// (liens vers leur page, lot 7), onglets Toutes / Menacées / Par groupe et premières espèces. Tout
+// est en liens : la page marche sans JavaScript.
 import CarteContinent from "../components/CarteContinent.astro";
 import LigneEspece from "../components/LigneEspece.astro";
 import PuceFiltre from "../components/PuceFiltre.astro";
@@ -31,51 +31,30 @@ const { langue, code, panneau, courbes } = Astro.props;
 const textes = t(langue);
 const continent = CONTINENTS[code];
 const nom = textes.continents[code];
-const base = lienContinent(continent.adresse, langue);
 const adresses = Object.fromEntries(langues.map((l) => [l, lienContinent(continent.adresse, l)])) as Record<Langue, string>;
 const nombre = new Intl.NumberFormat(langue === "fr" ? "fr-FR" : "en-US", { useGrouping: "always" });
-const paysChoisi = panneau?.choix.pays ?? "";
 ---
 
 <Base
-  titre={remplir(textes.carte.titreContinent, { nom: panneau && paysChoisi ? panneau.titre : nom })}
+  titre={remplir(textes.carte.titreContinent, { nom })}
   description={remplir(textes.carte.descriptionContinent, { nom })}
   langue={langue}
   adresses={adresses}
-  indexer={!paysChoisi}
 >
   <div class="page">
     <nav class="fil t-mono-surtitre" aria-label={textes.carte.filAriane}>
       <ol>
         <li><a href={lien("carte", langue)}>{textes.carte.monde}</a></li>
-        {
-          panneau && paysChoisi ? (
-            <>
-              <li>
-                <a href={base}>{nom}</a>
-              </li>
-              <li aria-current="page">{panneau.titre}</li>
-            </>
-          ) : (
-            <li aria-current="page">{nom}</li>
-          )
-        }
+        <li aria-current="page">{nom}</li>
       </ol>
     </nav>
     <div class="colonnes">
-      <CarteContinent langue={langue} code={code} liens={panneau?.liensPays ?? {}} choisi={paysChoisi} courbes={courbes} />
+      <CarteContinent langue={langue} code={code} liens={panneau?.liensPays ?? {}} courbes={courbes} />
       <section class="panneau" aria-labelledby="nom-panneau">
         <span class="poignee" aria-hidden="true"></span>
         <p class="t-mono-surtitre surtitre">{panneau?.surtitre ?? `${textes.carte.continent} · ${coordonnees(continent.centre)}`}</p>
         <h1 class="t-display-compact" id="nom-panneau">{panneau?.titre ?? nom}</h1>
         {courbes && courbes.length > 0 && <p class="phrase t-texte-petit">{textes.carte.phraseCourbes}</p>}
-        {
-          panneau?.retour && (
-            <a class="retour t-libelle-petit" href={panneau.retour.lien}>
-              ← {remplir(textes.panneau.retour, { nom: panneau.retour.libelle })}
-            </a>
-          )
-        }
         {
           panneau ? (
             <>
@@ -203,14 +182,6 @@ const paysChoisi = panneau?.choix.pays ?? "";
   .phrase {
     margin: 0;
     color: var(--color-text-secondary);
-  }
-  .retour {
-    align-self: flex-start;
-    color: var(--color-text-highlight);
-    text-decoration: none;
-  }
-  .retour:hover {
-    text-decoration: underline;
   }
   .chiffres {
     display: grid;

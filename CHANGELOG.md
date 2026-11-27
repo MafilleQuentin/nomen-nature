@@ -5,6 +5,16 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ## [Non publié]
 
+### Ajouté
+- Pages des pays, d'après la maquette « Pays — Suisse » (ordinateur et téléphone), en français (`/fr/pays/suisse`) et en anglais (`/en/country/switzerland`), rendues par le serveur à partir des listes du mois : fil d'Ariane « Monde › Europe › Suisse », coordonnées, phrase tirée des chiffres, chiffres clés, carte de situation (le pays et ses voisins, point ambre, noms sans chevauchement), puces des groupes, tri « menacées d'abord » ou « les plus observées » (menu qui marche sans JavaScript), grille de cartes espèce avec photo créditée, « Afficher 24 espèces de plus » ; 251 pays et territoires (QUE-32).
+- Outil `tools/carte/pays.ts` : cadre de chaque pays et de son plus grand morceau dans les cartes des continents, continent et position de chaque pays (`src/data/carte/pays.json`) (QUE-32).
+
+### Modifié
+- Les pays du panneau des continents (puces et carte) mènent à la page du pays ; l'ancienne adresse `?pays=ch` y est redirigée (QUE-32).
+
+### Corrigé
+- Photos Commons dont le nom contient une virgule (« Sociable_Lapwing,_Korgalzhynskiy… ») : le relais de notre serveur répondait 404 (QUE-32).
+
 ## [0.10.0] - 2026-11-27
 
 Lot 6 terminé : la carte. La carte du monde est sur l'accueil et chaque continent a sa page avec ses pays, dessinées par notre serveur en Equal Earth (Natural Earth) et zoomables à la souris, aux doigts et au clavier. Un panneau montre les espèces du continent ou du pays choisi (toutes, menacées, par groupe), et les courbes de niveau, calculées chaque mois à partir des observations GBIF, montrent où l'on a observé le plus d'espèces. Prochain lot : les listes et l'accueil.

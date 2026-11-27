@@ -4,7 +4,10 @@
 // - monde.json : Natural Earth 1:110 m, les terres de chaque continent en un chemin (un lien par
 //   continent sur la carte du monde) ;
 // - continents/<code>.json : Natural Earth 1:50 m, les pays visibles dans la vue du continent,
-//   découpés au cadre, avec le point de l'étiquette et le rang de Natural Earth.
+//   découpés au cadre, avec le point de l'étiquette, le rang de Natural Earth, le cadre du pays et
+//   celui de son plus grand morceau (carte de situation des pages pays, lot 7) ;
+// - pays.json : continent de chaque pays (champ CONTINENT de Natural Earth) et point de son
+//   étiquette en degrés (surtitre « Pays · 46.80°N 8.23°E » des pages pays, lot 7).
 //
 // Chaque morceau de terre appartient au continent de son pays (champ CONTINENT), sauf s'il est
 // loin de lui : la Guyane va à l'Amérique du Sud, la Réunion à l'Afrique, la Sibérie à l'Asie
@@ -160,21 +163,36 @@ function continent(code: CodeContinent, pays: Pays[]) {
   for (const p of pays) {
     let membre = false;
     const anneaux: Anneau[] = [];
+    let principal: Rectangle | undefined;
     for (const polygone of p.polygones) {
       const exterieur = polygone[0];
       if (!exterieur) continue;
-      if (continentDuMorceau(centreGeo(exterieur), p.continent) === code) membre = true;
-      for (const anneau of polygone) {
+      const dedans = continentDuMorceau(centreGeo(exterieur), p.continent) === code;
+      if (dedans) membre = true;
+      for (const [rangAnneau, anneau] of polygone.entries()) {
         const projete = projeterAnneau(anneau);
         if (!seCroisent(boite(projete), marge)) continue;
         const decoupe = decouper(projete, marge);
         const simple = decoupe && simplifierAnneau(decoupe, tolerance);
-        if (simple && Math.max(boite(simple)[2], boite(simple)[3]) >= tolerance * 2) anneaux.push(simple);
+        if (!simple || Math.max(boite(simple)[2], boite(simple)[3]) < tolerance * 2) continue;
+        anneaux.push(simple);
+        // Plus grand morceau du pays sur ce continent (sa boîte) : cadre de la carte de situation.
+        const cadre = boite(decoupe ?? simple);
+        if (dedans && rangAnneau === 0 && (!principal || cadre[2] * cadre[3] > principal[2] * principal[3])) principal = cadre;
       }
     }
     if (anneaux.length === 0) continue;
-    const etiquette = projeter(...p.etiquette).map((n) => Math.round(n * 10) / 10) as Point;
-    sortie.push({ code: p.code, membre: membre || p.continent === code, chemin: chemin(anneaux), etiquette, rang: p.rang });
+    const arrondi = (n: number) => Math.round(n * 10) / 10;
+    const etiquette = projeter(...p.etiquette).map(arrondi) as Point;
+    sortie.push({
+      code: p.code,
+      membre: membre || p.continent === code,
+      chemin: chemin(anneaux),
+      etiquette,
+      rang: p.rang,
+      cadre: boite(anneaux.flat()).map(arrondi),
+      ...(principal ? { principal: principal.map(arrondi) } : {}),
+    });
   }
   return { code, vue, pays: sortie };
 }
@@ -186,6 +204,16 @@ if (import.meta.main) {
   writeFileSync(join(SORTIE, "monde.json"), JSON.stringify(carteMonde));
   console.log(`monde.json : ${Math.round(JSON.stringify(carteMonde).length / 1024)} Ko`);
   const pays50 = await lire50m();
+  // Continent et point d'étiquette de chaque pays (le premier enregistrement d'un code l'emporte).
+  // Les îles de « Seven seas (open ocean) » (Maurice, Seychelles…) n'ont pas de continent ici :
+  // src/lib/carte/pays.ts leur en donne un (TERRITOIRES).
+  const infos: Record<string, { continent: CodeContinent | ""; centre: [number, number] }> = {};
+  for (const p of pays50) {
+    if (!p.code || infos[p.code]) continue;
+    infos[p.code] = { continent: p.continent ?? "", centre: [Math.round(p.etiquette[0] * 100) / 100, Math.round(p.etiquette[1] * 100) / 100] };
+  }
+  writeFileSync(join(SORTIE, "pays.json"), JSON.stringify(infos));
+  console.log(`pays.json : ${Object.keys(infos).length} pays`);
   for (const code of CODES_CONTINENTS) {
     const carte = continent(code, pays50);
     const texte = JSON.stringify(carte);

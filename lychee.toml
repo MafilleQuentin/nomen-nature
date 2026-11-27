@@ -31,6 +31,8 @@ exclude = [
   '/(fr|en)/continent/[a-z-]+(\.html)?$',
   # Accueil, rendu par le serveur depuis le lot 6 (QUE-31, courbes de niveau du mois).
   '/(fr|en)(\.html)?$',
+  # Pages des pays, rendues par le serveur depuis le lot 7 (QUE-32) : tests/e2e/pays.spec.ts.
+  '/(fr/pays|en/country)/[a-z0-9-]+(\.html)?$',
   # Sites qui refusent les robots ou demandent une connexion.
   '^https://(www\.)?linkedin\.com',
   '^https://(www\.)?figma\.com',
