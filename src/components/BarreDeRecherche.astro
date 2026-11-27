@@ -1,22 +1,27 @@
 ---
 // Barre de recherche (Figma « Barre de recherche », 75:42) : Grand sur ordinateur, Compact
 // sur téléphone. Formulaire natif qui envoie vers la page de recherche (?q=…) : il marche
-// sans JavaScript. Les suggestions et la tolérance aux fautes arrivent avec le lot 5.
+// sans JavaScript. Avec JavaScript, l'îlot SuggestionsRecherche propose les espèces pendant la
+// frappe (lot 5, QUE-27).
 import type { Langue } from "../i18n/langues";
 import { t } from "../i18n/textes";
 import { lien } from "../lib/liens";
 import Icone from "./Icone.astro";
+import SuggestionsRecherche from "./SuggestionsRecherche.svelte";
 
 interface Props {
   langue: Langue;
   taille?: "grand" | "compact";
   /** Identifiant du champ, à changer s'il y a deux barres sur la même page. */
   id?: string;
+  /** Texte déjà cherché (page de résultats). */
+  valeur?: string;
   class?: string;
 }
 
-const { langue, taille = "grand", id = "recherche", class: classe } = Astro.props;
+const { langue, taille = "grand", id = "recherche", valeur, class: classe } = Astro.props;
 const textes = t(langue).recherche;
+const textesSuggestions = { ...textes, statutUicn: t(langue).fiche.statutUicn };
 ---
 
 <form class:list={["barre", `barre--${taille}`, classe]} role="search" action={lien("recherche", langue)} method="get">
@@ -27,14 +32,17 @@ const textes = t(langue).recherche;
     class:list={["barre__champ", taille === "grand" ? "t-texte-grand" : "t-texte-normal"]}
     type="search"
     name="q"
+    value={valeur}
     placeholder={textes.indicatif}
     autocomplete="off"
     enterkeyhint="search"
   />
+  <SuggestionsRecherche client:idle idChamp={id} langue={langue} lienResultats={lien("recherche", langue)} textes={textesSuggestions} />
 </form>
 
 <style>
   .barre {
+    position: relative;
     display: flex;
     align-items: center;
     gap: var(--space-3);

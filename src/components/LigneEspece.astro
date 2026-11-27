@@ -1,0 +1,79 @@
+---
+// Ligne espèce (Figma « Ligne espèce », 79:36) : vignette, nom, nom latin, information (groupe,
+// observations) et badge de statut. Toute la ligne est un lien vers la fiche. La vignette garde
+// les courbes de niveau de la maquette : la recherche ne lit pas les photos (elles sont dans
+// les fiches, trop lourdes à ouvrir pour chaque résultat).
+import courbes from "../assets/motifs/courbes-carte.svg?url";
+import type { Langue } from "../i18n/langues";
+import type { LigneResultat } from "../lib/recherche/resultats";
+import BadgeStatut from "./BadgeStatut.astro";
+
+interface Props {
+  ligne: LigneResultat;
+  langue: Langue;
+}
+
+const { ligne, langue } = Astro.props;
+---
+
+<a class="ligne" href={ligne.lien}>
+  <span class="vignette" aria-hidden="true">
+    <img src={courbes} alt="" width="302" height="187" loading="lazy" decoding="async" />
+  </span>
+  <span class="texte">
+    <span class="t-titre-carte nom">{ligne.nom}</span>
+    {ligne.nom !== ligne.latin && <span class="t-texte-latin latin" lang="la">{ligne.latin}</span>}
+    {ligne.meta && <span class="t-mono-legende meta">{ligne.meta}</span>}
+    <BadgeStatut uicn={ligne.uicn} langue={langue} class="badge" />
+  </span>
+</a>
+
+<style>
+  .ligne {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--color-border-subtle);
+    color: var(--color-text-primary);
+    text-decoration: none;
+  }
+  .ligne:hover .nom {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .vignette {
+    position: relative;
+    flex: none;
+    width: 56px;
+    height: 56px;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-surface-raised);
+  }
+  .vignette img {
+    position: absolute;
+    top: -40px;
+    left: -60px;
+    width: 302px;
+    max-width: none;
+    height: 187px;
+  }
+  .texte {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+  .nom,
+  .latin,
+  .meta {
+    max-width: 100%;
+  }
+  .latin,
+  .meta {
+    color: var(--color-text-secondary);
+  }
+</style>

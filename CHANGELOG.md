@@ -5,6 +5,31 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 
 ## [Non publié]
 
+## [0.9.0] - 2026-11-27
+
+Lot 5 terminé : la recherche. La barre de recherche propose les espèces pendant la frappe, en français, anglais et latin, même avec des fautes (« boulot » → bouleaux), et mène à une page de résultats avec « Tu voulais dire… » et des filtres par groupe, par statut et par lieu (Monde, ton pays, ton continent), qui marche sans JavaScript. Prochain lot : la carte.
+
+### Ajouté
+- Moteur de recherche en TypeScript, traduit de l'essai du lot 1 (même score, même tri) : **39/40** sur le jeu de test du lot 1, comme en Python ; lu par notre serveur (index et fiches), le navigateur ne reçoit que les résultats (QUE-27).
+- Espèces proposées : « Tu voulais dire… » quand le texte n'a été trouvé que par le son (« boulot » → bouleaux), espèces les plus observées d'abord, espèces du genre visé (« birch » → bouleaux) : **55/55** recherches de test avec une bonne réponse dans les 5 premières, 54 en première (QUE-27).
+- Suggestions pendant la frappe sur la barre de recherche : îlot Svelte (~15 Ko compressés), au clavier (flèches, Entrée, Échap) et au lecteur d'écran (combobox ARIA), en français, anglais et latin ; API `/api/recherche` (8 espèces, gardées en cache) ; sans JavaScript, la barre reste un formulaire vers la page de résultats (QUE-27).
+- Index de la recherche : chaque nom d'espèce porte aussi l'adresse de sa fiche, ses observations, son statut, son groupe et ses noms principaux ; fichiers d'environ 96 Ko (lus par le serveur), 7 274 fichiers. Import : fiches avant l'index (QUE-27).
+- Page de résultats, d'après les maquettes « boulot » (ordinateur et téléphone) et « Aucun résultat », en français (`/fr/recherche?q=…`) et en anglais (`/en/search?q=…`), rendue par le serveur avec le même moteur que les suggestions (30 espèces), **sans JavaScript** et jamais indexée : « Tu voulais dire « … » ? » avec lien vers la recherche corrigée, « N espèces pour « … » », lignes espèce (nom, nom latin, groupe, observations, badge de statut) vers les fiches (QUE-28).
+- Filtres de la page de résultats, en liens : groupes présents dans les résultats (du plus fourni au moins fourni) et « Menacées seulement » (CR, EN, VU) ; sur téléphone, rangées de puces à faire défiler ; filtres sans résultat → « Retirer les filtres » (QUE-28).
+- Filtre « Où » de la page de résultats : Monde, le pays et le continent du visiteur (donnés par Cloudflare pour la requête, jamais enregistrés), et le lieu d'un lien partagé ; une espèce y compte à partir de 5 observations. La page n'est plus gardée que par le navigateur (« private »), puisque ses puces dépendent du visiteur. Sur téléphone, statut et lieu partagent une rangée, qui défile jusqu'à la puce active (QUE-28).
+- Import : pays et continents de chaque espèce (948 659 espèces, 4 millions de couples) dans 3 000 fichiers `zones/<n>.json` regroupés par genre comme les fiches (29 Mo, 78 Ko au plus), lus par le serveur seulement quand le filtre « Où » est choisi ; données d'exemple complétées (QUE-28).
+- États de la page : « Aucune espèce trouvée » avec le bouton « Explorer par groupe » (vers l'accueil jusqu'au lot 6), texte trop court, recherche indisponible (code 503) (QUE-28).
+- Composants `PuceFiltre`, `LigneEspece` et `MessageEtat` ; la barre de recherche peut être pré-remplie (QUE-28).
+- Lighthouse mesure aussi la page de résultats (contrôles de référencement un par un : la page est « noindex » par choix) (QUE-28).
+- Outil `evaluer-recherche.ts` : les 40 recherches du lot 1 et 15 recherches imprévues ; l'import mensuel échoue si le score passe sous 38/40 (QUE-27).
+
+### Modifié
+- Fonds de courbes de niveau (page de résultats, page introuvable) allégés : coordonnées arrondies au pixel, 37 Ko au lieu de 45 Ko compressés sur ordinateur, 9 Ko au lieu de 11 Ko sur téléphone, sans différence visible (QUE-28).
+
+### Corrigé
+- Suggestions lentes en ligne (2 à 12 secondes) : le serveur lisait la fiche de chaque espèce candidate (jusqu'à 35 fichiers, 7,5 Mo pour « fougère »). Il ne lit plus que l'index, et au plus le fichier du genre visé (QUE-27).
+- Suggestions encore à 1,2-2 secondes pour un mot nouveau : le serveur lisait les 4 à 10 fichiers de l'index d'une recherche l'un après l'autre (~0,2 s chacun en ligne). Il les lit maintenant en même temps (QUE-27).
+
 ## [0.8.0] - 2026-11-24
 
 Lot 4 terminé : la fiche espèce. Chaque espèce observée a sa page en français et en anglais : fiche complète (nom, résumé Wikipédia, « Sais-tu ? », photo créditée) ou fiche courte qui dit ce qui manque, carte de répartition des observations GBIF dessinée par notre serveur, espèces proches, cache et référencement. Prochain lot : la recherche.
@@ -132,7 +157,8 @@ Fin du cadrage : le projet est défini, aucune ligne de code encore.
 - Coffre Obsidian dans `docs/`.
 - Licence MIT.
 
-[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.8.0...HEAD
+[Non publié]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/MafilleQuentin/nomen-nature/compare/v0.5.0...v0.6.0

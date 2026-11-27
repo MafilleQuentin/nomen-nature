@@ -1,0 +1,307 @@
+---
+// Page de résultats de la recherche (lot 5, QUE-28 ; Figma « Recherche — « boulot » », 84:390
+// ordinateur et 84:503 téléphone, « Erreur — aucun résultat », 96:425). Rendue par le serveur,
+// sans JavaScript (les filtres sont des liens), jamais indexée. Ordinateur : filtres à gauche,
+// résultats à droite. Téléphone : « Tu voulais dire », rangées de puces à faire défiler, puis la
+// liste (décision du 24.11.2026).
+import BarreDeRecherche from "../components/BarreDeRecherche.astro";
+import Bouton from "../components/Bouton.astro";
+import LigneEspece from "../components/LigneEspece.astro";
+import MessageEtat from "../components/MessageEtat.astro";
+import PuceFiltre from "../components/PuceFiltre.astro";
+import type { Langue } from "../i18n/langues";
+import { t } from "../i18n/textes";
+import Base from "../layouts/Base.astro";
+import { remplir } from "../lib/especes/affichage";
+import { lien } from "../lib/liens";
+import type { ContenuResultats } from "../lib/recherche/page";
+import { adresseRecherche } from "../lib/recherche/resultats";
+
+interface Props {
+  langue: Langue;
+  contenu: ContenuResultats;
+}
+
+const { langue, contenu } = Astro.props;
+const textes = t(langue).resultats;
+const { texte } = contenu;
+const titrePage = texte ? remplir(textes.titrePage, { q: texte }) : textes.titrePageVide;
+// Changer de langue garde la recherche (sans les filtres).
+const adresses = {
+  fr: texte ? adresseRecherche(lien("recherche", "fr"), texte) : lien("recherche", "fr"),
+  en: texte ? adresseRecherche(lien("recherche", "en"), texte) : lien("recherche", "en"),
+};
+---
+
+<Base titre={titrePage} description={textes.descriptionPage} langue={langue} adresses={adresses} indexer={false}>
+  <div class="page">
+    <BarreDeRecherche langue={langue} taille="grand" class="ordi-flex" id="recherche-ordinateur" valeur={texte} />
+    <BarreDeRecherche langue={langue} taille="compact" class="tel-flex" id="recherche-telephone" valeur={texte} />
+    {
+      contenu.etat === "resultats" ? (
+        <div class:list={["grille", { "grille--correction": contenu.correction }]}>
+          {contenu.correction && (
+            <p class="correction t-texte-grand">
+              {textes.tuVoulaisDireAvant}
+              <a href={contenu.lienCorrection}>{contenu.correction}</a>
+              {textes.tuVoulaisDireApres}
+            </p>
+          )}
+          <nav class="filtres" aria-label={textes.filtres}>
+            <div class="famille">
+              <p class="t-mono-surtitre intitule" id="filtre-groupes">
+                {textes.groupes}
+              </p>
+              <ul class="puces" aria-labelledby="filtre-groupes">
+                {contenu.groupes.map((puce) => (
+                  <li>
+                    <PuceFiltre href={puce.lien} actif={puce.actif}>
+                      {puce.libelle}
+                    </PuceFiltre>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {/* Téléphone : statut et lieu dans une seule rangée à faire défiler (décision du 24.11.2026). */}
+            <div class="rangee">
+              <div class="famille">
+                <p class="t-mono-surtitre intitule" id="filtre-statut">
+                  {textes.statut}
+                </p>
+                <ul class="puces" aria-labelledby="filtre-statut">
+                  {contenu.statut.map((puce) => (
+                    <li>
+                      <PuceFiltre href={puce.lien} actif={puce.actif}>
+                        {puce.libelle}
+                      </PuceFiltre>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div class="famille">
+                <p class="t-mono-surtitre intitule" id="filtre-lieu">
+                  {textes.ou}
+                </p>
+                <ul class="puces" aria-labelledby="filtre-lieu">
+                  {contenu.lieux.map((puce) => (
+                    <li>
+                      <PuceFiltre href={puce.lien} actif={puce.actif}>
+                        {puce.libelle}
+                      </PuceFiltre>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </nav>
+          <h1 class="titre t-titre-section-compact">{contenu.titre}</h1>
+          {contenu.lignes.length > 0 ? (
+            <ul class="liste" aria-label={textes.liste}>
+              {contenu.lignes.map((ligne) => (
+                <li>
+                  <LigneEspece ligne={ligne} langue={langue} />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p class="liste vide t-texte-normal">
+              <a href={contenu.lienSansFiltres}>{textes.retirerFiltres}</a>
+            </p>
+          )}
+          <p class="note t-mono-legende">{textes.note}</p>
+        </div>
+      ) : contenu.etat === "aucune" ? (
+        <MessageEtat niveau={1} titre={textes.aucuneTitre} texte={remplir(textes.aucuneTexte, { q: texte })}>
+          <Bouton href={lien("carte", langue)}>{textes.explorer}</Bouton>
+        </MessageEtat>
+      ) : contenu.etat === "indisponible" ? (
+        <MessageEtat niveau={1} titre={textes.indisponibleTitre} texte={textes.indisponibleTexte} />
+      ) : (
+        <MessageEtat niveau={1} titre={textes.titreVide} texte={textes.tropCourt} />
+      )
+    }
+  </div>
+</Base>
+
+<script>
+  // Téléphone : chaque rangée de puces défile jusqu'à sa puce active (« Europe » serait sinon
+  // cachée à droite). Sans JavaScript, la rangée reste au début et la page marche pareil.
+  for (const rangee of document.querySelectorAll<HTMLElement>(".filtres .puces, .filtres .rangee")) {
+    if (rangee.scrollWidth <= rangee.clientWidth) continue;
+    const actives = [...rangee.querySelectorAll<HTMLElement>('[aria-current="true"]')];
+    const derniere = actives.at(-1);
+    const depasse = derniere ? derniere.getBoundingClientRect().right - rangee.getBoundingClientRect().right : 0;
+    if (depasse > 0) rangee.scrollLeft += depasse + 16;
+  }
+</script>
+
+<style>
+  /* Fond de courbes de niveau sur toute la page, comme la page introuvable (maquette). */
+  :global(body) {
+    background:
+      url("../assets/motifs/courbes-telephone.svg") top left / max(100%, 390px) auto no-repeat,
+      var(--color-bg-page);
+  }
+  @media (min-width: 600px) {
+    :global(body) {
+      background:
+        url("../assets/motifs/courbes-ordinateur.svg") top left / max(100%, 1440px) auto no-repeat,
+        var(--color-bg-page);
+    }
+  }
+
+  .page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-6) var(--space-5) var(--space-14);
+  }
+  /* Deux barres (grande et compacte), une seule visible : classe .barre ajoutée pour passer
+     devant le display de la barre elle-même, quel que soit l'ordre des feuilles de style. */
+  .page :global(.barre.ordi-flex) {
+    display: none;
+  }
+
+  /* Téléphone : une colonne, puces en rangées à faire défiler. */
+  .grille {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "filtres" "titre" "liste" "note";
+    gap: var(--space-4);
+  }
+  .grille--correction {
+    grid-template-areas: "correction" "filtres" "titre" "liste" "note";
+  }
+  .correction {
+    grid-area: correction;
+    margin: 0;
+    color: var(--color-text-secondary);
+  }
+  .correction a {
+    color: var(--color-text-accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .correction a:hover {
+    text-decoration: underline;
+  }
+  .filtres {
+    grid-area: filtres;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+  .famille {
+    min-width: 0;
+  }
+  .intitule {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .puces {
+    display: flex;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0 0 var(--space-1);
+    overflow-x: auto;
+    list-style: none;
+    scrollbar-width: none;
+  }
+  .rangee {
+    display: flex;
+    gap: var(--space-5);
+    overflow-x: auto;
+    padding-bottom: var(--space-1);
+    scrollbar-width: none;
+  }
+  .rangee .puces {
+    overflow: visible;
+    padding: 0;
+  }
+  .rangee .famille {
+    flex: none;
+  }
+  .titre {
+    grid-area: titre;
+    margin: var(--space-2) 0 0;
+  }
+  .liste {
+    grid-area: liste;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .vide {
+    color: var(--color-text-secondary);
+  }
+  .vide a {
+    color: var(--color-text-primary);
+  }
+  .note {
+    grid-area: note;
+    margin: 0;
+    color: var(--color-text-secondary);
+  }
+
+  /* Ordinateur : filtres dans un encadré à gauche (300 px), résultats à droite. */
+  @media (min-width: 900px) {
+    .page {
+      gap: var(--space-6);
+      padding: var(--space-8) var(--space-20) var(--space-20);
+    }
+    .page :global(.barre.ordi-flex) {
+      display: flex;
+    }
+    .page :global(.barre.tel-flex) {
+      display: none;
+    }
+    .grille {
+      grid-template-columns: 300px minmax(0, 1fr);
+      grid-template-areas: "filtres titre" "filtres liste" "filtres note";
+      grid-template-rows: auto auto 1fr;
+      column-gap: var(--space-10);
+      row-gap: var(--space-3);
+    }
+    .grille--correction {
+      grid-template-areas: "filtres correction" "filtres titre" "filtres liste" "filtres note";
+      grid-template-rows: auto auto auto 1fr;
+    }
+    .filtres {
+      align-self: start;
+      gap: var(--space-4);
+      padding: var(--space-5);
+      border-radius: var(--radius-xl);
+      background: var(--color-bg-surface);
+    }
+    .famille {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+    .rangee {
+      display: contents;
+    }
+    .intitule {
+      position: static;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      clip-path: none;
+      margin: 0;
+      color: var(--color-text-highlight);
+    }
+    .puces {
+      flex-wrap: wrap;
+      padding: 0;
+      overflow: visible;
+    }
+    .titre {
+      margin: 0;
+    }
+  }
+</style>

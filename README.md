@@ -18,6 +18,8 @@ Le troisième lot, les **données**, est terminé (v0.7.0) : un import mensuel a
 
 Le deuxième lot, le **socle du site**, est terminé (v0.6.0) : gabarit bilingue (français et anglais) fidèle aux maquettes, page 404, tests automatiques sur GitHub, et un site de test en ligne sur <https://test.nomenature.org> (non indexé).
 
+Le cinquième lot, la **recherche**, est terminé (v0.9.0) : la barre de recherche propose les espèces pendant la frappe, en français, anglais et latin, même avec des fautes (« boulot » → bouleaux), et mène à une page de résultats (`/fr/recherche?q=boulot`) avec « Tu voulais dire… » et des filtres par groupe, par statut et par lieu (Monde, ton pays, ton continent), qui marche sans JavaScript.
+
 Le quatrième lot, la **fiche espèce**, est terminé (v0.8.0) : chaque espèce observée a sa page, en français (`/fr/espece/quercus-robur`) et en anglais (`/en/species/quercus-robur`), avec son statut, ses noms, le résumé Wikipédia, ses chiffres et des espèces proches ; les espèces peu documentées ont une « fiche courte » qui dit ce qui manque et renvoie vers GBIF. Les photos (Wikimedia Commons, sinon iNaturalist) sont créditées et servies par notre serveur, et la carte de répartition (observations GBIF en Equal Earth) est dessinée par notre serveur, sans JavaScript. Les fiches complètes sont gardées en cache et seules elles sont proposées aux moteurs de recherche.
 
 | Étape | État |
@@ -26,7 +28,7 @@ Le quatrième lot, la **fiche espèce**, est terminé (v0.8.0) : chaque espèce 
 | 2. Parcours utilisateurs (FigJam) | ✅ Terminé |
 | 3. Maquettes Figma (mobile et ordinateur) | ✅ Terminé |
 | 4. Choix de la stack technique | ✅ Terminé |
-| 5. Développement de la V1, lot par lot | ⏳ En cours (lots 1 à 4 sur 10 terminés) |
+| 5. Développement de la V1, lot par lot | ⏳ En cours (lots 1 à 5 sur 10 terminés) |
 
 Détail : [feuille de route](docs/Feuille%20de%20route.md).
 

@@ -1,0 +1,54 @@
+---
+// Message d'état (Figma « Message d'état », 93:80) : pastille avec icône, titre, explication et
+// action facultative (dans l'emplacement). Pour un état vide ou une erreur : dire ce qui se passe
+// et quoi faire.
+import Icone, { type NomIcone } from "./Icone.astro";
+
+interface Props {
+  titre: string;
+  texte: string;
+  icone?: NomIcone;
+  /** Niveau du titre : h1 quand le message est tout le contenu de la page. */
+  niveau?: 1 | 2;
+}
+
+const { titre, texte, icone = "recherche", niveau = 2 } = Astro.props;
+const Titre = niveau === 1 ? "h1" : "h2";
+---
+
+<div class="message">
+  <span class="pastille" aria-hidden="true"><Icone nom={icone} taille={28} /></span>
+  <Titre class="titre t-titre-section-compact">{titre}</Titre>
+  <p class="texte t-texte-normal">{texte}</p>
+  <slot />
+</div>
+
+<style>
+  .message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-8) var(--space-6);
+    text-align: center;
+  }
+  .pastille {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-full);
+    background: var(--color-bg-surface);
+    color: var(--color-icon-primary);
+  }
+  .titre {
+    margin: 0;
+  }
+  .texte {
+    max-width: 520px;
+    margin: 0;
+    color: var(--color-text-secondary);
+  }
+</style>

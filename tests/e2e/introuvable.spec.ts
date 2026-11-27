@@ -28,7 +28,8 @@ test("la 404 propose la recherche et le retour à la carte", async ({ page }) =>
   const recherche = page.getByRole("search").filter({ visible: true });
   await expect(recherche).toHaveCount(1);
   await expect(recherche).toHaveAttribute("action", "/fr/recherche");
-  await expect(recherche.getByRole("searchbox", { name: "Chercher une espèce" })).toBeVisible();
+  // Champ de recherche (« combobox » une fois l'îlot de suggestions chargé).
+  await expect(recherche.getByLabel("Chercher une espèce")).toBeVisible();
   await expect(page.getByRole("main").getByRole("link", { name: "Retour à la carte" })).toHaveAttribute("href", "/fr");
 });
 

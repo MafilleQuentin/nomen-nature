@@ -1,0 +1,19 @@
+---
+// Résultats de la recherche en français (/fr/recherche?q=boulot), rendus à la demande par le
+// Worker (QUE-28). Tout est calculé avant le rendu : le code 503 (index indisponible) doit être
+// fixé avant que la page parte vers le navigateur. Jamais indexée ; 5 minutes dans le navigateur
+// seulement (« private ») : les puces du filtre « Où » dépendent du pays du visiteur.
+import { lieuxDuVisiteur } from "../../lib/recherche/lieux";
+import { chargerResultats } from "../../lib/recherche/page";
+import ResultatsRecherche from "../../vues/ResultatsRecherche.astro";
+
+export const prerender = false;
+
+// Pays et continent du visiteur (Cloudflare) : pour proposer le filtre « Où », jamais enregistrés.
+const cf = (Astro.request as Request & { cf?: { country?: unknown; continent?: unknown } }).cf;
+const contenu = await chargerResultats(Astro.url, "fr", lieuxDuVisiteur(cf));
+if (contenu.etat === "indisponible") Astro.response.status = 503;
+Astro.response.headers.set("Cache-Control", contenu.etat === "indisponible" ? "no-store" : "private, max-age=300");
+---
+
+<ResultatsRecherche langue="fr" contenu={contenu} />

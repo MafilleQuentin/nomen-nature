@@ -1,0 +1,6 @@
+cen|ak 	en|ak tra	Oak Tree	en	courant	8W2YL	genus	Quercus		Fagaceae	5
+cla|kue	la|kuerkus	Quercus	la	accepte	8W2YL	genus	Quercus		Fagaceae	5
+cla|kue	la|kuerkus robur	Quercus robur	la	accepte	4R5YN	species	Quercus robur	Quercus	Fagaceae	5	quercus-robur	1606550	LC	arbres	chêne pédonculé	English oak
+noak	oak tree	Oak Tree	en	courant	8W2YL	genus	Quercus		Fagaceae	5
+noak	oaks	oaks	en	courant	8W2YL	genus	Quercus		Fagaceae	5
+nped	pedunculate oak	pedunculate oak	en	courant	4R5YN	species	Quercus robur	Quercus	Fagaceae	5	quercus-robur	1606550	LC	arbres	chêne pédonculé	English oak
