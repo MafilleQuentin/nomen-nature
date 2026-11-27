@@ -19,7 +19,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numérotation
 - Les pays du panneau des continents (puces et carte) mènent à la page du pays ; l'ancienne adresse `?pays=ch` y est redirigée (QUE-32).
 
 ### Corrigé
-- Relais des photos : quand Wikimedia refusait une vignette sur le moment (trop de demandes, panne), notre serveur envoyait la photo originale, parfois de plusieurs Mo ; il répond maintenant « indisponible » (503, sans cache) et ne sert l'original que s'il n'y a pas de vignette et qu'il pèse moins de 512 Ko (QUE-33).
+- Relais des photos : quand Wikimedia refusait une vignette sur le moment (trop de demandes, panne), notre serveur envoyait la photo originale, parfois de plusieurs Mo ; il répond maintenant « indisponible » (503, sans cache) et ne sert l'original que s'il n'y a pas de vignette et qu'il pèse moins de 512 Ko ; une vignette de 330 ou 500 px de plus de 200 Ko (vu : 305 Ko au lieu de 58) est refusée de même ; une photo qui ne vient pas laisse l'image d'attente (courbes de niveau) au lieu d'une image cassée (QUE-33).
 - Les rapports Lighthouse de l'intégration continue sont bien gardés (le dossier `.lighthouseci` était ignoré).
 - Noms français écrits à l'anglaise, avec une majuscule à chaque mot (« L'Anguille Européenne », « Compère De Guinée ») : remis en forme à l'affichage (« L'anguille européenne », « Compère de Guinée ») ; « Bouleau á papier » → « Bouleau à papier » ; environ 1 900 noms concernés (QUE-33).
 - Photos Commons dont le nom contient une virgule (« Sociable_Lapwing,_Korgalzhynskiy… ») : le relais de notre serveur répondait 404 (QUE-32).

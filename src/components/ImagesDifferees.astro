@@ -9,6 +9,12 @@
 <script>
   const differees = document.querySelectorAll<HTMLImageElement>("img[data-src]");
   const charger = (image: HTMLImageElement) => {
+    // Photo qui ne vient pas (source occupée, 503) : l'image d'attente (courbes de niveau) reste.
+    const attente = image.src;
+    image.addEventListener("error", () => {
+      image.removeAttribute("srcset");
+      image.src = attente;
+    }, { once: true });
     if (image.dataset["srcset"]) image.srcset = image.dataset["srcset"];
     image.src = image.dataset["src"] ?? image.src;
     image.removeAttribute("data-src");

@@ -30,8 +30,9 @@ async function telecharger(adresse: string, tailleMax = TAILLE_MAX): Promise<Res
     const type = reponse.headers.get("Content-Type") ?? "";
     const taille = Number(reponse.headers.get("Content-Length") ?? 0);
     if (!type.startsWith("image/")) return 0;
-    // Trop lourde, ou taille inconnue pour un repli qui doit rester léger : refusée (413), sans repli.
-    if (taille > tailleMax || (tailleMax < TAILLE_MAX && !taille)) return 413;
+    // Trop lourde (413), ou taille inconnue pour un repli qui doit rester léger (refusé aussi).
+    if (taille > tailleMax) return 413;
+    if (tailleMax === TAILLE_MAX_REPLI && !taille) return 411;
     return reponse;
   } catch {
     return 0;
@@ -44,13 +45,16 @@ const passager = (code: number) => code === 0 || code === 429 || code >= 500;
 /**
  * Relaie `source` pour la requête du visiteur, avec le cache. `repli` (l'original) n'est demandé que
  * si la vignette n'existe pas (photo plus petite que la vignette), et seulement s'il est léger.
+ * `tailleMax` : au-delà, la vignette est jugée anormale (vu en CI : une vignette WebP de 500 px à
+ * 305 Ko au lieu de 58 Ko) et refusée sans être gardée (503) : elle sera redemandée plus tard.
  */
-export async function relayer(requete: Request, source: string, repli?: string): Promise<Response> {
+export async function relayer(requete: Request, source: string, repli?: string, tailleMax = TAILLE_MAX): Promise<Response> {
   const cache = typeof caches !== "undefined" && "default" in caches ? (caches as unknown as { default: Cache }).default : undefined;
   const cle = new Request(new URL(requete.url).toString(), { method: "GET" });
   const connue = await cache?.match(cle);
   if (connue) return connue;
-  let reponse = await telecharger(source);
+  let reponse = await telecharger(source, tailleMax);
+  if (reponse === 413) return indisponible(); // vignette anormalement lourde : ni repli, ni cache
   if (typeof reponse === "number" && !passager(reponse) && repli) reponse = await telecharger(repli, TAILLE_MAX_REPLI);
   if (typeof reponse === "number") return passager(reponse) ? indisponible() : introuvable();
   if (!reponse.body) return introuvable();
