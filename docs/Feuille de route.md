@@ -23,7 +23,7 @@ Découpés le 18.11.2026 dans le projet Linear [Nomen Nature — V1](https://lin
 | 4 | **Fiche espèce** : complète et peu documentée, photos créditées, carte de répartition, référencement et cache | QUE-22 à QUE-26 | v0.8.0 | ✅ Terminé (24.11.2026) |
 | 5 | **Recherche** : autocomplétion, résultats, « Tu voulais dire… », filtres | QUE-27, QUE-28 | v0.9.0 | ✅ Terminé (24.11.2026) |
 | 6 | **Carte** : monde → continent → pays en d3, panneau d'espèces, courbes de niveau réelles | QUE-29 à QUE-31 | v0.10.0 | ✅ Terminé (27.11.2026) |
-| 7 | **Listes et accueil** : page pays, liste d'un groupe, espèces menacées, accueil | QUE-32 à QUE-34 | v0.11.0 | ⏳ En cours (QUE-32 terminé ; QUE-33 en relecture) |
+| 7 | **Listes et accueil** : page pays, liste d'un groupe, espèces menacées, accueil | QUE-32 à QUE-34 | v0.11.0 | ⏳ En cours (QUE-32 et QUE-33 terminés ; QUE-34 à faire) |
 | 8 | **Autour de moi** : demande de position ou choix d'un lieu, rayon 5/25/100 km, carte et liste | QUE-35, QUE-36 | v0.12.0 | ⬜ |
 | 9 | **Identifier une plante** : clé Pl@ntNet, photo, Worker avec limite, résultats et erreurs | QUE-37 à QUE-40 | v0.13.0 | ⬜ |
 | 10 | **Finitions avant ouverture** : logo et favicon, pages légales, plan du site, DOI GBIF, checklist complète | QUE-41 à QUE-45 | v0.14.0 | ⬜ |
