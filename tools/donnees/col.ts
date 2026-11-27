@@ -3,7 +3,10 @@
 // et extraire_noms.py (lot 1), sans les synonymes latins (verdict du lot 1).
 //
 // Sources (licence CC BY 4.0, citer l'édition et son DOI) :
-// - l'export « à plat » de ChecklistBank : un taxon par ligne avec sa classification (~137 Mo) ;
+// - l'export ColDP de ChecklistBank (NameUsage, un taxon par ligne, ~180 Mo compressé). La
+//   classification (règne… genre) est reconstruite en remontant les parents (parentID) : selon
+//   l'export que ChecklistBank a déjà prêt, ses colonnes de classification sont là ou non (en
+//   novembre 2026, elles manquaient et l'import n'avait trouvé aucune espèce) ;
 // - la table des noms courants (VernacularName.tsv), prise seule dans l'archive mensuelle
 //   (~1,4 Go) par requêtes partielles (~35 Mo).
 //
@@ -90,6 +93,66 @@ export function nettoyer(nom: string): string {
 
 const COLONNES_TAXONS = ["id", "rang", "nom", "auteur", "regne", "embranchement", "classe", "ordre", "famille", "genre", "groupe_col"];
 
+/** Rangs de la classification gardée, dans l'ordre des colonnes de taxons.tsv. */
+export const RANGS_CLASSIFICATION = ["kingdom", "phylum", "class", "order", "family", "genus"] as const;
+/** Rangs qui ne sont jamais parents d'un genre ou d'une famille : inutile de les garder en mémoire. */
+const RANGS_SOUS_ESPECE = new Set([
+  "species",
+  "subspecies",
+  "variety",
+  "subvariety",
+  "form",
+  "subform",
+  "infraspecific name",
+  "infrasubspecific name",
+  "cultivar",
+  "strain",
+]);
+/** En dessous, l'extraction a échoué (export vide ou d'un autre format) : l'import s'arrête. */
+export const ESPECES_MIN = 1_000_000;
+
+export interface Usage {
+  parent: string;
+  rang: string;
+  /** Nom, seulement pour les rangs de la classification (sinon vide). */
+  nom: string;
+}
+
+/**
+ * Copie d'un morceau de ligne : V8 garde sinon toute la ligne en mémoire derrière chaque
+ * identifiant (8,5 millions de lignes dans l'export : la mémoire de Node n'y suffisait pas).
+ */
+const copie = (texte: string) => (" " + texte).slice(1);
+
+/**
+ * Classification d'un taxon (règne, embranchement, classe, ordre, famille, genre) en remontant ses
+ * parents. `memoire` garde celle de chaque taxon déjà vu (les espèces d'un genre partagent tout).
+ */
+export function classification(id: string, usages: Map<string, Usage>, memoire = new Map<string, string[]>()): string[] {
+  const chemin: string[] = [];
+  let courant: string | undefined = id;
+  let connue: string[] | undefined;
+  while (courant && chemin.length < 80) {
+    connue = memoire.get(courant);
+    if (connue) break;
+    chemin.push(courant);
+    courant = usages.get(courant)?.parent;
+  }
+  let resultat = connue ?? RANGS_CLASSIFICATION.map(() => "");
+  // Redescendre : chaque taxon ajoute son propre rang à la classification de son parent ; le plus
+  // proche l'emporte (un « genre » mal rangé plus haut, comme Pellonulinae, ne masque pas le vrai).
+  for (const noeud of chemin.reverse()) {
+    const u = usages.get(noeud);
+    const i = u ? (RANGS_CLASSIFICATION as readonly string[]).indexOf(u.rang) : -1;
+    if (u && i >= 0) {
+      resultat = [...resultat];
+      resultat[i] = u.nom;
+    }
+    memoire.set(noeud, resultat);
+  }
+  return resultat;
+}
+
 export async function extraire(v: Version, dossier: string): Promise<Record<string, number | string>> {
   mkdirSync(dossier, { recursive: true });
   const exportZip = join(dossier, "export.zip");
@@ -100,24 +163,45 @@ export async function extraire(v: Version, dossier: string): Promise<Record<stri
   const compteurs: Record<string, number> = {};
   const compter = (cle: string) => (compteurs[cle] = (compteurs[cle] ?? 0) + 1);
 
-  // 1. Taxons cherchables, et synonymes d'espèces (pour rattacher leurs noms courants).
+  // Le tableau des taxons dans l'archive : NameUsage.tsv (ColDP), ou dataset-<clé>.tsv (export à plat).
+  const ouvrirExport = async () => (await ouvrirParNom(await sourceLocale(exportZip), /(^|\/)(NameUsage|dataset-\d+)\.tsv$/)).flux;
+
+  // 1a. Les taxons acceptés au-dessus de l'espèce et leurs parents, pour reconstruire la classification.
+  const usages = new Map<string, Usage>();
+  for await (const t of lignesTsv(await ouvrirExport())) {
+    const rang = t["rank"] ?? "";
+    if (!STATUTS_ACCEPTES.has(t["status"] ?? "") || RANGS_SOUS_ESPECE.has(rang)) continue;
+    const utile = (RANGS_CLASSIFICATION as readonly string[]).includes(rang);
+    usages.set(copie(t["ID"] ?? ""), { parent: copie(t["parentID"] ?? ""), rang: utile ? rang : "", nom: utile ? copie(t["scientificName"] ?? "") : "" });
+  }
+
+  // 1b. Taxons cherchables, et synonymes d'espèces (pour rattacher leurs noms courants).
   const taxons = new Map<string, string[]>();
   const rangs = new Map<string, string>();
   const synonymes = new Map<string, string>(); // id du synonyme → id de l'espèce acceptée
-  const { flux: fluxExport } = await ouvrirParNom(await sourceLocale(exportZip), /\.tsv$/);
-  for await (const t of lignesTsv(fluxExport)) {
-    if (!REGNES.has(t["kingdom"] ?? "") || !RANGS.has(t["rank"] ?? "")) continue;
+  const memoire = new Map<string, string[]>();
+  for await (const t of lignesTsv(await ouvrirExport())) {
+    const rang = t["rank"] ?? "";
+    if (!RANGS.has(rang)) continue;
     if (STATUTS_ACCEPTES.has(t["status"] ?? "")) {
       const id = t["ID"] ?? "";
-      taxons.set(id, [
-        id, t["rank"], t["scientificName"], t["authorship"], t["kingdom"], t["phylum"],
-        t["class"], t["order"], t["family"], t["genus"], t["taxGroup"],
-      ].map((x) => x ?? ""));
-      rangs.set(id, t["rank"] ?? "");
-      compter(`taxons_${t["rank"]}`);
-    } else if (t["status"] === "synonym" && t["rank"] === "species") {
-      synonymes.set(t["ID"] ?? "", t["parentID"] ?? "");
+      // Classification des parents (comme l'export à plat : un genre n'a pas son propre nom en « genre »).
+      const [regne = "", embranchement = "", classe = "", ordre = "", famille = "", genre = ""] = classification(t["parentID"] ?? "", usages, memoire);
+      if (!REGNES.has(regne)) continue;
+      const ligne = [id, rang, t["scientificName"] ?? "", t["authorship"] ?? "", regne, embranchement, classe, ordre, famille, genre, t["taxGroup"] ?? ""];
+      taxons.set(copie(id), ligne.map(copie));
+      rangs.set(copie(id), rang);
+      compter(`taxons_${rang}`);
+    } else if (t["status"] === "synonym" && rang === "species") {
+      synonymes.set(copie(t["ID"] ?? ""), copie(t["parentID"] ?? ""));
     }
+  }
+  usages.clear();
+  memoire.clear();
+  if ((compteurs["taxons_species"] ?? 0) < ESPECES_MIN) {
+    throw new Error(
+      `Catalogue of Life : ${compteurs["taxons_species"] ?? 0} espèces seulement dans ${exportZip} (au moins ${ESPECES_MIN} attendues) : export vide ou d'un autre format.`,
+    );
   }
   await ecrire(join(dossier, "taxons.tsv"), [COLONNES_TAXONS, ...taxons.values()]);
 

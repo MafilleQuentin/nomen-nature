@@ -2,7 +2,7 @@
 // lecture des TSV du Catalogue of Life, nettoyage des noms courants.
 import { Readable } from "node:stream";
 import { describe, expect, it } from "vitest";
-import { lignesTsv, nettoyer } from "../../tools/donnees/col.ts";
+import { classification, lignesTsv, nettoyer, type Usage } from "../../tools/donnees/col.ts";
 import { choisirUicn } from "../../tools/donnees/gbif.ts";
 import { lireRequete } from "../../tools/donnees/gbif-sql.ts";
 import { entrees, ouvrirParNom, sourceLocale } from "../../tools/donnees/zip.ts";
@@ -212,5 +212,36 @@ describe("nom français principal", async () => {
     expect(nomPrincipal(["fayard", "hêtre"], "Hêtre_commun")).toBe("fayard");
     expect(nomPrincipal(["renard roux"], "")).toBe("renard roux");
     expect(nomPrincipal([], "Quercus_robur")).toBe("");
+  });
+});
+
+describe("classification du Catalogue of Life, par les parents", () => {
+  // Règne > embranchement > classe > ordre > famille > sous-famille > « genre » mal rangé > genre.
+  const usages = new Map<string, Usage>([
+    ["K", { parent: "", rang: "kingdom", nom: "Animalia" }],
+    ["P", { parent: "K", rang: "phylum", nom: "Chordata" }],
+    ["C", { parent: "P", rang: "class", nom: "Teleostei" }],
+    ["O", { parent: "C", rang: "order", nom: "Clupeiformes" }],
+    ["F", { parent: "O", rang: "family", nom: "Dorosomatidae" }],
+    ["SF", { parent: "F", rang: "", nom: "" }],
+    ["G1", { parent: "SF", rang: "genus", nom: "Pellonulinae" }],
+    ["G2", { parent: "G1", rang: "genus", nom: "Congothrissa" }],
+  ]);
+
+  it("remonte jusqu'au règne ; le rang le plus proche l'emporte", () => {
+    expect(classification("G2", usages)).toEqual(["Animalia", "Chordata", "Teleostei", "Clupeiformes", "Dorosomatidae", "Congothrissa"]);
+    expect(classification("SF", usages)).toEqual(["Animalia", "Chordata", "Teleostei", "Clupeiformes", "Dorosomatidae", ""]);
+  });
+
+  it("partage les classifications déjà vues, et s'arrête sur un parent inconnu ou une boucle", () => {
+    const memoire = new Map<string, string[]>();
+    classification("G2", usages, memoire);
+    expect(memoire.get("F")).toEqual(["Animalia", "Chordata", "Teleostei", "Clupeiformes", "Dorosomatidae", ""]);
+    expect(classification("inconnu", usages)).toEqual(["", "", "", "", "", ""]);
+    const boucle = new Map<string, Usage>([
+      ["A", { parent: "B", rang: "genus", nom: "A" }],
+      ["B", { parent: "A", rang: "family", nom: "B" }],
+    ]);
+    expect(classification("A", boucle)[5]).toBe("A");
   });
 });

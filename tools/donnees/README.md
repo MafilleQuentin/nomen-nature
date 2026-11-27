@@ -8,7 +8,7 @@ Les fichiers téléchargés et produits vont dans `tools/donnees/data/`, ignoré
 
 | Fichier | Rôle |
 |---|---|
-| [`col.ts`](col.ts) | Trouve la dernière version du Catalogue of Life XR, télécharge l'export (~137 Mo), prend la table des noms courants dans l'archive mensuelle (~35 Mo sur 1,4 Go) et écrit `taxons.tsv`, `noms.tsv` et `version.json` dans `data/col/<clé>/` |
+| [`col.ts`](col.ts) | Trouve la dernière version du Catalogue of Life XR, télécharge l'export ColDP (~180 Mo), reconstruit la classification en remontant les parents (l'export n'a pas toujours ses colonnes de classification), prend la table des noms courants dans l'archive mensuelle (~35 Mo sur 1,4 Go) et écrit `taxons.tsv`, `noms.tsv` et `version.json` dans `data/col/<clé>/` ; s'arrête sous un million d'espèces |
 | [`gbif-sql.ts`](gbif-sql.ts) | Téléchargements SQL de GBIF : valider, demander, attendre, télécharger. `obtenir` réutilise un résultat identique de moins de 25 jours du compte, sinon demande et attend (~20 minutes), et **refuse un résultat presque vide**. Identifiants dans `.env` (`GBIF_UTILISATEUR`, `GBIF_MOT_DE_PASSE`) |
 | [`gbif.ts`](gbif.ts) | Obtient les quatre téléchargements et écrit `data/gbif/especes.tsv` (id, observations, statut UICN), `pays.tsv`, `continents.tsv`, `cases.tsv` (espèces distinctes par case d'un degré, pour les courbes de niveau de la carte, lot 6) et `gbif.json` (DOI, licences, citations). Attend une requête identique déjà en cours plutôt que d'en demander une autre |
 | [`groupes.ts`](groupes.ts) | Range chaque espèce observée dans l'un des 13 groupes courants (classification du Catalogue of Life ; « arbres » d'après la forme de vie de WCVP, Kew, CC BY 3.0, téléchargé chaque mois s'il a plus de 30 jours) ; écrit `data/groupes.tsv` |
