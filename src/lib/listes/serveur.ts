@@ -69,10 +69,13 @@ export async function chargerListe(
   const defaut = lieuxVisiteur[0] ?? MONDE;
   const choix = lireChoixListe(url.searchParams, mode, groupe, defaut);
   if (!regions[cleRegion(choix.lieu)]) choix.lieu = MONDE; // lieu sans liste (lien ancien ou inventé)
-  const [resume, resumeMonde] = await Promise.all([
-    lireJson<Resume>(`${dossierDuLieu(choix.lieu)}/resume.json`, url),
-    lireJson<Resume>("/donnees/listes/monde/resume.json", url),
-  ]);
+  const resumeMonde = await lireJson<Resume>("/donnees/listes/monde/resume.json", url);
+  let resume = choix.lieu.type === "monde" ? resumeMonde : await lireJson<Resume>(`${dossierDuLieu(choix.lieu)}/resume.json`, url);
+  // Listes du lieu introuvables (paquet incomplet, données d'exemple) : le monde.
+  if (!resume && choix.lieu.type !== "monde") {
+    choix.lieu = MONDE;
+    resume = resumeMonde;
+  }
   if (!resume) return "indisponible";
   const nomFichier = choix.groupe || "menacees";
   const fichier = await lireJson<FichierListe>(`${dossierDuLieu(choix.lieu)}/${nomFichier}.json`, url);
